@@ -12,7 +12,12 @@
  */
 
 import { mount } from "svelte";
-import App from "./svelte/app.svelte";
+import Table from "./svelte/Table.svelte";
+import PlayerPanel from "./svelte/PlayerPanel.svelte";
+import type { AnarchyData, AnarchyPlayer } from "./context";
+import { ctx } from "./context";
+
+type AnarchyBga = Bga<AnarchyPlayer, AnarchyData>;
 
 /**
  * We create one State class per declared state on the PHP side, to handle all state specific code here.
@@ -21,9 +26,9 @@ import App from "./svelte/app.svelte";
  */
 class PlayerTurn {
   game: Game;
-  bga: Bga<Player, Gamedatas<Player>>;
+  bga: AnarchyBga;
 
-  constructor(game: Game, bga: Bga) {
+  constructor(game: Game, bga: AnarchyBga) {
     this.game = game;
     this.bga = bga;
   }
@@ -84,10 +89,9 @@ class PlayerTurn {
 }
 
 export class Game {
-  bga: Bga<Player, Gamedatas<Player>>;
-  gamedatas?: Gamedatas<Player>;
+  bga: AnarchyBga;
 
-  constructor(bga: Bga<Player, Gamedatas<Player>>) {
+  constructor(bga: AnarchyBga) {
     console.log("theanarchy constructor");
     this.bga = bga;
 
@@ -99,46 +103,27 @@ export class Game {
     this.bga.states.logger = console.log;
   }
 
-  setup(gamedatas: Gamedatas) {
-    console.log("Starting game setup");
-    this.gamedatas = gamedatas;
+  setup(gamedatas: AnarchyData) {
+    console.log("Starting game setup", gamedatas);
 
+    // Initialize the Svelte app
+    ctx.set(gamedatas);
     this.bga.gameArea
       .getElement()
       .insertAdjacentHTML("beforeend", `<div id="svelte-app"></div>`);
+    mount(Table, { target: document.getElementById("svelte-app")! });
 
-    mount(App, {
-      target: document.getElementById("svelte-app")!,
-    });
-
-    // Setting up player boards
+    // Set up player boards
     Object.values(gamedatas.players).forEach((player) => {
-      // example of setting up players boards
-      this.bga.playerPanels.getElement(player.id).insertAdjacentHTML(
-        "beforeend",
-        `
-                <span id="energy-player-counter-${player.id}"></span> Energy
-            `,
-      );
+      const divId = `player-panel-${player.id}`;
+      this.bga.playerPanels
+        .getElement(parseInt(player.id, 10))
+        .insertAdjacentHTML("beforeend", `<div id="${divId}"></div>`);
 
-      /* example of counter
-      const counter = new ebg.counter();
-      counter.create(`energy-player-counter-${player.id}`, {
-        value: player.energy,
-        playerCounter: "energy",
-        playerId: player.id,
+      mount(PlayerPanel, {
+        target: document.getElementById(divId),
+        props: { playerId: player.id },
       });
-
-      // example of adding a div for each player
-      document.getElementById("player-tables").insertAdjacentHTML(
-        "beforeend",
-        `
-                <div id="player-table-${player.id}">
-                    <strong>${player.name}</strong>
-                    <div>Player zone content goes here</div>
-                </div>
-            `,
-      );*/
     });
 
     // TODO: Set up your game interface here, according to "gamedatas"
@@ -176,7 +161,7 @@ export class Game {
     // automatically listen to the notifications, based on the `notif_xxx` function on this class.
     // Uncomment the logger param to see debug information in the console about notifications.
     this.bga.notifications.setupPromiseNotifications({
-      // logger: console.log
+      logger: console.log,
     });
   }
 
