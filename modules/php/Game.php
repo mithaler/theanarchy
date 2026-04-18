@@ -20,12 +20,21 @@ namespace Bga\Games\theanarchy;
 
 use Bga\Games\theanarchy\States\PlayerTurn;
 use Bga\GameFramework\Components\Counters\PlayerCounter;
+use Bga\GameFramework\Components\Counters\TableCounter;
 
-class Game extends \Bga\GameFramework\Table
-{
+class Game extends \Bga\GameFramework\Table {
     public static array $CARD_TYPES;
 
-    public PlayerCounter $playerEnergy;
+    public TableCounter $round;
+
+    public PlayerCounter $serfs;
+    public PlayerCounter $craftsmen;
+    public PlayerCounter $patrons;
+    public PlayerCounter $soldiers;
+    public PlayerCounter $knights;
+    public PlayerCounter $silver;
+    public PlayerCounter $food;
+    public PlayerCounter $materials;
 
     /**
      * Your global variables labels:
@@ -36,11 +45,19 @@ class Game extends \Bga\GameFramework\Table
      * NOTE: afterward, you can get/set the global variables with `getGameStateValue`, `setGameStateInitialValue` or
      * `setGameStateValue` functions.
      */
-    public function __construct()
-    {
+    public function __construct() {
         parent::__construct();
 
-        $this->playerEnergy = $this->bga->counterFactory->createPlayerCounter('energy');
+        $this->round = $this->bga->counterFactory->createTableCounter("round", 1);
+
+        $this->serfs = $this->bga->counterFactory->createPlayerCounter('serfs');
+        $this->craftsmen = $this->bga->counterFactory->createPlayerCounter('craftsmen');
+        $this->patrons = $this->bga->counterFactory->createPlayerCounter('patrons');
+        $this->soldiers = $this->bga->counterFactory->createPlayerCounter('soldiers');
+        $this->knights = $this->bga->counterFactory->createPlayerCounter('knights');
+        $this->silver = $this->bga->counterFactory->createPlayerCounter('silver');
+        $this->food = $this->bga->counterFactory->createPlayerCounter('food');
+        $this->materials = $this->bga->counterFactory->createPlayerCounter('materials');
 
         self::$CARD_TYPES = [
             1 => [
@@ -77,26 +94,13 @@ class Game extends \Bga\GameFramework\Table
      *
      * @return int
      */
-    public function getGameProgression()
-    {
+    public function getGameProgression() {
         // TODO: compute and return the game progression
 
         return 0;
     }
 
-    /**
-     * Migrate database.
-     *
-     * You don't have to care about this until your game has been published on BGA. Once your game is on BGA, this
-     * method is called everytime the system detects a game running with your old database scheme. In this case, if you
-     * change your database scheme, you just have to apply the needed changes in order to update the game database and
-     * allow the game to continue to run with your new version.
-     *
-     * @param int $from_version
-     * @return void
-     */
-    public function upgradeTableDb($from_version)
-    {
+    public function upgradeTableDb($from_version) {
 //       if ($from_version <= 1404301345)
 //       {
 //            // ! important ! Use `DBPREFIX_<table_name>` for all tables
@@ -122,19 +126,30 @@ class Game extends \Bga\GameFramework\Table
      * - when the game starts
      * - when a player refreshes the game page (F5)
      */
-    protected function getAllDatas(int $currentPlayerId): array
-    {
+    protected function getAllDatas(int $currentPlayerId): array {
         $result = [];
         // WARNING: We must only return information visible by the current player (using $currentPlayerId).
 
-        // Get information about players.
-        // NOTE: you can retrieve some extra field you added for "player" table in `dbmodel.sql` if you need it.
-        $result["players"] = $this->getCollectionFromDb(
-            "SELECT `player_id` AS `id`, `player_score` AS `score` FROM `player`"
-        );
-        $this->playerEnergy->fillResult($result);
+        $this->round->fillResult($result);
 
-        // TODO: Gather all information about current game situation (visible by player $currentPlayerId).
+        // Get information about players.
+        $result["players"] = $this->getCollectionFromDb(
+            "SELECT
+                `player_id` AS `id`,
+                `player_score` AS `score`,
+                `tent`, `gate`, `moat`,
+                `left_wall` AS `leftWall`, `right_wall`, `bottom_wall`, `top_wall`,
+                `tower_left_top`, `tower_left_bottom`, `tower_right_top`, `tower_right_bottom`
+            FROM `player`"
+        );
+        $this->serfs->fillResult($result);
+        $this->craftsmen->fillResult($result);
+        $this->patrons->fillResult($result);
+        $this->soldiers->fillResult($result);
+        $this->knights->fillResult($result);
+        $this->silver->fillResult($result);
+        $this->food->fillResult($result);
+        $this->materials->fillResult($result);
 
         return $result;
     }
@@ -144,7 +159,16 @@ class Game extends \Bga\GameFramework\Table
      *  according to the game rules, so that the game is ready to be played.
      */
     protected function setupNewGame($players, $options = []): string {
-        $this->playerEnergy->initDb(array_keys($players), initialValue: 2);
+        $this->round->initDb(1);
+
+        $this->serfs->initDb(array_keys($players), initialValue: 1);
+        $this->craftsmen->initDb(array_keys($players));
+        $this->patrons->initDb(array_keys($players));
+        $this->soldiers->initDb(array_keys($players), initialValue: 2);
+        $this->knights->initDb(array_keys($players));
+        $this->silver->initDb(array_keys($players), initialValue: 1);
+        $this->food->initDb(array_keys($players), initialValue: 1);
+        $this->materials->initDb(array_keys($players), initialValue: 1);
 
         // Set the colors of the players with HTML color code. The default below is red/green/blue/orange/brown. The
         // number of colors defined here must correspond to the maximum number of players allowed for the gams.
@@ -160,10 +184,6 @@ class Game extends \Bga\GameFramework\Table
             ]);
         }
 
-        // Create players based on generic information.
-        //
-        // NOTE: You can add extra field on player table in the database (see dbmodel.sql) and initialize
-        // additional fields directly here.
         static::DbQuery(
             sprintf(
                 "INSERT INTO `player` (`player_id`, `player_color`, `player_name`) VALUES %s",
