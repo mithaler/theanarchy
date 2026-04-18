@@ -87,7 +87,7 @@ export class Game {
   bga: Bga<Player, Gamedatas<Player>>;
   gamedatas?: Gamedatas<Player>;
 
-  constructor(bga: Bga) {
+  constructor(bga: Bga<Player, Gamedatas<Player>>) {
     console.log("theanarchy constructor");
     this.bga = bga;
 
@@ -96,36 +96,19 @@ export class Game {
     this.bga.states.register("PlayerTurn", playerTurn);
 
     // Uncomment the next line to show debug informations about state changes in the console. Remove before going to production!
-    // this.bga.states.logger = console.log;
-
-    // Here, you can init the global variables of your user interface
-    // Example:
-    // this.myGlobalValue = 0;
+    this.bga.states.logger = console.log;
   }
 
-  /*
-        setup:
-
-        This method must set up the game user interface according to current game situation specified
-        in parameters.
-
-        The method is called each time the game interface is displayed to a player, ie:
-        _ when the game starts
-        _ when a player refreshes the game page (F5)
-
-        "gamedatas" argument contains all datas retrieved by your "getAllDatas" PHP method.
-    */
   setup(gamedatas: Gamedatas) {
     console.log("Starting game setup");
     this.gamedatas = gamedatas;
 
-    // Example to add a div on the game area
     this.bga.gameArea
       .getElement()
       .insertAdjacentHTML("beforeend", `<div id="svelte-app"></div>`);
 
     mount(App, {
-      target: document.getElementById("svelte-app"),
+      target: document.getElementById("svelte-app")!,
     });
 
     // Setting up player boards

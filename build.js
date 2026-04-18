@@ -1,6 +1,9 @@
+import fs from "fs";
+
 import esbuild from "esbuild";
 import sveltePlugin from "esbuild-svelte";
-import sveltePreprocess from "svelte-preprocess";
+import { sveltePreprocess } from "svelte-preprocess";
+import { compile as sassCompile } from "sass";
 
 esbuild
   .build({
@@ -18,3 +21,8 @@ esbuild
     logLevel: "info",
   })
   .catch(() => process.exit(1));
+
+const out = sassCompile("modules/css/theanarchy.scss", {
+  style: "compressed",
+});
+fs.writeFileSync("theanarchy.css", out.css);

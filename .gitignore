@@ -2,3 +2,4 @@ node_modules/
 
 # compiled files for BGA
 modules/js/Game.js
+theanarchy.css
