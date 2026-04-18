@@ -11,13 +11,19 @@
  *
  */
 
+import { mount } from "svelte";
+import App from "./svelte/app.svelte";
+
 /**
  * We create one State class per declared state on the PHP side, to handle all state specific code here.
  * onEnteringState, onLeavingState and onPlayerActivationChange are predefined names that will be called by the framework.
  * When executing code in this state, you can access the args using this.args
  */
 class PlayerTurn {
-  constructor(game, bga) {
+  game: Game;
+  bga: Bga<Player, Gamedatas<Player>>;
+
+  constructor(game: Game, bga: Bga) {
     this.game = game;
     this.bga = bga;
   }
@@ -78,13 +84,16 @@ class PlayerTurn {
 }
 
 export class Game {
-  constructor(bga) {
+  bga: Bga<Player, Gamedatas<Player>>;
+  gamedatas?: Gamedatas<Player>;
+
+  constructor(bga: Bga) {
     console.log("theanarchy constructor");
     this.bga = bga;
 
     // Declare the State classes
-    this.playerTurn = new PlayerTurn(this, bga);
-    this.bga.states.register("PlayerTurn", this.playerTurn);
+    const playerTurn = new PlayerTurn(this, bga);
+    this.bga.states.register("PlayerTurn", playerTurn);
 
     // Uncomment the next line to show debug informations about state changes in the console. Remove before going to production!
     // this.bga.states.logger = console.log;
@@ -106,18 +115,18 @@ export class Game {
 
         "gamedatas" argument contains all datas retrieved by your "getAllDatas" PHP method.
     */
-
-  setup(gamedatas) {
+  setup(gamedatas: Gamedatas) {
     console.log("Starting game setup");
     this.gamedatas = gamedatas;
 
     // Example to add a div on the game area
-    this.bga.gameArea.getElement().insertAdjacentHTML(
-      "beforeend",
-      `
-            <div id="player-tables"></div>
-        `,
-    );
+    this.bga.gameArea
+      .getElement()
+      .insertAdjacentHTML("beforeend", `<div id="svelte-app"></div>`);
+
+    mount(App, {
+      target: document.getElementById("svelte-app"),
+    });
 
     // Setting up player boards
     Object.values(gamedatas.players).forEach((player) => {
@@ -128,6 +137,8 @@ export class Game {
                 <span id="energy-player-counter-${player.id}"></span> Energy
             `,
       );
+
+      /* example of counter
       const counter = new ebg.counter();
       counter.create(`energy-player-counter-${player.id}`, {
         value: player.energy,
@@ -144,7 +155,7 @@ export class Game {
                     <div>Player zone content goes here</div>
                 </div>
             `,
-      );
+      );*/
     });
 
     // TODO: Set up your game interface here, according to "gamedatas"
