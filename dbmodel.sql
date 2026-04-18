@@ -54,17 +54,16 @@ CREATE TABLE IF NOT EXISTS `checked_box` (
 
     -- The section the box is in. Always matches the row name as it appears on the sheet exactly,
     -- like "WALLS", "QUARRY & FOREST" or "ST. VALENTINE'S FESTIVAL".
-    `section` VARCHAR(32) NOT NULL,
+    `section` VARCHAR(64) NOT NULL,
 
     -- The ID of the box.
     -- If the row is simple left-to-right, matches the position (the first checked box is numbered 1).
     -- Other schemes are documented as they appear in PHP code.
     `box_id` TINYINT UNSIGNED NOT NULL,
 
+    -- For cases where a number is written in the box, NULL if not needed.
+    -- I think this is only MICHAELMAS.
+    `value` TINYINT UNSIGNED,
+
     PRIMARY KEY (`player_id`, `section`, `box_id`),
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-CREATE TABLE IF NOT EXISTS `castle` (
-    `player_id` INT NOT NULL PRIMARY KEY,
-
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
