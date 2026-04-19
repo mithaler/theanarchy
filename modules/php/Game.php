@@ -18,23 +18,19 @@ declare(strict_types=1);
 
 namespace Bga\Games\theanarchy;
 
-use Bga\Games\theanarchy\States\PlayerTurn;
+require_once(__DIR__ . "/Constants.php");
+
 use Bga\GameFramework\Components\Counters\PlayerCounter;
+use Bga\Games\theanarchy\States\PlayerTurn;
 use Bga\GameFramework\Components\Counters\TableCounter;
+use Bga\Games\theanarchy\Resource;
 
 class Game extends \Bga\GameFramework\Table {
     public static array $CARD_TYPES;
 
     public TableCounter $round;
 
-    public PlayerCounter $serfs;
-    public PlayerCounter $craftsmen;
-    public PlayerCounter $patrons;
-    public PlayerCounter $soldiers;
-    public PlayerCounter $knights;
-    public PlayerCounter $silver;
-    public PlayerCounter $food;
-    public PlayerCounter $materials;
+    public array $playerResources;
 
     /**
      * Your global variables labels:
@@ -50,14 +46,10 @@ class Game extends \Bga\GameFramework\Table {
 
         $this->round = $this->bga->counterFactory->createTableCounter("round", 1);
 
-        $this->serfs = $this->bga->counterFactory->createPlayerCounter('serfs');
-        $this->craftsmen = $this->bga->counterFactory->createPlayerCounter('craftsmen');
-        $this->patrons = $this->bga->counterFactory->createPlayerCounter('patrons');
-        $this->soldiers = $this->bga->counterFactory->createPlayerCounter('soldiers');
-        $this->knights = $this->bga->counterFactory->createPlayerCounter('knights');
-        $this->silver = $this->bga->counterFactory->createPlayerCounter('silver');
-        $this->food = $this->bga->counterFactory->createPlayerCounter('food');
-        $this->materials = $this->bga->counterFactory->createPlayerCounter('materials');
+        $this->playerResources = [];
+        foreach (Resource::cases() as $resource) {
+            $this->playerResources[$resource->name] = $this->bga->counterFactory->createPlayerCounter($resource->value);
+        }
 
         self::$CARD_TYPES = [
             1 => [
@@ -98,6 +90,10 @@ class Game extends \Bga\GameFramework\Table {
         // TODO: compute and return the game progression
 
         return 0;
+    }
+
+    public function resources(Resource $resource): PlayerCounter {
+        return $this->playerResources[$resource->name];
     }
 
     public function upgradeTableDb($from_version) {
@@ -158,14 +154,9 @@ class Game extends \Bga\GameFramework\Table {
             }
         }
 
-        $this->serfs->fillResult($result);
-        $this->craftsmen->fillResult($result);
-        $this->patrons->fillResult($result);
-        $this->soldiers->fillResult($result);
-        $this->knights->fillResult($result);
-        $this->silver->fillResult($result);
-        $this->food->fillResult($result);
-        $this->materials->fillResult($result);
+        foreach ($this->playerResources as $counter) {
+            $counter->fillResult($result);
+        }
 
         return $result;
     }
@@ -177,14 +168,20 @@ class Game extends \Bga\GameFramework\Table {
     protected function setupNewGame($players, $options = []): string {
         $this->round->initDb(1);
 
-        $this->serfs->initDb(array_keys($players), initialValue: 1);
-        $this->craftsmen->initDb(array_keys($players));
-        $this->patrons->initDb(array_keys($players));
-        $this->soldiers->initDb(array_keys($players), initialValue: 2);
-        $this->knights->initDb(array_keys($players));
-        $this->silver->initDb(array_keys($players), initialValue: 1);
-        $this->food->initDb(array_keys($players), initialValue: 1);
-        $this->materials->initDb(array_keys($players), initialValue: 1);
+        $initialValues = [
+            Resource::SERFS->value => 1,
+            Resource::SOLDIERS->value => 2,
+            Resource::SILVER->value => 1,
+            Resource::FOOD->value => 1,
+            Resource::MATERIALS->value => 1,
+        ];
+
+        foreach (Resource::cases() as $resource) {
+            $this->resources($resource)->initDb(
+                array_keys($players),
+                initialValue: $initialValues[$resource->value] ?? 0
+            );
+        }
 
         // Set the colors of the players with HTML color code. The default below is red/green/blue/orange/brown. The
         // number of colors defined here must correspond to the maximum number of players allowed for the gams.
@@ -233,7 +230,7 @@ class Game extends \Bga\GameFramework\Table {
      * Here, jump to a state you want to test (by default, jump to next player state)
      * You can trigger it on Studio using the Debug button on the right of the top bar.
      */
-    public function debug_goToState(int $state = 3) {
+    public function debug_goToState(int $state = 6) {
         $this->gamestate->jumpToState($state);
     }
 
@@ -253,4 +250,12 @@ class Game extends \Bga\GameFramework\Table {
         $this->cards->moveCard($card['id'], 'hand', $playerId);
     }
     */
+
+    public function getAvailableBoxes(int | null $playerId = null) {
+        $query = "SELECT * FROM checked_box";
+        if ($playerId) {
+            $query .= " WHERE player_id = $playerId";
+        }
+        $boxes = $this->getObjectListFromDB($query);
+    }
 }
