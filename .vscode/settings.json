@@ -1,3 +1,6 @@
 {
-  "git.enabled": false
+  "git.enabled": false,
+  "[svelte]": {
+    "editor.defaultFormatter": "svelte.svelte-vscode"
+  }
 }
