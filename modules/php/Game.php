@@ -18,8 +18,12 @@ declare(strict_types=1);
 
 namespace Bga\Games\theanarchy;
 
-use Bga\Games\theanarchy\States\PlayerTurn;
+
+require_once(__DIR__ . "/Constants.php");
+
 use Bga\GameFramework\Components\Counters\PlayerCounter;
+
+use Bga\Games\theanarchy\States\InitialSetup;
 use Bga\GameFramework\Components\Counters\TableCounter;
 
 class Game extends \Bga\GameFramework\Table {
@@ -210,22 +214,16 @@ class Game extends \Bga\GameFramework\Table {
         $this->reattributeColorsBasedOnPreferences($players, $gameinfos["player_colors"]);
         $this->reloadPlayersBasicInfos();
 
-        // Init global values with their initial values.
-
         // Init game statistics.
         //
         // NOTE: statistics used in this file must be defined in your `stats.inc.php` file.
-
-        // Dummy content.
         // $this->tableStats->init('table_teststat1', 0);
         // $this->playerStats->init('player_teststat1', 0);
-
-        // TODO: Setup the initial game situation here.
 
         // Activate first player once everything has been initialized and ready.
         $this->activeNextPlayer();
 
-        return PlayerTurn::class;
+        return InitialSetup::class;
     }
 
     /**
@@ -253,4 +251,5 @@ class Game extends \Bga\GameFramework\Table {
         $this->cards->moveCard($card['id'], 'hand', $playerId);
     }
     */
+
 }
