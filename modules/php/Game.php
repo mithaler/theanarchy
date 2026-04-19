@@ -128,20 +128,36 @@ class Game extends \Bga\GameFramework\Table {
      */
     protected function getAllDatas(int $currentPlayerId): array {
         $result = [];
-        // WARNING: We must only return information visible by the current player (using $currentPlayerId).
 
         $this->round->fillResult($result);
 
-        // Get information about players.
         $result["players"] = $this->getCollectionFromDb(
             "SELECT
-                `player_id` AS `id`,
-                `player_score` AS `score`,
-                `tent`, `gate`, `moat`,
-                `left_wall` AS `leftWall`, `right_wall`, `bottom_wall`, `top_wall`,
-                `tower_left_top`, `tower_left_bottom`, `tower_right_top`, `tower_right_bottom`
+                player_id AS id,
+                player_score AS score,
+                tent, gate, moat,
+                left_wall AS leftWall,
+                right_wall as rightWall,
+                bottom_wall as bottomWall,
+                top_wall AS topWall,
+                tower_left_top AS towerLeftTop,
+                tower_left_bottom AS towerLeftBottom,
+                tower_right_top AS towerRightTop,
+                tower_right_bottom AS towerRightBottom
             FROM `player`"
         );
+
+        // Transform all those int fields into actual ints because this framework doesn't for some reason
+        foreach ($result["players"] as &$player) {
+            foreach ([
+                "tent", "gate", "moat",
+                "leftWall", "rightWall", "bottomWall", "topWall",
+                "towerLeftTop", "towerRightTop", "towerLeftBottom", "towerRightBottom",
+            ] as $field) {
+                $player[$field] = (int) ($player[$field]);
+            }
+        }
+
         $this->serfs->fillResult($result);
         $this->craftsmen->fillResult($result);
         $this->patrons->fillResult($result);
