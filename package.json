@@ -2,20 +2,13 @@
   "name": "theanarchy",
   "version": "1.0.0",
   "description": "",
-  "homepage": "https://github.com/mithaler/theanarchy#readme",
-  "bugs": {
-    "url": "https://github.com/mithaler/theanarchy/issues"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/mithaler/theanarchy.git"
   },
-  "license": "ISC",
-  "author": "",
+  "license": "BGA Proprietary",
+  "author": "Michael Louis Thaler <michael.louis.thaler@gmail.com>",
   "type": "module",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "dependencies": {
     "esbuild": "^0.28.0",
     "esbuild-svelte": "^0.9.4",
