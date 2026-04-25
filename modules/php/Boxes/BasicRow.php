@@ -20,8 +20,8 @@ abstract class BasicRow extends BoxType {
 
         $highestFilled = array_reduce(
             $currBoxes,
-            function ($max, $box) {
-                if ($box->section == $this->section && $box->boxId > $max) {
+            function ($max, $box) use ($playerId) {
+                if ($box->playerId == $playerId && $box->section == $this->section && $box->boxId > $max) {
                     return $box->boxId;
                 }
                 return $max;
@@ -35,20 +35,48 @@ abstract class BasicRow extends BoxType {
     }
 }
 
-class QuarryForest extends BasicRow {
-    public string $section = "QUARRY & FOREST";
+abstract class ResourceRow extends BasicRow {
     public int $boxCount = 13;
 
+    abstract public Resource $cost { get; }
+    abstract public Resource $resourceReward { get; }
+    abstract public string $incomeUpgrade { get; }
+    abstract public string $pointUpgrade { get; }
+
     function canPay(Game $game, int $playerId): bool {
-        return $game->resources(Resource::SERFS)->get($playerId) > 0;
+        return $game->resources($this->cost)->get($playerId) > 0;
     }
 
-    public function reward(Game $game, int $boxId): array {
+    public function reward(Game $game, int $boxId): Reward {
         return match ($boxId) {
-            1, 5, 9 => [Resource::MATERIALS],
-            3, 7, 11 => [Resource::MATERIALS, "MATERIALS"],
-            13 => [Resource::MATERIALS, "MATERIALS", "LOYALTY"],
-            default => [],
+            1, 5, 9 => Reward::resources([$this->resourceReward => 1]),
+            3, 7, 11 => new Reward([$this->resourceReward => 1], [$this->incomeUpgrade]),
+            13 => new Reward([$this->resourceReward => 1], [$this->incomeUpgrade, $this->pointUpgrade]),
+            default => Reward::none(),
         };
     }
+}
+
+class QuarryForest extends ResourceRow {
+    public string $name = "QUARRY & FOREST";
+    public Resource $cost = Resource::SERFS;
+    public Resource $resourceReward = Resource::MATERIALS;
+    public string $incomeUpgrade = "MATERIALS";
+    public string $pointUpgrade = "LOYALTY";
+}
+
+class Farms extends ResourceRow {
+    public string $name = "FARMS";
+    public Resource $cost = Resource::SERFS;
+    public Resource $resourceReward = Resource::FOOD;
+    public string $incomeUpgrade = "FOOD";
+    public string $pointUpgrade = "LOYALTY";  // TODO ???
+}
+
+class TrainingGrounds extends ResourceRow {
+    public string $name = "FARMS";
+    public Resource $cost = Resource::SERFS;
+    public Resource $resourceReward = Resource::SOLDIERS;
+    public string $incomeUpgrade = "SOLDIERS";
+    public string $pointUpgrade = "LOYALTY";  // TODO ???
 }

@@ -2,7 +2,10 @@
 
 namespace BGA\Games\theanarchy\States;
 
+require_once(__DIR__ . "/../Boxes/Sections.php");
 require_once(__DIR__ . "/../Constants.php");
+
+use const BGA\Games\theanarchy\Boxes\SECTIONS;
 
 use Bga\GameFramework\StateType;
 use Bga\GameFramework\States\GameState;
@@ -29,8 +32,25 @@ class CheckBoxes extends GameState {
         $this->gamestate->setAllPlayersMultiactive();
     }
 
-    function getArgs() {
+    private function getAvailableBoxes(int $playerId, array $allCheckedBoxes): array {
+        return array_reduce(
+            SECTIONS,
+            function($acc, $section) use ($allCheckedBoxes, $playerId) {
+                $acc[$section->name] = $section->validBoxes($this->game, $playerId, $allCheckedBoxes);
+                return $acc;
+            },
+            [],
+        );
+    }
 
+    function getArgs() {
+        $playerIds = $this->game->allPlayerIds();
+        $boxes = $this->game->allCheckedBoxes();
+        $out = [];
+        foreach ($playerIds as $playerId) {
+            $out[$playerId] = $this->getAvailableBoxes($playerId, $boxes);
+        }
+        return ["availableBoxes" => $out];
     }
 
     function actCheckBox(string $section, string $boxId, string | null $writtenValue = null) {

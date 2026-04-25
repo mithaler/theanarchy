@@ -20,12 +20,14 @@ namespace Bga\Games\theanarchy;
 
 
 require_once(__DIR__ . "/Constants.php");
+require_once(__DIR__ . "/Boxes/BoxType.php");
 
 use Bga\GameFramework\Components\Counters\PlayerCounter;
 use Bga\GameFramework\Components\Counters\TableCounter;
 
 use Bga\Games\theanarchy\States\InitialSetup;
 use Bga\Games\theanarchy\Resource;
+use Bga\Games\theanarchy\Boxes\Box;
 
 class Game extends \Bga\GameFramework\Table {
     public static array $CARD_TYPES;
@@ -231,12 +233,17 @@ class Game extends \Bga\GameFramework\Table {
     }
     */
 
-    public function getCheckedBoxes(int | null $playerId = null) {
+    public function allPlayerIds(): array {
+        return $this->getObjectListFromDB("SELECT player_id FROM player", true);
+    }
+
+    public function allCheckedBoxes(int | null $playerId = null) {
          $query = "SELECT * FROM checked_box";
          if ($playerId) {
              $query .= " WHERE player_id = $playerId";
          }
          $boxes = $this->getObjectListFromDB($query);
+         return array_map(Box::fromDb(...), $boxes);
      }
 
 }

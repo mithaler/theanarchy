@@ -6,36 +6,63 @@ use BGA\Games\theanarchy\Game;
 use BGA\Games\theanarchy\Resource;
 
 class Box {
-    /** Must be "ALL UPPERCASE", as it appears on the sheet. */
-    public string $section;
 
-    /** Only for sections with multiple subsections, must be "all lowercase". */
-    public ?string $subsection;
+    private function __construct(
+        /** Must be "ALL UPPERCASE", as it appears on the sheet. */
+        public string $section,
 
-    /** The number of the box. If the scheme for converting to a number is not obvious, it will be explained in the class' doc. */
-    public int $boxId;
+        /** Only for sections with multiple subsections, must be "all lowercase". */
+        public ?string $subsection,
 
-    function toDbFields(int $playerId): array {
+        /** The number of the box. If the scheme for converting to a number is not obvious, it will be explained in the class' doc. */
+        public int $boxId,
+
+        /** The player who checked this box. */
+        public int $playerId,
+    ) {}
+
+    function toDbFields(): array {
         return [
-            "player_id" => $playerId,
-            "section" => $this->subsection != null ? "$this->section_$this->subsection" : $this->section,
+            "player_id" => $this->playerId,
+            "section" => $this->subsection != null ? "{$this->section}_{$this->subsection}" : $this->section,
             "box_id" => $this->boxId,
         ];
     }
 
-
-    static function fromDb(string $fields): static {
+    public static function fromDb(array $fields): Box {
         $sectionParts = explode("_", $fields["section"]);
-        $out = new static();
-        $out->section = $sectionParts[0];
-        $out->subsection = count($sectionParts) == 2 ? $sectionParts[1] : null;
-        $out->boxId = (int) $fields["box_id"];
-        return $out;
+        return new Box(
+            $sectionParts[0],
+            count($sectionParts) == 2 ? $sectionParts[1] : null,
+            (int) $fields["box_id"],
+            (int) $fields["player_id"],
+        );
+    }
+}
+
+class Reward {
+    public function __construct(
+        /** Resource -> int */
+        public array | null $resources,
+        /** Plain strings, naming sections */
+        public array | null $boxes
+    ) {}
+
+    public static function resources(array $resources): Reward {
+        return new Reward($resources, null);
+    }
+
+    public static function boxes(array $boxes): Reward {
+        return new Reward(null, $boxes);
+    }
+
+    public static function none(): Reward {
+        return new Reward(null, null);
     }
 }
 
 abstract class BoxType {
-    abstract public string $section { get; }
+    abstract public string $name { get; }
 
     /**
      * Returns the list of box IDs in this section that can be checked right now.
@@ -49,5 +76,5 @@ abstract class BoxType {
      * resources (instances of Resource), or sections to check the next box of (strings).
      * @return array<Resource, int>
      */
-    abstract public function reward(Game $game, int $boxId): array;
+    abstract public function reward(Game $game, int $boxId): Reward;
 }
