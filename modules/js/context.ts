@@ -1,5 +1,9 @@
 import { writable } from "svelte/store";
 
+export interface CheckedBoxes {
+  [key: string]: number[];
+}
+
 export interface AnarchyPlayer extends Player {
   tent: number;
 
@@ -24,11 +28,12 @@ export interface AnarchyPlayer extends Player {
   materials: number;
   silver: number;
   food: number;
+
+  checkedBoxes: {[key: number]: CheckedBoxes}
 }
 
 export interface AnarchyData extends Gamedatas<AnarchyPlayer> {
   round: number;
-  test: string;
 }
 
 export const ctx = writable<AnarchyData>();

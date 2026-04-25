@@ -5,7 +5,6 @@
 
 <p>It is round {$ctx.round}</p>
 
-<input bind:value={$ctx.test} />
 <button onclick={() => (count += 1)}>
   clicks: {count}
 </button>

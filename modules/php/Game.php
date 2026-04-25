@@ -140,6 +140,12 @@ class Game extends \Bga\GameFramework\Table {
             ] as $field) {
                 $player[$field] = (int) ($player[$field]);
             }
+            $player["checkedBoxes"] = [];
+        }
+
+        $checkedBoxes = $this->allCheckedBoxes();
+        foreach ($checkedBoxes as $box) {
+            $result["players"]["checkedBoxes"][$box["section"]][] = $box["box_id"];
         }
 
         foreach ($this->playerResources as $counter) {
@@ -242,6 +248,7 @@ class Game extends \Bga\GameFramework\Table {
          if ($playerId) {
              $query .= " WHERE player_id = $playerId";
          }
+         $query .= " ORDER BY player_id, section, box_id ASC";
          $boxes = $this->getObjectListFromDB($query);
          return array_map(Box::fromDb(...), $boxes);
      }
