@@ -4,7 +4,7 @@
   interface Props {
     playerId: number;
   }
-  const playerId: number = $props();
+  const { playerId }: Props = $props();
 </script>
 
 <LeftSheet {playerId} />

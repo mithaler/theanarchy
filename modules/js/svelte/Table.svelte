@@ -1,10 +1,15 @@
 <script lang="ts">
   import { ctx } from "../context";
-  let count = $state(0);
+  import PlayerBoard from "./PlayerBoard.svelte";
+
+  const playerIds = Object.keys($ctx.data.players).map((pid) =>
+    parseInt(pid, 10),
+  );
+  $inspect(playerIds);
 </script>
 
-<p>It is round {$ctx.round}</p>
+<p>It is round {$ctx.data.round}</p>
 
-<button onclick={() => (count += 1)}>
-  clicks: {count}
-</button>
+{#each playerIds as playerId}
+  <PlayerBoard {playerId} />
+{/each}

@@ -58,7 +58,7 @@ abstract class ResourceRow extends BasicRow {
 }
 
 class QuarryForest extends ResourceRow {
-    public string $name = clienttranslate("QUARRY & FOREST");
+    public string $name = "QUARRY & FOREST";
     public Resource $cost = Resource::SERFS;
     public Resource $resourceReward = Resource::MATERIALS;
     public string $incomeUpgrade = "MATERIALS";
@@ -66,7 +66,7 @@ class QuarryForest extends ResourceRow {
 }
 
 class Farms extends ResourceRow {
-    public string $name = clienttranslate("FARMS");
+    public string $name = "FARMS";
     public Resource $cost = Resource::SERFS;
     public Resource $resourceReward = Resource::FOOD;
     public string $incomeUpgrade = "FOOD";
@@ -74,7 +74,7 @@ class Farms extends ResourceRow {
 }
 
 class TrainingGrounds extends ResourceRow {
-    public string $name = clienttranslate("FARMS");
+    public string $name = "TRAINING GROUNDS";
     public Resource $cost = Resource::SERFS;
     public Resource $resourceReward = Resource::SOLDIERS;
     public string $incomeUpgrade = "SOLDIERS";

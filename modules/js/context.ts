@@ -1,6 +1,9 @@
 import { writable } from "svelte/store";
 
-export interface CheckedBoxes {
+export type AnarchyBga = Bga<AnarchyPlayer, AnarchyData>;
+
+export interface BoxSet {
+  // section -> ids
   [key: string]: number[];
 }
 
@@ -29,11 +32,17 @@ export interface AnarchyPlayer extends Player {
   silver: number;
   food: number;
 
-  checkedBoxes: {[key: number]: CheckedBoxes}
+  availableBoxes?: BoxSet;
+  checkedBoxes: BoxSet;
 }
 
 export interface AnarchyData extends Gamedatas<AnarchyPlayer> {
   round: number;
 }
 
-export const ctx = writable<AnarchyData>();
+export interface AnarchyContext {
+  data: AnarchyData;
+  bga: AnarchyBga;
+}
+
+export const ctx = writable<AnarchyContext>();
