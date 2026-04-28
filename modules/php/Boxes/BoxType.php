@@ -72,9 +72,11 @@ abstract class BoxType {
     abstract public function validBoxes(Game $game, int $playerId, array $currBoxes): array;
 
     /**
-     * Returns the reward for a given box ID, which can be multiple things:
-     * resources (instances of Resource), or sections to check the next box of (strings).
-     * @return array<Resource, int>
+     * Pays the cost, updates the DB. Might look up and recursively call this on downstream
+     * BoxTypes, and recursively combine rewards. Assumes that the caller has already validated
+     * that the box is checkable and the cost is payable.
+     * @param Game $game
+     * @param int $boxId
      */
-    abstract public function reward(Game $game, int $boxId): Reward;
+    abstract public function check(Game $game, int $playerId, int $boxId, bool $pay = true);
 }

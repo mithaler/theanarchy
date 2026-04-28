@@ -41,19 +41,30 @@ abstract class ResourceRow extends BasicRow {
     abstract public Resource $cost { get; }
     abstract public Resource $resourceReward { get; }
     abstract public string $incomeUpgrade { get; }
-    abstract public string $pointUpgrade { get; }
 
     function canPay(Game $game, int $playerId): bool {
         return $game->resources($this->cost)->get($playerId) > 0;
     }
 
-    public function reward(Game $game, int $boxId): Reward {
+    protected function reward(int $boxId): Reward {
         return match ($boxId) {
             1, 5, 9 => Reward::resources([$this->resourceReward => 1]),
             3, 7, 11 => new Reward([$this->resourceReward => 1], [$this->incomeUpgrade]),
-            13 => new Reward([$this->resourceReward => 1], [$this->incomeUpgrade, $this->pointUpgrade]),
+            13 => new Reward([$this->resourceReward => 1], [$this->incomeUpgrade, "LOYALTY"]),
             default => Reward::none(),
         };
+    }
+
+    public function check(Game $game, int $playerId, int $boxId, bool $pay = true) {
+        Game::DbQuery("INSERT INTO checked_box (player_id, section, box_id) VALUES ($playerId, {$this->name}, $boxId)");
+        $reward = $this->reward($boxId);
+        $game->giveResourceReward($playerId, $reward);
+        $game->notify->all("checkBox", \clienttranslate('${player_name} checks ${section}'), [
+            "player_id" => $playerId,
+            "player_name" => $game->getPlayerNameById($playerId),
+            "section" => $this->name,
+        ]);
+        // TODO other checked boxes!
     }
 }
 
@@ -62,7 +73,6 @@ class QuarryForest extends ResourceRow {
     public Resource $cost = Resource::SERFS;
     public Resource $resourceReward = Resource::MATERIALS;
     public string $incomeUpgrade = "MATERIALS";
-    public string $pointUpgrade = "LOYALTY";
 }
 
 class Farms extends ResourceRow {
@@ -70,7 +80,6 @@ class Farms extends ResourceRow {
     public Resource $cost = Resource::SERFS;
     public Resource $resourceReward = Resource::FOOD;
     public string $incomeUpgrade = "FOOD";
-    public string $pointUpgrade = "LOYALTY";  // TODO ???
 }
 
 class TrainingGrounds extends ResourceRow {
@@ -78,5 +87,4 @@ class TrainingGrounds extends ResourceRow {
     public Resource $cost = Resource::SERFS;
     public Resource $resourceReward = Resource::SOLDIERS;
     public string $incomeUpgrade = "SOLDIERS";
-    public string $pointUpgrade = "LOYALTY";  // TODO ???
 }

@@ -28,6 +28,7 @@ use Bga\GameFramework\Components\Counters\TableCounter;
 use Bga\Games\theanarchy\States\InitialSetup;
 use Bga\Games\theanarchy\Resource;
 use Bga\Games\theanarchy\Boxes\Box;
+use Bga\Games\theanarchy\Boxes\Reward;
 
 class Game extends \Bga\GameFramework\Table {
     public static array $CARD_TYPES;
@@ -82,6 +83,14 @@ class Game extends \Bga\GameFramework\Table {
 
     public function resources(Resource $resource): PlayerCounter {
         return $this->playerResources[$resource->name];
+    }
+
+    public function giveResourceReward(int $playerId, Reward $reward) {
+        if ($reward->resources) {
+            foreach ($reward->resources as $resource => $count) {
+                $this->resources($resource)->inc($playerId, $count);
+            }
+        }
     }
 
     public function upgradeTableDb($from_version) {

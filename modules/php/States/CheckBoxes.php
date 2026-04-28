@@ -32,6 +32,12 @@ class CheckBoxes extends GameState {
         $this->gamestate->setAllPlayersMultiactive();
     }
 
+    /**
+     * Returns all boxes currently checkable by the player.
+     * @param int $playerId The player to check.
+     * @param array $allCheckedBoxes All boxes checked by the player.
+     * @return array<string, int[]>
+     */
     private function getAvailableBoxes(int $playerId, array $allCheckedBoxes): array {
         return array_reduce(
             SECTIONS,
@@ -53,8 +59,15 @@ class CheckBoxes extends GameState {
         return ["availableBoxes" => $out];
     }
 
-    function actCheckBox(string $section, string $boxId, string | null $writtenValue = null) {
-        // TODO actually get the box and check it!
+    #[PossibleAction]
+    function actCheckBox(int $currentPlayerId, string $section, string $boxId, string | null $writtenValue = null) {
+        $currBoxes = $this->game->allCheckedBoxes($currentPlayerId);
+        $validBoxes = $this->getAvailableBoxes($currentPlayerId, $currBoxes);
+        if (!\array_key_exists($section, $validBoxes) || !\in_array($boxId, $validBoxes[$section])) {
+            throw new UserException("Box not available");
+        }
+
+        SECTIONS[$section]->check($this->game, $currentPlayerId, $boxId, true);
     }
 
     #[PossibleAction]
