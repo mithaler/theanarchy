@@ -14,23 +14,13 @@
     return sectionData ? Math.max(...sectionData) : 0;
   });
 
-  const {
-    checkableId,
-    onCheck,
-  }: { checkableId: number | null; onCheck?: () => void } = $derived.by(() => {
+  const checkableId = $derived.by(() => {
     const state = $ctx.bga.states.getCurrentMainStateClass();
     if (state instanceof CheckBoxes && playerData.availableBoxes) {
       const availableSectionBoxes = playerData.availableBoxes[section] ?? [];
-      const checkableId =
-        availableSectionBoxes.length > 0 ? availableSectionBoxes[0] : null;
-      return {
-        checkableId,
-        onCheck: () => {
-          state.checkBox(section, checkableId);
-        },
-      };
+      return availableSectionBoxes.length > 0 ? availableSectionBoxes[0] : null;
     }
-    return { checkableId: null };
+    return null;
   });
 </script>
 
@@ -45,7 +35,6 @@
             checkableId === id
           ? "available"
           : "unavailable"}
-      {onCheck}
     />
   {/each}
 </div>
