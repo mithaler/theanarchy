@@ -1,6 +1,7 @@
 <script lang="ts">
   import { ctx } from "../context";
   import { CheckBoxes } from "../states";
+  import Checkbox from "./Checkbox.svelte";
 
   interface Props {
     playerId: number;
@@ -21,7 +22,7 @@
     return 0;
   });
 
-  const validBox: number | null = $derived.by(() => {
+  const checkableId: number | null = $derived.by(() => {
     const state = $ctx.bga.states.getCurrentMainStateClass();
     if (state instanceof CheckBoxes && playerData.availableBoxes) {
       const availableSectionBoxes = playerData.availableBoxes[section] ?? [];
@@ -29,15 +30,19 @@
     }
     return null;
   });
-  $inspect(section, validBox);
 </script>
 
 <div id={section}>
   {#each Array.from({ length: 13 }, (_, i) => i + 1) as id}
-    <input
-      type="checkbox"
-      checked={id < lastCheckedBoxId}
-      disabled={!(validBox == id) && id > lastCheckedBoxId}
+    <Checkbox
+      {section}
+      boxId={id}
+      state={id < lastCheckedBoxId
+        ? "checked"
+        : id > lastCheckedBoxId && checkableId !== id
+          ? "unavailable"
+          : "available"}
+      onCheck={() => console.log(id)}
     />
   {/each}
 </div>
