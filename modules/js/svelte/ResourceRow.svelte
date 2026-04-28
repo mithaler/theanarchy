@@ -1,6 +1,7 @@
 <script lang="ts">
   import { ctx } from "../context";
   import { CheckBoxes } from "../states";
+  import Checkbox from "./Checkbox.svelte";
 
   interface Props {
     playerId: number;
@@ -10,34 +11,41 @@
   const playerData = $derived($ctx.data.players[playerId]);
   const lastCheckedBoxId = $derived.by(() => {
     const sectionData: number[] = playerData.checkedBoxes[section];
-    if (sectionData) {
-      return sectionData.reduce((acc, curr) => {
-        if (curr > acc) {
-          return curr;
-        }
-        return acc;
-      }, 0);
-    }
-    return 0;
+    return sectionData ? Math.max(...sectionData) : 0;
   });
 
-  const validBox: number | null = $derived.by(() => {
+  const {
+    checkableId,
+    onCheck,
+  }: { checkableId: number | null; onCheck?: () => void } = $derived.by(() => {
     const state = $ctx.bga.states.getCurrentMainStateClass();
     if (state instanceof CheckBoxes && playerData.availableBoxes) {
       const availableSectionBoxes = playerData.availableBoxes[section] ?? [];
-      return availableSectionBoxes.length > 0 ? availableSectionBoxes[0] : null;
+      const checkableId =
+        availableSectionBoxes.length > 0 ? availableSectionBoxes[0] : null;
+      return {
+        checkableId,
+        onCheck: () => {
+          state.checkBox(section, checkableId);
+        },
+      };
     }
-    return null;
+    return { checkableId: null };
   });
-  $inspect(section, validBox);
 </script>
 
 <div id={section}>
   {#each Array.from({ length: 13 }, (_, i) => i + 1) as id}
-    <input
-      type="checkbox"
-      checked={id < lastCheckedBoxId}
-      disabled={!(validBox == id) && id > lastCheckedBoxId}
+    <Checkbox
+      {section}
+      boxId={id}
+      state={id <= lastCheckedBoxId
+        ? "checked"
+        : playerId === $ctx.bga.players.getCurrentPlayerId() &&
+            checkableId === id
+          ? "available"
+          : "unavailable"}
+      {onCheck}
     />
   {/each}
 </div>

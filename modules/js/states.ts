@@ -60,4 +60,8 @@ export class CheckBoxes extends State<CheckBoxesArgs> {
     args: CheckBoxesArgs,
     isCurrentPlayerActive: boolean,
   ) {}
+
+  async checkBox(section: string, boxId: number) {
+    return this.bga.actions.performAction("actCheckBox", { section, boxId });
+  }
 }

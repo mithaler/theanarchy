@@ -21,7 +21,7 @@ abstract class BasicRow extends BoxType {
         $highestFilled = array_reduce(
             $currBoxes,
             function ($max, $box) use ($playerId) {
-                if ($box->playerId == $playerId && $box->section == $this->section && $box->boxId > $max) {
+                if ($box->playerId == $playerId && $box->section == $this->name && $box->boxId > $max) {
                     return $box->boxId;
                 }
                 return $max;
@@ -38,9 +38,9 @@ abstract class BasicRow extends BoxType {
 abstract class ResourceRow extends BasicRow {
     public int $boxCount = 13;
 
-    abstract public Resource $cost { get; }
-    abstract public Resource $resourceReward { get; }
-    abstract public string $incomeUpgrade { get; }
+    abstract protected Resource $cost { get; }
+    abstract protected Resource $resourceReward { get; }
+    abstract protected string $incomeUpgrade { get; }
 
     function canPay(Game $game, int $playerId): bool {
         return $game->resources($this->cost)->get($playerId) > 0;
@@ -48,15 +48,16 @@ abstract class ResourceRow extends BasicRow {
 
     protected function reward(int $boxId): Reward {
         return match ($boxId) {
-            1, 5, 9 => Reward::resources([$this->resourceReward => 1]),
-            3, 7, 11 => new Reward([$this->resourceReward => 1], [$this->incomeUpgrade]),
-            13 => new Reward([$this->resourceReward => 1], [$this->incomeUpgrade, "LOYALTY"]),
+            1, 5, 9 => Reward::resources([$this->resourceReward->value => 1]),
+            3, 7, 11 => new Reward([$this->resourceReward->value => 1], [$this->incomeUpgrade]),
+            13 => new Reward([$this->resourceReward->value => 1], [$this->incomeUpgrade, "LOYALTY"]),
             default => Reward::none(),
         };
     }
 
     public function check(Game $game, int $playerId, int $boxId, bool $pay = true) {
-        Game::DbQuery("INSERT INTO checked_box (player_id, section, box_id) VALUES ($playerId, {$this->name}, $boxId)");
+        Game::DbQuery("INSERT INTO checked_box (player_id, section, box_id) VALUES ($playerId, '{$this->name}', $boxId)");
+        $game->resources($this->cost)->inc($playerId, -1);
         $reward = $this->reward($boxId);
         $game->giveResourceReward($playerId, $reward);
         $game->notify->all("checkBox", \clienttranslate('${player_name} checks ${section}'), [
@@ -70,21 +71,21 @@ abstract class ResourceRow extends BasicRow {
 
 class QuarryForest extends ResourceRow {
     public string $name = "QUARRY & FOREST";
-    public Resource $cost = Resource::SERFS;
-    public Resource $resourceReward = Resource::MATERIALS;
-    public string $incomeUpgrade = "MATERIALS";
+    protected Resource $cost = Resource::SERFS;
+    protected Resource $resourceReward = Resource::MATERIALS;
+    protected string $incomeUpgrade = "MATERIALS";
 }
 
 class Farms extends ResourceRow {
     public string $name = "FARMS";
-    public Resource $cost = Resource::SERFS;
-    public Resource $resourceReward = Resource::FOOD;
-    public string $incomeUpgrade = "FOOD";
+    protected Resource $cost = Resource::SERFS;
+    protected Resource $resourceReward = Resource::FOOD;
+    protected string $incomeUpgrade = "FOOD";
 }
 
 class TrainingGrounds extends ResourceRow {
     public string $name = "TRAINING GROUNDS";
-    public Resource $cost = Resource::SERFS;
-    public Resource $resourceReward = Resource::SOLDIERS;
-    public string $incomeUpgrade = "SOLDIERS";
+    protected Resource $cost = Resource::SERFS;
+    protected Resource $resourceReward = Resource::SOLDIERS;
+    protected string $incomeUpgrade = "SOLDIERS";
 }

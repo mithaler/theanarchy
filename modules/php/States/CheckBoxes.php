@@ -60,7 +60,7 @@ class CheckBoxes extends GameState {
     }
 
     #[PossibleAction]
-    function actCheckBox(int $currentPlayerId, string $section, string $boxId, string | null $writtenValue = null) {
+    function actCheckBox(int $currentPlayerId, string $section, int $boxId, string | null $writtenValue = null) {
         $currBoxes = $this->game->allCheckedBoxes($currentPlayerId);
         $validBoxes = $this->getAvailableBoxes($currentPlayerId, $currBoxes);
         if (!\array_key_exists($section, $validBoxes) || !\in_array($boxId, $validBoxes[$section])) {

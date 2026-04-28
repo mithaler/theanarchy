@@ -35,6 +35,10 @@ class Game extends \Bga\GameFramework\Table {
 
     public TableCounter $round;
 
+    /**
+     * All player resource counters.
+     * @var array<string, PlayerCounter>
+     */
     public array $playerResources;
 
     /**
@@ -88,7 +92,7 @@ class Game extends \Bga\GameFramework\Table {
     public function giveResourceReward(int $playerId, Reward $reward) {
         if ($reward->resources) {
             foreach ($reward->resources as $resource => $count) {
-                $this->resources($resource)->inc($playerId, $count);
+                $this->resources(Resource::from($resource))->inc($playerId, $count);
             }
         }
     }
@@ -140,6 +144,10 @@ class Game extends \Bga\GameFramework\Table {
             FROM `player`"
         );
 
+        foreach ($this->playerResources as $counter) {
+            $counter->fillResult($result);
+        }
+
         // Transform all those int fields into actual ints because this framework doesn't for some reason
         foreach ($result["players"] as &$player) {
             foreach ([
@@ -154,11 +162,7 @@ class Game extends \Bga\GameFramework\Table {
 
         $checkedBoxes = $this->allCheckedBoxes();
         foreach ($checkedBoxes as $box) {
-            $result["players"]["checkedBoxes"][$box["section"]][] = $box["box_id"];
-        }
-
-        foreach ($this->playerResources as $counter) {
-            $counter->fillResult($result);
+            $result["players"][$box->playerId]["checkedBoxes"][$box->section][] = $box->boxId;
         }
 
         return $result;
