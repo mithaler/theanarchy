@@ -19,16 +19,14 @@ abstract class State<ArgType> {
   }
 }
 
-interface CheckBoxesArgs {
+export interface CheckBoxesArgs {
   availableBoxes: PlayerBoxSet;
+  checkedBoxes: PlayerBoxSet;
 }
 
 export class CheckBoxes extends State<CheckBoxesArgs> {
   onEnteringState(args: CheckBoxesArgs, isCurrentPlayerActive: boolean) {
-    Object.entries(ctx.data.players).forEach(([pid, p]) => {
-      p.availableBoxes = args.availableBoxes[pid];
-    });
-
+    CheckBoxes.updateCtx(args);
     if (isCurrentPlayerActive) {
       this.bga.statusBar.addActionButton(
         _("Pass"),
@@ -36,6 +34,13 @@ export class CheckBoxes extends State<CheckBoxesArgs> {
         { color: "secondary" },
       );
     }
+  }
+
+  static updateCtx(args: CheckBoxesArgs) {
+    Object.entries(ctx.data.players).forEach(([pid, p]) => {
+      p.availableBoxes = args.availableBoxes[pid];
+      p.checkedBoxes = args.checkedBoxes[pid] ?? {};
+    });
   }
 
   async checkBox(section: string, boxId: number) {

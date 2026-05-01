@@ -11,7 +11,7 @@
   }
   const { bga, section, boxId, state }: Props = $props();
 
-  const onClick = $derived.by(() => {
+  const onclick = $derived.by(() => {
     if (state === "available") {
       const gameState = bga.states.getCurrentMainStateClass();
       if (gameState instanceof CheckBoxes) {
@@ -29,6 +29,6 @@
   id="box-{section}-{boxId}"
   type="checkbox"
   checked={state === "checked"}
-  disabled={state === "unavailable"}
-  onclick={onClick}
+  disabled={state === "unavailable" || state == "checked"}
+  {onclick}
 />

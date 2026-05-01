@@ -56,7 +56,7 @@ class CheckBoxes extends GameState {
         foreach ($playerIds as $playerId) {
             $out[$playerId] = $this->getAvailableBoxes($playerId, $boxes);
         }
-        return ["availableBoxes" => $out];
+        return ["checkedBoxes" => $this->game->boxesByPlayer($boxes), "availableBoxes" => $out];
     }
 
     #[PossibleAction]
@@ -68,6 +68,7 @@ class CheckBoxes extends GameState {
         }
 
         SECTIONS[$section]->check($this->game, $currentPlayerId, $boxId, true);
+        $this->notify->all("updateAvailableBoxes", "", $this->getArgs());
     }
 
     #[PossibleAction]

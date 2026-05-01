@@ -6,7 +6,6 @@
   const playerIds = $derived.by(() =>
     Object.keys(ctx.data.players).map((pid) => parseInt(pid, 10)),
   );
-  $inspect(playerIds);
 </script>
 
 <p>It is round {ctx.data.round}</p>

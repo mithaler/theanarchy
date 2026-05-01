@@ -17,7 +17,7 @@ import PlayerPanel from "./svelte/PlayerPanel.svelte";
 import type { AnarchyData, AnarchyBga } from "./context.svelte";
 import type { AnarchyContext } from "./context.svelte";
 import { ctx } from "./context.svelte";
-import { CheckBoxes } from "./states.svelte";
+import { CheckBoxes, type CheckBoxesArgs } from "./states.svelte";
 
 export class Game {
   bga: AnarchyBga;
@@ -70,27 +70,6 @@ export class Game {
     console.log("Ending game setup");
   }
 
-  ///////////////////////////////////////////////////
-  //// Utility methods
-
-  /*
-
-        Here, you can defines some utility methods that you can use everywhere in your javascript
-        script. Typically, functions that are used in multiple state classes or outside a state class.
-
-    */
-
-  ///////////////////////////////////////////////////
-  //// Reaction to cometD notifications
-
-  /*
-        setupNotifications:
-
-        In this method, you associate each of your game notifications with your local method to handle it.
-
-        Note: game notification names correspond to "bga->notify->all" calls in your Game.php file.
-
-    */
   setupNotifications() {
     console.log("notifications subscriptions setup");
 
@@ -101,14 +80,7 @@ export class Game {
     });
   }
 
-  // TODO: from this point and below, you can write your game notifications handling methods
-
-  /*
-    Example:
-    async notif_cardPlayed( args ) {
-        // Note: args contains the arguments specified during you "notifyAllPlayers" / "notifyPlayer" PHP call
-
-        // TODO: play the card in the user interface.
-    }
-    */
+  async notif_updateAvailableBoxes(args: CheckBoxesArgs) {
+    CheckBoxes.updateCtx(args);
+  }
 }
