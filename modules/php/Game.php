@@ -211,6 +211,7 @@ class Game extends \Bga\GameFramework\Table {
             )
         );
 
+        $this->insertInitialProduction(array_keys($players));
         $this->reattributeColorsBasedOnPreferences($players, $gameinfos["player_colors"]);
         $this->reloadPlayersBasicInfos();
 
@@ -226,20 +227,40 @@ class Game extends \Bga\GameFramework\Table {
         return InitialSetup::class;
     }
 
-    /**
-     * Example of debug function.
-     * Here, jump to a state you want to test (by default, jump to next player state)
-     * You can trigger it on Studio using the Debug button on the right of the top bar.
-     */
+    private function insertInitialProduction($playerIds) {
+        $query = "INSERT INTO checked_box (player_id, section, box_id) VALUES ";
+        $values = [];
+        foreach ($playerIds as $playerId) {
+            $values[] = "($playerId, 'SERFS', 1)";
+            $values[] = "($playerId, 'MATERIALS', 1)";
+            $values[] = "($playerId, 'SILVER', 1)";
+            $values[] = "($playerId, 'FOOD', 1)";
+            $values[] = "($playerId, 'SOLDIERS', 1)";
+            $values[] = "($playerId, 'SOLDIERS', 2)";
+        }
+        $query .= implode(", ", $values);
+        static::DbQuery($query);
+    }
+
+    /** Debug: jump to a state. */
     public function debug_goToState(int $state = 6) {
         $this->gamestate->jumpToState($state);
     }
 
-    /**
-     * Another example of debug function, to easily test the zombie code.
-     */
+
+    /** Debug: test zombie code. */
     public function debug_playOneMove() {
         $this->bga->debug->playUntil(fn(int $count) => $count == 1);
+    }
+
+    /** Debug: give me a pile of stuff to check boxes with. */
+    public function debug_giveMeResources() {
+        $resources = array_reduce(Resource::cases(), function ($items, $resource) {
+            $items[$resource->value] = 10;
+            return $items;
+        }, []);
+
+        $this->giveReward((int) $this->getCurrentPlayerId(), Reward::resources($resources));
     }
 
     /*
