@@ -9,10 +9,10 @@
   const { playerId, ctx }: Props = $props();
 
   const getCheckedBoxes = (section: string) => {
-    return ctx.data.players[playerId].checkedBoxes[section] ?? [];
+    return ctx.data!.players[playerId].checkedBoxes[section] ?? [];
   };
   const getAvailableBoxes = (section: string) => {
-    const allAvailBoxes = ctx.data.players[playerId].availableBoxes;
+    const allAvailBoxes = ctx.data!.players[playerId].availableBoxes;
     if (allAvailBoxes) {
       return allAvailBoxes[section];
     }
@@ -22,7 +22,7 @@
 
 {#snippet resourceRow(section: string)}
   <ResourceRow
-    bga={ctx.bga}
+    bga={ctx.bga!}
     {playerId}
     {section}
     checkedBoxes={getCheckedBoxes(section)}

@@ -5,7 +5,6 @@ abstract class State<ArgType> {
   game: Game;
   bga: AnarchyBga;
 
-  args: ArgType;
   onEnteringState(args: ArgType, isCurrentPlayerActive: boolean): void {}
   onLeavingState(args: ArgType, isCurrentPlayerActive: boolean): void {}
   onPlayerActivationChange(
@@ -37,9 +36,9 @@ export class CheckBoxes extends State<CheckBoxesArgs> {
   }
 
   static updateCtx(args: CheckBoxesArgs) {
-    Object.entries(ctx.data.players).forEach(([pid, p]) => {
-      p.availableBoxes = args.availableBoxes[pid];
-      p.checkedBoxes = args.checkedBoxes[pid] ?? {};
+    Object.entries(ctx.data!.players).forEach(([pid, p]) => {
+      p.availableBoxes = args.availableBoxes[parseInt(pid, 10)];
+      p.checkedBoxes = args.checkedBoxes[parseInt(pid, 10)] ?? {};
     });
   }
 

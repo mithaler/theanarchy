@@ -6,22 +6,17 @@
  * This code has been produced on the BGA studio platform for use on http://boardgamearena.com.
  * See http://en.boardgamearena.com/#!doc/Studio for more information.
  * -----
- *
- * In this file, you are describing the logic of your user interface, in Javascript language.
- *
  */
 
 import { mount } from "svelte";
 import Table from "./svelte/Table.svelte";
 import PlayerPanel from "./svelte/PlayerPanel.svelte";
 import type { AnarchyData, AnarchyBga } from "./context.svelte";
-import type { AnarchyContext } from "./context.svelte";
 import { ctx } from "./context.svelte";
 import { CheckBoxes, type CheckBoxesArgs } from "./states.svelte";
 
 export class Game {
   bga: AnarchyBga;
-  ctx: AnarchyContext = $state();
 
   constructor(bga: AnarchyBga) {
     console.log("theanarchy constructor");
@@ -57,16 +52,12 @@ export class Game {
         .insertAdjacentHTML("beforeend", `<div id="${divId}"></div>`);
 
       mount(PlayerPanel, {
-        target: document.getElementById(divId),
+        target: document.getElementById(divId)!,
         props: { player },
       });
     });
 
-    // TODO: Set up your game interface here, according to "gamedatas"
-
-    // Setup game notifications to handle (see "setupNotifications" method below)
     this.setupNotifications();
-
     console.log("Ending game setup");
   }
 
