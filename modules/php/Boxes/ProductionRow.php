@@ -13,17 +13,13 @@ abstract class ProductionRow extends BoxType {
         return []; // production rows can only be checked by other boxes
     }
 
-    public function check(Game $game, int $playerId, int|null $boxId = null, bool $pay = false) {
+    public function check(Game $game, int $playerId, int|null $boxId = null, bool $pay = false): Reward {
         $currValue = (int) Game::getUniqueValueFromDB(
             "SELECT MAX(box_id) FROM checked_box WHERE player_id = $playerId AND section = '$this->name'"
         );
-        Game::checkBox($playerId, $this->name, $currValue + 1);
-        $game->notify->all("checkBox", \clienttranslate('${player_name} gains ${section} production'), [
-            "player_id" => $playerId,
-            "player_name" => $game->getPlayerNameById($playerId),
-            "section" => $this->name,
-        ]);
-        // never gives additional rewards
+        $boxId = $currValue + 1;
+        Game::checkBox($playerId, $this->name, $boxId);
+        return Reward::none($this->name, $boxId);
     }
 }
 

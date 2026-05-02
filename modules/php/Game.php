@@ -91,19 +91,6 @@ class Game extends \Bga\GameFramework\Table {
         return $this->playerResources[$resource->name];
     }
 
-    public function giveReward(int $playerId, Reward $reward) {
-        if ($reward->resources) {
-            foreach ($reward->resources as $resource => $count) {
-                $this->resources(Resource::from($resource))->inc($playerId, $count);
-            }
-        }
-        if ($reward->boxes) {
-            foreach ($reward->boxes as $box) {
-                SECTIONS[$box]->check($this, $playerId, null);
-            }
-        }
-    }
-
     public function upgradeTableDb($from_version) {
 //       if ($from_version <= 1404301345)
 //       {
@@ -258,7 +245,7 @@ class Game extends \Bga\GameFramework\Table {
             return $items;
         }, []);
 
-        $this->giveReward((int) $this->getCurrentPlayerId(), Reward::resources($resources));
+        Reward::resources("DEBUG", 0, $resources)->grant($this, (int) $this->getCurrentPlayerId());
     }
 
     public function allPlayerIds(): array {
