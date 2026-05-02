@@ -11,9 +11,14 @@
 import { mount } from "svelte";
 import Table from "./svelte/Table.svelte";
 import PlayerPanel from "./svelte/PlayerPanel.svelte";
-import type { AnarchyData, AnarchyBga } from "./context.svelte";
+import type {
+  AnarchyData,
+  AnarchyBga,
+  PlayerCounterArgs,
+  BoxRewardArgs,
+} from "./context.svelte";
 import { ctx } from "./context.svelte";
-import { CheckBoxes, type CheckBoxesArgs } from "./states.svelte";
+import { CheckBoxes } from "./states.svelte";
 
 export class Game {
   bga: AnarchyBga;
@@ -53,7 +58,7 @@ export class Game {
 
       mount(PlayerPanel, {
         target: document.getElementById(divId)!,
-        props: { player },
+        props: { player: ctx.data!.players[parseInt(player.id, 10)] },
       });
     });
 
@@ -71,7 +76,17 @@ export class Game {
     });
   }
 
-  async notif_updateAvailableBoxes(args: CheckBoxesArgs) {
-    CheckBoxes.updateCtx(args);
+  async notif_boxReward(args: BoxRewardArgs) {
+    const player = ctx.data!.players[args.player_id]!;
+
+    const section = player.checkedBoxes[args.boxSection] ?? [];
+    section.push(args.boxId);
+    ctx.data!.players[args.player_id]!.checkedBoxes[args.boxSection] = section;
+
+    player.availableBoxes![args.boxSection] = args.newAvailable;
+  }
+
+  async notif_setPlayerCounter(args: PlayerCounterArgs) {
+    ctx.data!.players[args.playerId]![args.name] = args.value;
   }
 }

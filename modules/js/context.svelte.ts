@@ -50,3 +50,17 @@ export interface AnarchyContext {
 }
 
 export const ctx: AnarchyContext = $state({});
+
+export interface BoxRewardArgs {
+  player_id: number; // forced to be underscored by the framework
+  boxSection: string;
+  boxId: number;
+  newAvailable: number[];
+}
+
+export interface PlayerCounterArgs {
+  inc: number;
+  value: number;
+  name: keyof AnarchyPlayer;
+  playerId: number;
+}
