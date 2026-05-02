@@ -122,14 +122,6 @@ class Game extends \Bga\GameFramework\Table {
 //       }
     }
 
-    /*
-     * Gather all information about current game situation (visible by the current player).
-     *
-     * The method is called each time the game interface is displayed to a player, i.e.:
-     *
-     * - when the game starts
-     * - when a player refreshes the game page (F5)
-     */
     protected function getAllDatas(int $currentPlayerId): array {
         $result = [];
 
@@ -268,16 +260,6 @@ class Game extends \Bga\GameFramework\Table {
 
         $this->giveReward((int) $this->getCurrentPlayerId(), Reward::resources($resources));
     }
-
-    /*
-    Another example of debug function, to easily create situations you want to test.
-    Here, put a card you want to test in your hand (assuming you use the Deck component).
-
-    public function debug_setCardInHand(int $cardType, int $playerId) {
-        $card = array_values($this->cards->getCardsOfType($cardType))[0];
-        $this->cards->moveCard($card['id'], 'hand', $playerId);
-    }
-    */
 
     public function allPlayerIds(): array {
         return $this->getObjectListFromDB("SELECT player_id FROM player", true);
