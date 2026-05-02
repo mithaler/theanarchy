@@ -48,25 +48,21 @@ abstract class ResourceRow extends BasicRow {
 
     protected function reward(int $boxId): Reward {
         return match ($boxId) {
-            1, 5, 9 => Reward::resources([$this->resourceReward->value => 1]),
-            3, 7, 11 => new Reward([$this->resourceReward->value => 1], [$this->incomeUpgrade]),
-            13 => new Reward([$this->resourceReward->value => 1], [$this->incomeUpgrade, "LOYALTY"]),
-            default => Reward::none(),
+            1, 5, 9 => Reward::resources($this->name, $boxId, [$this->resourceReward->value => 1]),
+            3, 7, 11 => new Reward($this->name, $boxId, [$this->resourceReward->value => 1], [$this->incomeUpgrade]),
+            13 => new Reward($this->name, $boxId, [$this->resourceReward->value => 1], [$this->incomeUpgrade, "LOYALTY"]),
+            default => Reward::none($this->name, $boxId),
         };
     }
 
-    public function check(Game $game, int $playerId, int|null $boxId = null, bool $pay = true) {
+    public function check(Game $game, int $playerId, int|null $boxId = null, bool $pay = true): Reward {
         Game::checkBox($playerId, $this->name, $boxId);
         if ($pay) {
             $game->resources($this->cost)->inc($playerId, -1);
         }
         $reward = $this->reward($boxId);
-        $game->notify->all("checkBox", \clienttranslate('${player_name} checks ${section}'), [
-            "player_id" => $playerId,
-            "player_name" => $game->getPlayerNameById($playerId),
-            "section" => $this->name,
-        ]);
-        $game->giveReward($playerId, $reward);
+        $reward->grant($game, $playerId);
+        return $reward;
     }
 }
 

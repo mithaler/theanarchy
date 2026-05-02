@@ -14,6 +14,7 @@ use Bga\GameFramework\UserException;
 
 use Bga\Games\theanarchy\Game;
 use BGA\Games\theanarchy\StateConstants;
+use BGA\Games\theanarchy\Boxes\Reward;
 
 class CheckBoxes extends GameState {
 
@@ -67,8 +68,43 @@ class CheckBoxes extends GameState {
             throw new UserException("Box not available");
         }
 
-        SECTIONS[$section]->check($this->game, $currentPlayerId, $boxId, true);
-        $this->notify->all("updateAvailableBoxes", "", $this->getArgs());
+        $reward = SECTIONS[$section]->check($this->game, $currentPlayerId, $boxId, true);
+        $newAllCheckedBoxes = $this->game->allCheckedBoxes($currentPlayerId);
+        $this->notifyReward($reward, $currentPlayerId, $newAllCheckedBoxes);
+    }
+
+    private function notifyReward(Reward &$reward, int $playerId, $currBoxes) {
+        if (\count($reward->resources) == 0 && \count($reward->boxes) == 0) {
+            $this->game->notify->all("boxReward", \clienttranslate('${player_name} checks ${boxSection}'), [
+                "player_id" => $playerId,
+                "player_name" => $this->game->getPlayerNameById($playerId),
+                "boxSection" => $reward->fromSection,
+                "boxId" => $reward->fromId,
+                "newAvailable" => SECTIONS[$reward->fromSection]->validBoxes($this->game, $playerId, $currBoxes),
+            ]);
+        } else {
+            $resourceRewards = [];
+            foreach ($reward->resources as $resource => $count) {
+                for ($i = 0; $i < $count; $i++) {
+                    $resourceRewards[] = $resource;
+                }
+            }
+            $this->game->notify->all("boxReward", \clienttranslate('${player_name} checks ${boxSection} and earns ${rewards}'), [
+                "player_id" => $playerId,
+                "player_name" => $this->game->getPlayerNameById($playerId),
+                "boxSection" => $reward->fromSection,
+                "boxId" => $reward->fromId,
+                "newAvailable" => SECTIONS[$reward->fromSection]->validBoxes($this->game, $playerId, $currBoxes),
+                // TODO make this pretty!
+                "rewards" => implode(" ", [...$resourceRewards, ...array_keys($reward->boxes)]),
+                // we don't include resources here, the framework auto-notifies setPlayerCounter for that
+            ]);
+        }
+
+        // DFS into the boxes and notify those too
+        foreach ($reward->boxes as $boxReward) {
+            $this->notifyReward($boxReward, $playerId, $currBoxes);
+        }
     }
 
     #[PossibleAction]

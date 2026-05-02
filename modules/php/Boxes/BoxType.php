@@ -41,23 +41,66 @@ class Box {
 }
 
 class Reward {
+
+    public string $fromSection;
+    public int $fromId;
+
+    /**
+     * @var array<Resource, int>
+     */
+    public array $resources;
+
+    /**
+     * @var array<string, Reward|null>
+     */
+    public array $boxes;
+
     public function __construct(
-        /** Resource -> int */
-        public array | null $resources,
-        /** Plain strings, naming sections */
-        public array | null $boxes
-    ) {}
+        string $fromSection,
+        int $fromId,
+        array $resources,
+        array $boxesToCheck,
+    ) {
+        $this->fromSection = $fromSection;
+        $this->fromId = $fromId;
+        $this->resources = $resources;
 
-    public static function resources(array $resources): Reward {
-        return new Reward($resources, null);
+        if (\count($boxesToCheck) > 0) {
+            $boxes = [];
+            foreach ($boxesToCheck as $box) {
+                // not yet resolved! call grant() to resolve them
+                $boxes[$box] = null;
+            }
+            $this->boxes = $boxes;
+        } else {
+            $this->boxes = [];
+        }
     }
 
-    public static function boxes(array $boxes): Reward {
-        return new Reward(null, $boxes);
+    public static function resources(string $fromSection, int $fromId, array $resources): Reward {
+        return new Reward($fromSection, $fromId, $resources, []);
     }
 
-    public static function none(): Reward {
-        return new Reward(null, null);
+    public static function boxes(string $fromSection, int $fromId, array $boxes): Reward {
+        return new Reward($fromSection, $fromId, [], $boxes);
+    }
+
+    public static function none(string $fromSection, int $fromId): Reward {
+        return new Reward($fromSection, $fromId, [], []);
+    }
+
+    public function grant(Game $game, int $playerId) {
+        if ($this->resources) {
+            foreach ($this->resources as $resource => $count) {
+                $game->resources(Resource::from($resource))->inc($playerId, $count);
+            }
+        }
+        if ($this->boxes) {
+            foreach ($this->boxes as $box => $unused) {
+                $subreward = SECTIONS[$box]->check($game, $playerId, null, false);
+                $this->boxes[$box] = $subreward;
+            }
+        }
     }
 }
 
@@ -66,7 +109,7 @@ abstract class BoxType {
 
     /**
      * Returns the list of box IDs in this section that can be checked right now.
-     * @param Box[] $currBoxes
+     * @param int[] $currBoxes
      * @return int[] A list of checkable box IDs in this section.
      */
     abstract public function validBoxes(Game $game, int $playerId, array $currBoxes): array;
@@ -79,6 +122,7 @@ abstract class BoxType {
      * @param int $playerId The player to check it for.
      * @param int $boxId The box to check. If null, the implicit "next" box, which might be an error if such a thing is not defined for this section.
      * @param bool $pay Whether to pay the cost in the process.
+     * @return Reward The full reward.
      */
-    abstract public function check(Game $game, int $playerId, int|null $boxId = null, bool $pay = true);
+    abstract public function check(Game $game, int $playerId, int|null $boxId = null, bool $pay = true): Reward;
 }
