@@ -5,13 +5,18 @@
   interface Props {
     ctx: AnarchyContext;
     playerId: number;
+    isMe: boolean;
   }
-  const { playerId, ctx }: Props = $props();
+  const { playerId, ctx, isMe }: Props = $props();
 
   const getCheckedBoxes = (section: string) => {
     return ctx.data!.players[playerId].checkedBoxes[section] ?? [];
   };
   const getAvailableBoxes = (section: string) => {
+    if (!isMe) {
+      return null;
+    }
+
     const allAvailBoxes = ctx.data!.players[playerId].availableBoxes;
     if (allAvailBoxes) {
       return allAvailBoxes[section];

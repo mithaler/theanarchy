@@ -5,8 +5,9 @@
   interface Props {
     ctx: AnarchyContext;
     playerId: number;
+    isMe: boolean;
   }
-  const { playerId, ctx }: Props = $props();
+  const { playerId, ctx, isMe }: Props = $props();
 </script>
 
-<PlayerSheets {playerId} {ctx} />
+<PlayerSheets {playerId} {ctx} {isMe} />
