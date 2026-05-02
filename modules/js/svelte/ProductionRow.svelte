@@ -27,6 +27,7 @@
 </script>
 
 <div id={section}>
+  <span class="row-label">{section}</span>
   {#each Array.from({ length: PRODUCTION_ROWS[section] }, (_, i) => i + 1) as id}
     <Checkbox
       {bga}

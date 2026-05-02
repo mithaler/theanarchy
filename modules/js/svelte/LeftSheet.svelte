@@ -37,8 +37,7 @@
   />
 {/snippet}
 
-<div>
-  Player {playerId}
+<div class="left-sheet">
   <!-- TODO figure out how to make these translated -->
   {@render resourceRow("QUARRY & FOREST")}
   {@render resourceRow("FARMS")}
@@ -52,3 +51,10 @@
     />
   {/each}
 </div>
+
+<style lang="scss">
+  .left-sheet :global(.row-label) {
+    display: inline-block;
+    width: 10em;
+  }
+</style>

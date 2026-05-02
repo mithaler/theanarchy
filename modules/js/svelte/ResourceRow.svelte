@@ -13,6 +13,7 @@
 </script>
 
 <div id={section}>
+  <span class="row-label">{section}</span>
   {#each Array.from({ length: 13 }, (_, i) => i + 1) as id}
     <Checkbox
       {bga}

@@ -2,4 +2,7 @@ node_modules/
 
 # compiled files for BGA
 modules/js/Game.js
+
+# this is spit out by the Svelte compiler and latter glommed together by scss
+modules/js/Game.css
 theanarchy.css

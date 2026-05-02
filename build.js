@@ -21,7 +21,4 @@ await esbuild.build({
   logLevel: "info",
 });
 
-const out = sassCompile("modules/css/theanarchy.scss", {
-  style: "compressed",
-});
-fs.writeFileSync("theanarchy.css", out.css);
+fs.renameSync("modules/js/Game.css", "theanarchy.css");

@@ -10,4 +10,13 @@
   const { playerId, ctx, isMe }: Props = $props();
 </script>
 
-<PlayerSheets {playerId} {ctx} {isMe} />
+<div class="player-board">
+  <h2>Player {playerId}</h2>
+  <PlayerSheets {playerId} {ctx} {isMe} />
+</div>
+
+<style lang="scss">
+  .player-board {
+    margin-bottom: 1em;
+  }
+</style>
