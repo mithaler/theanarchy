@@ -1,20 +1,22 @@
 <script lang="ts">
-  import { ctx } from "../context";
-  import { CheckBoxes } from "../states";
+  import type { AnarchyBga } from "../context.svelte";
+  import { CheckBoxes } from "../states.svelte";
 
   type State = "checked" | "available" | "unavailable";
   interface Props {
+    bga: AnarchyBga;
     section: string;
     boxId: number;
     state: State;
   }
-  const { section, boxId, state }: Props = $props();
+  const { bga, section, boxId, state }: Props = $props();
 
   const onClick = $derived.by(() => {
     if (state === "available") {
-      const gameState = $ctx.bga.states.getCurrentMainStateClass();
+      const gameState = bga.states.getCurrentMainStateClass();
       if (gameState instanceof CheckBoxes) {
-        return () => {
+        return (evt: Event) => {
+          evt.preventDefault();
           gameState.checkBox(section, boxId);
         };
       }

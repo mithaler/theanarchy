@@ -7,6 +7,10 @@ export interface BoxSet {
   [key: string]: number[];
 }
 
+export interface PlayerBoxSet {
+  [key: number]: BoxSet;
+}
+
 export interface AnarchyPlayer extends Player {
   tent: number;
 
@@ -41,8 +45,8 @@ export interface AnarchyData extends Gamedatas<AnarchyPlayer> {
 }
 
 export interface AnarchyContext {
-  data: AnarchyData;
-  bga: AnarchyBga;
+  data?: AnarchyData;
+  bga?: AnarchyBga;
 }
 
-export const ctx = writable<AnarchyContext>();
+export const ctx: AnarchyContext = $state({});

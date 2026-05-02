@@ -14,12 +14,14 @@
 import { mount } from "svelte";
 import Table from "./svelte/Table.svelte";
 import PlayerPanel from "./svelte/PlayerPanel.svelte";
-import type { AnarchyData, AnarchyBga } from "./context";
-import { ctx } from "./context";
-import { CheckBoxes } from "./states";
+import type { AnarchyData, AnarchyBga } from "./context.svelte";
+import type { AnarchyContext } from "./context.svelte";
+import { ctx } from "./context.svelte";
+import { CheckBoxes } from "./states.svelte";
 
 export class Game {
   bga: AnarchyBga;
+  ctx: AnarchyContext = $state();
 
   constructor(bga: AnarchyBga) {
     console.log("theanarchy constructor");
@@ -36,11 +38,16 @@ export class Game {
     console.log("Starting game setup", gamedatas);
 
     // Initialize the Svelte app
-    ctx.set({ data: gamedatas, bga: this.bga });
+    ctx.data = gamedatas;
+    ctx.bga = this.bga;
+
     this.bga.gameArea
       .getElement()
       .insertAdjacentHTML("beforeend", `<div id="svelte-app"></div>`);
-    mount(Table, { target: document.getElementById("svelte-app")! });
+    mount(Table, {
+      target: document.getElementById("svelte-app")!,
+      props: { ctx },
+    });
 
     // Set up player boards
     Object.values(gamedatas.players).forEach((player) => {
@@ -51,7 +58,7 @@ export class Game {
 
       mount(PlayerPanel, {
         target: document.getElementById(divId),
-        props: { playerId: player.id },
+        props: { player },
       });
     });
 

@@ -1,13 +1,11 @@
 <script lang="ts">
-  import type { AnarchyPlayer } from "../context";
-  import { ctx } from "../context";
+  import type { AnarchyPlayer } from "../context.svelte";
 
   interface Props {
-    playerId: number;
+    player: AnarchyPlayer;
   }
 
-  let { playerId }: Props = $props();
-  let player: AnarchyPlayer = $derived($ctx.data.players[playerId]);
+  let { player }: Props = $props();
 </script>
 
 I am player {player.id}, I have {player.serfs} serfs

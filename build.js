@@ -6,7 +6,7 @@ import { sveltePreprocess } from "svelte-preprocess";
 import { compile as sassCompile } from "sass";
 
 await esbuild.build({
-  entryPoints: ["modules/js/Game.ts"],
+  entryPoints: ["modules/js/Game.svelte.ts"],
   mainFields: ["svelte", "browser", "module", "main"],
   conditions: ["svelte", "browser"],
   bundle: true,
@@ -15,6 +15,7 @@ await esbuild.build({
   plugins: [
     sveltePlugin({
       preprocess: sveltePreprocess(),
+      compilerOptions: { dev: true },
     }),
   ],
   logLevel: "info",
