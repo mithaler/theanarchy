@@ -76,7 +76,9 @@ abstract class BoxType {
      * BoxTypes, and recursively combine rewards. Assumes that the caller has already validated
      * that the box is checkable and the cost is payable.
      * @param Game $game
-     * @param int $boxId
+     * @param int $playerId The player to check it for.
+     * @param int $boxId The box to check. If null, the implicit "next" box, which might be an error if such a thing is not defined for this section.
+     * @param bool $pay Whether to pay the cost in the process.
      */
-    abstract public function check(Game $game, int $playerId, int $boxId, bool $pay = true);
+    abstract public function check(Game $game, int $playerId, int|null $boxId = null, bool $pay = true);
 }

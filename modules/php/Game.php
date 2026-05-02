@@ -21,10 +21,12 @@ namespace Bga\Games\theanarchy;
 
 require_once(__DIR__ . "/Constants.php");
 require_once(__DIR__ . "/Boxes/BoxType.php");
+require_once(__DIR__ . "/Boxes/Sections.php");
 
 use Bga\GameFramework\Components\Counters\PlayerCounter;
 use Bga\GameFramework\Components\Counters\TableCounter;
 
+use const Bga\Games\theanarchy\Boxes\SECTIONS;
 use Bga\Games\theanarchy\States\InitialSetup;
 use Bga\Games\theanarchy\Resource;
 use Bga\Games\theanarchy\Boxes\Box;
@@ -89,10 +91,15 @@ class Game extends \Bga\GameFramework\Table {
         return $this->playerResources[$resource->name];
     }
 
-    public function giveResourceReward(int $playerId, Reward $reward) {
+    public function giveReward(int $playerId, Reward $reward) {
         if ($reward->resources) {
             foreach ($reward->resources as $resource => $count) {
                 $this->resources(Resource::from($resource))->inc($playerId, $count);
+            }
+        }
+        if ($reward->boxes) {
+            foreach ($reward->boxes as $box) {
+                SECTIONS[$box]->check($this, $playerId, null);
             }
         }
     }
@@ -195,10 +202,9 @@ class Game extends \Bga\GameFramework\Table {
         $gameinfos = $this->getGameinfos();
         $default_colors = $gameinfos['player_colors'];
 
-        foreach ($players as $player_id => $player) {
-            // Now you can access both $player_id and $player array
+        foreach ($players as $playerId => $player) {
             $query_values[] = vsprintf("(%s, '%s', '%s')", [
-                $player_id,
+                $playerId,
                 array_shift($default_colors),
                 addslashes($player["player_name"]),
             ]);
@@ -293,6 +299,14 @@ class Game extends \Bga\GameFramework\Table {
             $out[$box->playerId][$box->section][] = $box->boxId;
         }
         return $out;
+     }
+
+     public static function checkBox(int $playerId, string $section, int $boxId, string|null $writtenValue = null) {
+        if ($writtenValue) {
+            Game::DbQuery("INSERT INTO checked_box (player_id, section, box_id, written_value) VALUES ($playerId, '$section', $boxId, '$writtenValue')");
+        } else {
+            Game::DbQuery("INSERT INTO checked_box (player_id, section, box_id) VALUES ($playerId, '$section', $boxId)");
+        }
      }
 
 }

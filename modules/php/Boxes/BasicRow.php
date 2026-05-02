@@ -55,17 +55,18 @@ abstract class ResourceRow extends BasicRow {
         };
     }
 
-    public function check(Game $game, int $playerId, int $boxId, bool $pay = true) {
-        Game::DbQuery("INSERT INTO checked_box (player_id, section, box_id) VALUES ($playerId, '{$this->name}', $boxId)");
-        $game->resources($this->cost)->inc($playerId, -1);
+    public function check(Game $game, int $playerId, int|null $boxId = null, bool $pay = true) {
+        Game::checkBox($playerId, $this->name, $boxId);
+        if ($pay) {
+            $game->resources($this->cost)->inc($playerId, -1);
+        }
         $reward = $this->reward($boxId);
-        $game->giveResourceReward($playerId, $reward);
         $game->notify->all("checkBox", \clienttranslate('${player_name} checks ${section}'), [
             "player_id" => $playerId,
             "player_name" => $game->getPlayerNameById($playerId),
             "section" => $this->name,
         ]);
-        // TODO other checked boxes!
+        $game->giveReward($playerId, $reward);
     }
 }
 
