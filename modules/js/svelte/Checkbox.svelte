@@ -27,8 +27,15 @@
 
 <input
   id="box-{section}-{boxId}"
+  class={state}
   type="checkbox"
   checked={state === "checked"}
   disabled={state === "unavailable" || state == "checked"}
   {onclick}
 />
+
+<style lang="scss">
+  .available {
+    cursor: pointer;
+  }
+</style>
