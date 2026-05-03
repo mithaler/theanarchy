@@ -1,5 +1,3 @@
-import { writable } from "svelte/store";
-
 export type AnarchyBga = Bga<AnarchyPlayer, AnarchyData>;
 
 export interface BoxSet {
@@ -8,6 +6,7 @@ export interface BoxSet {
 }
 
 export interface PlayerBoxSet {
+  // player ID -> section -> ids
   [key: number]: BoxSet;
 }
 
@@ -63,4 +62,28 @@ export interface PlayerCounterArgs {
   value: number;
   name: keyof AnarchyPlayer;
   playerId: number;
+}
+
+export function getPlayer(playerId: number | string): AnarchyPlayer {
+  return ctx.data!.players[
+    typeof playerId === "string" ? parseInt(playerId, 10) : playerId
+  ];
+}
+
+export function getCheckedBoxes(
+  playerId: number | string,
+  section: string,
+): number[] {
+  return getPlayer(playerId).checkedBoxes[section] ?? [];
+}
+
+export function getAvailableBoxes(
+  playerId: number | string,
+  section: string,
+): number[] | null {
+  const availBoxes = getPlayer(playerId).availableBoxes;
+  if (availBoxes) {
+    return availBoxes[section];
+  }
+  return null;
 }

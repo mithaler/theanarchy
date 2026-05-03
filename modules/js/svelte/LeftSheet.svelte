@@ -6,6 +6,7 @@
     type UnclickableType,
   } from "./UnclickableRow.svelte";
   import UnclickableRow from "./UnclickableRow.svelte";
+  import { getCheckedBoxes, getAvailableBoxes } from "../context.svelte";
 
   interface Props {
     ctx: AnarchyContext;
@@ -13,21 +14,6 @@
     isMe: boolean;
   }
   const { playerId, ctx, isMe }: Props = $props();
-
-  const getCheckedBoxes = (section: string) => {
-    return ctx.data!.players[playerId].checkedBoxes[section] ?? [];
-  };
-  const getAvailableBoxes = (section: string) => {
-    if (!isMe) {
-      return null;
-    }
-
-    const allAvailBoxes = ctx.data!.players[playerId].availableBoxes;
-    if (allAvailBoxes) {
-      return allAvailBoxes[section];
-    }
-    return null;
-  };
 </script>
 
 {#snippet resourceRow(section: string)}
@@ -35,8 +21,8 @@
     bga={ctx.bga!}
     {playerId}
     {section}
-    checkedBoxes={getCheckedBoxes(section)}
-    availableBoxes={getAvailableBoxes(section)}
+    checkedBoxes={getCheckedBoxes(playerId, section)}
+    availableBoxes={isMe ? getAvailableBoxes(playerId, section) : null}
   />
 {/snippet}
 
@@ -45,12 +31,12 @@
   {@render resourceRow("QUARRY & FOREST")}
   {@render resourceRow("FARMS")}
   {@render resourceRow("TRAINING GROUNDS")}
-  {#each Object.keys(UNCLICKABLE_ROWS) as productionRow}
+  {#each Object.keys(UNCLICKABLE_ROWS) as unclickableRow}
     <UnclickableRow
       bga={ctx.bga!}
       {playerId}
-      section={productionRow as UnclickableType}
-      checkedBoxes={getCheckedBoxes(productionRow)}
+      section={unclickableRow as UnclickableType}
+      checkedBoxes={getCheckedBoxes(playerId, unclickableRow)}
     />
   {/each}
 </div>

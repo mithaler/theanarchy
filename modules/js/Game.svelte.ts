@@ -17,7 +17,7 @@ import type {
   PlayerCounterArgs,
   BoxRewardArgs,
 } from "./context.svelte";
-import { ctx } from "./context.svelte";
+import { ctx, getPlayer } from "./context.svelte";
 import { CheckBoxes } from "./states.svelte";
 
 export class Game {
@@ -49,7 +49,7 @@ export class Game {
       props: { ctx },
     });
 
-    // Set up player boards
+    // Set up player panels
     Object.values(gamedatas.players).forEach((player) => {
       const divId = `player-panel-${player.id}`;
       this.bga.playerPanels
@@ -58,7 +58,7 @@ export class Game {
 
       mount(PlayerPanel, {
         target: document.getElementById(divId)!,
-        props: { player: ctx.data!.players[parseInt(player.id, 10)] },
+        props: { player: getPlayer(player.id) },
       });
     });
 
@@ -87,6 +87,6 @@ export class Game {
   }
 
   async notif_setPlayerCounter(args: PlayerCounterArgs) {
-    ctx.data!.players[args.playerId]![args.name] = args.value;
+    (ctx.data!.players[args.playerId]![args.name] as number) = args.value;
   }
 }
