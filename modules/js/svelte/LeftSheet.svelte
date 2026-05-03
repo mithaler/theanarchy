@@ -1,8 +1,11 @@
 <script lang="ts">
   import type { AnarchyContext } from "../context.svelte";
   import ResourceRow from "./ResourceRow.svelte";
-  import { PRODUCTION_ROWS, type ProductionType } from "./ProductionRow.svelte";
-  import ProductionRow from "./ProductionRow.svelte";
+  import {
+    UNCLICKABLE_ROWS,
+    type UnclickableType,
+  } from "./UnclickableRow.svelte";
+  import UnclickableRow from "./UnclickableRow.svelte";
 
   interface Props {
     ctx: AnarchyContext;
@@ -42,11 +45,11 @@
   {@render resourceRow("QUARRY & FOREST")}
   {@render resourceRow("FARMS")}
   {@render resourceRow("TRAINING GROUNDS")}
-  {#each Object.keys(PRODUCTION_ROWS) as productionRow}
-    <ProductionRow
+  {#each Object.keys(UNCLICKABLE_ROWS) as productionRow}
+    <UnclickableRow
       bga={ctx.bga!}
       {playerId}
-      section={productionRow as ProductionType}
+      section={productionRow as UnclickableType}
       checkedBoxes={getCheckedBoxes(productionRow)}
     />
   {/each}

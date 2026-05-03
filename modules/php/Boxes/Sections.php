@@ -3,7 +3,7 @@
 namespace BGA\Games\theanarchy\Boxes;
 
 require_once(__DIR__ . "/BasicRow.php");
-require_once(__DIR__ . "/ProductionRow.php");
+require_once(__DIR__ . "/UnclickableRow.php");
 
 /**
  * @var array<string, BoxType>
@@ -23,4 +23,10 @@ const SECTIONS = [
     "FOOD" => new Food(),
     "SOLDIERS" => new Soldiers(),
     "KNIGHTS" => new Knights(),
+
+    // Point rows
+    "BRAVERY" => new Bravery(),
+    "LOYALTY" => new Loyalty(),
+    "INFLUENCE" => new Influence(),
+    "MIGHT" => new Might(),
 ];

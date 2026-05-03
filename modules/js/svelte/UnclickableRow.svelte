@@ -1,5 +1,6 @@
 <script module>
-  export const PRODUCTION_ROWS = {
+  export const UNCLICKABLE_ROWS = {
+    // Resource production
     SERFS: 6,
     CRAFTSMEN: 3,
     MATERIALS: 5,
@@ -8,9 +9,15 @@
     FOOD: 5,
     SOLDIERS: 7,
     KNIGHTS: 5,
+
+    // Points
+    BRAVERY: 24,
+    LOYALTY: 24,
+    INFLUENCE: 24,
+    MIGHT: 24,
   };
 
-  export type ProductionType = keyof typeof PRODUCTION_ROWS;
+  export type UnclickableType = keyof typeof UNCLICKABLE_ROWS;
 </script>
 
 <script lang="ts">
@@ -20,7 +27,7 @@
   interface Props {
     bga: AnarchyBga;
     playerId: number;
-    section: ProductionType;
+    section: UnclickableType;
     checkedBoxes: number[];
   }
   const { bga, section, checkedBoxes }: Props = $props();
@@ -28,7 +35,7 @@
 
 <div id={section}>
   <span class="row-label">{section}</span>
-  {#each Array.from({ length: PRODUCTION_ROWS[section] }, (_, i) => i + 1) as id}
+  {#each Array.from({ length: UNCLICKABLE_ROWS[section] }, (_, i) => i + 1) as id}
     <Checkbox
       {bga}
       {section}
