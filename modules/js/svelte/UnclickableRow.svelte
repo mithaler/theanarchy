@@ -27,20 +27,40 @@
   interface Props {
     bga: AnarchyBga;
     playerId: number;
+    type: "production" | "points";
     section: UnclickableType;
     checkedBoxes: number[];
   }
-  const { bga, section, checkedBoxes }: Props = $props();
+  const { bga, section, type, checkedBoxes }: Props = $props();
 </script>
 
-<div id={section}>
-  <span class="row-label">{section}</span>
+<div class={["unclickable-row", type]}>
   {#each Array.from({ length: UNCLICKABLE_ROWS[section] }, (_, i) => i + 1) as id}
     <Checkbox
       {bga}
+      {type}
       {section}
       boxId={id}
-      state={checkedBoxes.includes(id) ? "checked" : "unavailable"}
+      state={checkedBoxes.includes(id) ? "checked" : "unclickable"}
     />
   {/each}
 </div>
+
+<style lang="scss">
+  .unclickable-row {
+    display: flex;
+  }
+
+  .production {
+    scale: 80%;
+    transform-origin: left;
+    position: relative;
+    top: -4px;
+    left: -2px;
+    margin-bottom: 10.5px;
+  }
+
+  .points {
+    margin-bottom: 13px;
+  }
+</style>

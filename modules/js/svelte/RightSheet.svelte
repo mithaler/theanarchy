@@ -16,7 +16,7 @@
     bga={ctx.bga!}
     {playerId}
     {section}
-    length={9}
+    type="leadership"
     checkedBoxes={getCheckedBoxes(playerId, section)}
     availableBoxes={isMe ? getAvailableBoxes(playerId, section) : null}
   />

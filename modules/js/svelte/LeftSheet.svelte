@@ -21,16 +21,20 @@
     bga={ctx.bga!}
     {playerId}
     {section}
-    length={13}
+    type="resource"
     checkedBoxes={getCheckedBoxes(playerId, section)}
     availableBoxes={isMe ? getAvailableBoxes(playerId, section) : null}
   />
 {/snippet}
 
-{#snippet unclickableRow(section: UnclickableType)}
+{#snippet unclickableRow(
+  section: UnclickableType,
+  type: "production" | "points",
+)}
   <UnclickableRow
     bga={ctx.bga!}
     {playerId}
+    {type}
     section={section as UnclickableType}
     checkedBoxes={getCheckedBoxes(playerId, section)}
   />
@@ -46,13 +50,13 @@
 
   <div class="production-rows">
     {#each ["SERFS", "CRAFTSMEN", "MATERIALS", "PARTRONS", "SILVER", "FOOD", "SOLDIERS", "KNIGHTS"] as productionRow}
-      {@render unclickableRow(productionRow as UnclickableType)}
+      {@render unclickableRow(productionRow as UnclickableType, "production")}
     {/each}
   </div>
 
   <div class="point-rows">
     {#each ["BRAVERY", "LOYALTY", "INFLUENCE", "MIGHT"] as pointRow}
-      {@render unclickableRow(pointRow as UnclickableType)}
+      {@render unclickableRow(pointRow as UnclickableType, "points")}
     {/each}
   </div>
 </div>
