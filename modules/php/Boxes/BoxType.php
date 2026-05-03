@@ -130,12 +130,12 @@ abstract class BoxType {
      * Returns the ID of the highest checked box in this row.
      * (This is not meaningful for some box types, it's pretty obvious which ones.)
      * @var int $playerId The player to check.
-     * @var Box[] $currBoxes All the boxes the player has checked.
+     * @var Box[] $currBoxes The player's checked boxes (or all players', doesn't matter).
      */
-    public function highestCheckedBox(int $playerId, array $currBoxes): int {
+    public function highestCheckedBox(int $playerId, array &$currBoxes): int {
         return array_reduce(
             $currBoxes,
-            function ($max, $box) use ($playerId) {
+            function (int $max, Box $box) use ($playerId) {
                 if ($box->playerId == $playerId && $box->section == $this->name && $box->boxId > $max) {
                     return $box->boxId;
                 }
@@ -143,5 +143,31 @@ abstract class BoxType {
             },
             0
         );
+    }
+
+    /**
+     * Returns whether a specific ID is filled.
+     * @param int $playerId The player to check.
+     * @param Box[] $currBoxes The player's checked boxes (or all players', doesn't matter).
+     * @return bool True if the specified box is filled, false if not.
+     */
+    public function idFilled(int $playerId, int $boxId, array &$currBoxes): bool {
+        return array_find(
+            $currBoxes,
+            fn (Box $box) => (
+                $box->$playerId == $playerId &&
+                $box->section == $this->name &&
+                $box->boxId == $boxId
+            )
+        ) != null;
+    }
+
+    protected function basicCheckBox(Game &$game, int $playerId, int $boxId, bool $pay = true, Resource $cost, Reward &$reward): Reward {
+        Game::checkBox($playerId, $this->name, $boxId);
+        if ($pay) {
+            $game->resources($cost)->inc($playerId, -1);
+        }
+        $reward->grant($game, $playerId);
+        return $reward;
     }
 }

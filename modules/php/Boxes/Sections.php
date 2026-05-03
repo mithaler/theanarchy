@@ -4,6 +4,7 @@ namespace BGA\Games\theanarchy\Boxes;
 
 require_once(__DIR__ . "/BasicRow.php");
 require_once(__DIR__ . "/UnclickableRow.php");
+require_once(__DIR__ . "/WealthWheel.php");
 
 /**
  * @var array<string, BoxType>
@@ -29,6 +30,12 @@ const SECTIONS = [
     "LOYALTY" => new Loyalty(),
     "INFLUENCE" => new Influence(),
     "MIGHT" => new Might(),
+
+    // Wealth wheel
+    "GUILDSMEN" => new Guildsmen(),
+    "ALLIES" => new Allies(),
+    "MERCENARIES" => new Mercenaries(),
+    "SIEGECRAFT" => new Siegecraft(),
 
     // Leadership rows
     "GOVERNANCE" => new Governance(),
