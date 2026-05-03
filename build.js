@@ -12,6 +12,7 @@ await esbuild.build({
   bundle: true,
   format: "esm",
   outfile: "modules/js/Game.js",
+  external: ["img/*"],
   plugins: [
     sveltePlugin({
       preprocess: sveltePreprocess(),

@@ -19,6 +19,12 @@
 <style lang="scss">
   .anarchy-player-sheets {
     display: flex;
+    flex-wrap: wrap;
+
+    :global(.anarchy-sheet) {
+      width: 800px;
+      height: 800px;
+    }
 
     :global(.row-label) {
       display: inline-block;

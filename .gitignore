@@ -6,3 +6,6 @@ modules/js/Game.js
 # this is spit out by the Svelte compiler and latter glommed together by scss
 modules/js/Game.css
 theanarchy.css
+
+#do not ever check in art assets
+img/*

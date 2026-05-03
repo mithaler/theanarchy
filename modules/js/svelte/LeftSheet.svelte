@@ -27,17 +27,59 @@
   />
 {/snippet}
 
+{#snippet unclickableRow(section: UnclickableType)}
+  <UnclickableRow
+    bga={ctx.bga!}
+    {playerId}
+    section={section as UnclickableType}
+    checkedBoxes={getCheckedBoxes(playerId, section)}
+  />
+{/snippet}
+
 <div class="anarchy-sheet anarchy-left-sheet">
   <!-- TODO figure out how to make these translated -->
-  {@render resourceRow("QUARRY & FOREST")}
-  {@render resourceRow("FARMS")}
-  {@render resourceRow("TRAINING GROUNDS")}
-  {#each Object.keys(UNCLICKABLE_ROWS) as unclickableRow}
-    <UnclickableRow
-      bga={ctx.bga!}
-      {playerId}
-      section={unclickableRow as UnclickableType}
-      checkedBoxes={getCheckedBoxes(playerId, unclickableRow)}
-    />
-  {/each}
+  <div class="resource-rows">
+    {@render resourceRow("QUARRY & FOREST")}
+    {@render resourceRow("FARMS")}
+    {@render resourceRow("TRAINING GROUNDS")}
+  </div>
+
+  <div class="production-rows">
+    {#each ["SERFS", "CRAFTSMEN", "MATERIALS", "PARTRONS", "SILVER", "FOOD", "SOLDIERS", "KNIGHTS"] as productionRow}
+      {@render unclickableRow(productionRow as UnclickableType)}
+    {/each}
+  </div>
+
+  <div class="point-rows">
+    {#each ["BRAVERY", "LOYALTY", "INFLUENCE", "MIGHT"] as pointRow}
+      {@render unclickableRow(pointRow as UnclickableType)}
+    {/each}
+  </div>
 </div>
+
+<style lang="scss">
+  .anarchy-left-sheet {
+    background-image: url("img/anarchy_left_sheet.jpg");
+    background-size: cover;
+    margin-right: 1em;
+
+    div {
+      position: absolute;
+    }
+
+    .resource-rows {
+      top: 175px;
+      left: 106px;
+    }
+
+    .production-rows {
+      top: 408px;
+      left: 124px;
+    }
+
+    .point-rows {
+      top: 638px;
+      left: 106px;
+    }
+  }
+</style>

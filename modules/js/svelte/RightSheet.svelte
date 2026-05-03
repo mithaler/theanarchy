@@ -22,9 +22,16 @@
   />
 {/snippet}
 
-<div class="anarchy-sheet anarchy-left-sheet">
+<div class="anarchy-sheet anarchy-right-sheet">
   {@render leadershipRow("GOVERNANCE")}
   {@render leadershipRow("WARCRAFT")}
   {@render leadershipRow("WORSHIP")}
   {@render leadershipRow("ENTERTAINMENT")}
 </div>
+
+<style lang="scss">
+  .anarchy-right-sheet {
+    background: url("img/anarchy_right_sheet.jpg");
+    background-size: cover;
+  }
+</style>
