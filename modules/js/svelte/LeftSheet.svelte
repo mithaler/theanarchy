@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { AnarchyContext } from "../context.svelte";
-  import ResourceRow from "./ResourceRow.svelte";
+  import BasicRow from "./BasicRow.svelte";
   import {
     UNCLICKABLE_ROWS,
     type UnclickableType,
@@ -17,16 +17,17 @@
 </script>
 
 {#snippet resourceRow(section: string)}
-  <ResourceRow
+  <BasicRow
     bga={ctx.bga!}
     {playerId}
     {section}
+    length={13}
     checkedBoxes={getCheckedBoxes(playerId, section)}
     availableBoxes={isMe ? getAvailableBoxes(playerId, section) : null}
   />
 {/snippet}
 
-<div class="left-sheet">
+<div class="anarchy-sheet anarchy-left-sheet">
   <!-- TODO figure out how to make these translated -->
   {@render resourceRow("QUARRY & FOREST")}
   {@render resourceRow("FARMS")}
@@ -40,10 +41,3 @@
     />
   {/each}
 </div>
-
-<style lang="scss">
-  .left-sheet :global(.row-label) {
-    display: inline-block;
-    width: 10em;
-  }
-</style>

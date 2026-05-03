@@ -29,4 +29,10 @@ const SECTIONS = [
     "LOYALTY" => new Loyalty(),
     "INFLUENCE" => new Influence(),
     "MIGHT" => new Might(),
+
+    // Leadership rows
+    "GOVERNANCE" => new Governance(),
+    "WARCRAFT" => new Warcraft(),
+    "WORSHIP" => new Worship(),
+    "ENTERTAINMENT" => new Entertainment(),
 ];

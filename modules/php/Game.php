@@ -252,7 +252,13 @@ class Game extends \Bga\GameFramework\Table {
         return $this->getObjectListFromDB("SELECT player_id FROM player", true);
     }
 
-    public function allCheckedBoxes(int | null $playerId = null) {
+    /**
+     * Returns all checked boxes.
+     * If playerId is not null, filters down to boxes checked by that player.
+     * @param int|null $playerId An optional player ID to filter on.
+     * @return Box[] A list of boxes.
+     */
+    public function allCheckedBoxes(int | null $playerId = null): array {
          $query = "SELECT * FROM checked_box";
          if ($playerId) {
              $query .= " WHERE player_id = $playerId";

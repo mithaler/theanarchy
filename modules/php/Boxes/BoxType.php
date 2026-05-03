@@ -109,7 +109,7 @@ abstract class BoxType {
 
     /**
      * Returns the list of box IDs in this section that can be checked right now.
-     * @param int[] $currBoxes
+     * @param Box[] $currBoxes
      * @return int[] A list of checkable box IDs in this section.
      */
     abstract public function validBoxes(Game $game, int $playerId, array $currBoxes): array;
@@ -125,4 +125,23 @@ abstract class BoxType {
      * @return Reward The full reward.
      */
     abstract public function check(Game $game, int $playerId, int|null $boxId = null, bool $pay = true): Reward;
+
+    /**
+     * Returns the ID of the highest checked box in this row.
+     * (This is not meaningful for some box types, it's pretty obvious which ones.)
+     * @var int $playerId The player to check.
+     * @var Box[] $currBoxes All the boxes the player has checked.
+     */
+    public function highestCheckedBox(int $playerId, array $currBoxes): int {
+        return array_reduce(
+            $currBoxes,
+            function ($max, $box) use ($playerId) {
+                if ($box->playerId == $playerId && $box->section == $this->name && $box->boxId > $max) {
+                    return $box->boxId;
+                }
+                return $max;
+            },
+            0
+        );
+    }
 }

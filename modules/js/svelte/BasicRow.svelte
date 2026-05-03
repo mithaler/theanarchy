@@ -6,15 +6,17 @@
     bga: AnarchyBga;
     playerId: number;
     section: string;
+    length: number;
     checkedBoxes: number[];
     availableBoxes: number[] | null;
   }
-  const { bga, section, checkedBoxes, availableBoxes }: Props = $props();
+  const { bga, section, length, checkedBoxes, availableBoxes }: Props =
+    $props();
 </script>
 
 <div id={section}>
   <span class="row-label">{section}</span>
-  {#each Array.from({ length: 13 }, (_, i) => i + 1) as id}
+  {#each Array.from({ length }, (_, i) => i + 1) as id}
     <Checkbox
       {bga}
       {section}
