@@ -69,6 +69,8 @@ class CheckBoxes extends GameState {
         }
 
         $reward = SECTIONS[$section]->check($this->game, $currentPlayerId, $boxId, true);
+
+        // requery here to make sure we're up to date
         $newAllCheckedBoxes = $this->game->allCheckedBoxes($currentPlayerId);
         $this->notifyReward($reward, $currentPlayerId, $newAllCheckedBoxes);
     }
