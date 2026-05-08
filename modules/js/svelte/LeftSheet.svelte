@@ -58,7 +58,7 @@
   <Guildsmen
     {playerId}
     checkedBoxes={getCheckedBoxes(playerId, "GUILDSMEN")}
-    availableBoxes={getAvailableBoxes(playerId, "GUILDSMEN")}
+    availableBoxes={isMe ? getAvailableBoxes(playerId, "GUILDSMEN") : null}
   />
 </div>
 
