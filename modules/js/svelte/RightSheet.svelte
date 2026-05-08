@@ -1,19 +1,16 @@
 <script lang="ts">
-  import type { AnarchyContext } from "../context.svelte";
   import BasicRow from "./BasicRow.svelte";
   import { getCheckedBoxes, getAvailableBoxes } from "../context.svelte";
 
   interface Props {
-    ctx: AnarchyContext;
     playerId: number;
     isMe: boolean;
   }
-  const { playerId, ctx, isMe }: Props = $props();
+  const { playerId, isMe }: Props = $props();
 </script>
 
 {#snippet leadershipRow(section: string)}
   <BasicRow
-    bga={ctx.bga!}
     {playerId}
     {section}
     type="leadership"

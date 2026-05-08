@@ -14,8 +14,8 @@
 
 <!-- Show current player first -->
 {#if playerIds.includes(meId)}
-  <PlayerBoard playerId={meId} {ctx} isMe={true} />
+  <PlayerBoard playerId={meId} isMe={true} />
 {/if}
 {#each playerIds.filter((p) => p !== meId) as playerId}
-  <PlayerBoard {playerId} {ctx} isMe={false} />
+  <PlayerBoard {playerId} isMe={false} />
 {/each}

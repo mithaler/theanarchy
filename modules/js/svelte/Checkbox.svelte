@@ -14,7 +14,7 @@
 </script>
 
 <script lang="ts">
-  import { getBga, type AnarchyBga } from "../context.svelte";
+  import { getBga } from "../context.svelte";
   import { CheckBoxes } from "../states.svelte";
 
   interface Props {

@@ -64,6 +64,10 @@ export interface PlayerCounterArgs {
   playerId: number;
 }
 
+export function getBga(): AnarchyBga {
+  return ctx.bga!;
+}
+
 export function getPlayer(playerId: number | string): AnarchyPlayer {
   return ctx.data!.players[
     typeof playerId === "string" ? parseInt(playerId, 10) : playerId

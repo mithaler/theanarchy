@@ -21,23 +21,20 @@
 </script>
 
 <script lang="ts">
-  import type { AnarchyBga } from "../context.svelte";
   import Checkbox from "./Checkbox.svelte";
 
   interface Props {
-    bga: AnarchyBga;
     playerId: number;
     type: "production" | "points";
     section: UnclickableType;
     checkedBoxes: number[];
   }
-  const { bga, section, type, checkedBoxes }: Props = $props();
+  const { section, type, checkedBoxes }: Props = $props();
 </script>
 
 <div class={["unclickable-row", type]}>
   {#each Array.from({ length: UNCLICKABLE_ROWS[section] }, (_, i) => i + 1) as id}
     <Checkbox
-      {bga}
       {type}
       {section}
       boxId={id}

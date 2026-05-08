@@ -7,16 +7,14 @@
   import Guildsmen from "./Guildsmen.svelte";
 
   interface Props {
-    ctx: AnarchyContext;
     playerId: number;
     isMe: boolean;
   }
-  const { playerId, ctx, isMe }: Props = $props();
+  const { playerId, isMe }: Props = $props();
 </script>
 
 {#snippet resourceRow(section: string)}
   <BasicRow
-    bga={ctx.bga!}
     {playerId}
     {section}
     type="resource"
@@ -30,7 +28,6 @@
   type: "production" | "points",
 )}
   <UnclickableRow
-    bga={ctx.bga!}
     {playerId}
     {type}
     section={section as UnclickableType}
@@ -59,7 +56,6 @@
   </div>
 
   <Guildsmen
-    bga={ctx.bga!}
     {playerId}
     checkedBoxes={getCheckedBoxes(playerId, "GUILDSMEN")}
     availableBoxes={getAvailableBoxes(playerId, "GUILDSMEN")}

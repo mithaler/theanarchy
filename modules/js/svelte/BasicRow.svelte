@@ -1,16 +1,14 @@
 <script lang="ts">
-  import type { AnarchyBga } from "../context.svelte";
   import Checkbox, { getState } from "./Checkbox.svelte";
 
   interface Props {
-    bga: AnarchyBga;
     playerId: number;
     section: string;
     type: "resource" | "leadership";
     checkedBoxes: number[];
     availableBoxes: number[] | null;
   }
-  const { bga, section, type, checkedBoxes, availableBoxes }: Props = $props();
+  const { section, type, checkedBoxes, availableBoxes }: Props = $props();
 
   function getWidth(id: number) {
     if (type === "resource") {
@@ -32,7 +30,6 @@
 <div class={["basic-row", type, sectionClass]}>
   {#each Array.from({ length: type === "resource" ? 13 : 9 }, (_, i) => i + 1) as id}
     <Checkbox
-      {bga}
       {type}
       {section}
       boxId={id}

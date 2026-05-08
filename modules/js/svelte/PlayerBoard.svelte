@@ -3,16 +3,15 @@
   import PlayerSheets from "./PlayerSheets.svelte";
 
   interface Props {
-    ctx: AnarchyContext;
     playerId: number;
     isMe: boolean;
   }
-  const { playerId, ctx, isMe }: Props = $props();
+  const { playerId, isMe }: Props = $props();
 </script>
 
 <div class="player-board">
   <h2>Player {playerId}</h2>
-  <PlayerSheets {playerId} {ctx} {isMe} />
+  <PlayerSheets {playerId} {isMe} />
 </div>
 
 <style lang="scss">

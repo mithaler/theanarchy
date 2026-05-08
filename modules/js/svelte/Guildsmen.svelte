@@ -1,21 +1,18 @@
 <script lang="ts">
-  import type { AnarchyBga } from "../context.svelte";
   import Checkbox, { getState } from "./Checkbox.svelte";
 
   interface Props {
-    bga: AnarchyBga;
     playerId: number;
     checkedBoxes: number[];
     availableBoxes: number[] | null;
   }
-  const { bga, checkedBoxes, availableBoxes }: Props = $props();
+  const { checkedBoxes, availableBoxes }: Props = $props();
 </script>
 
 <div class="guildsmen">
   {#each Array.from({ length: 11 }, (_, i) => i + 1) as id}
     <div class="guildsmen-box guildsmen-{id}">
       <Checkbox
-        {bga}
         type="guildsmen"
         section="GUILDSMEN"
         boxId={id}
