@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { AnarchyBga } from "../context.svelte";
-  import Checkbox from "./Checkbox.svelte";
+  import Checkbox, { getState } from "./Checkbox.svelte";
 
   interface Props {
     bga: AnarchyBga;
@@ -36,11 +36,7 @@
       {type}
       {section}
       boxId={id}
-      state={checkedBoxes.includes(id)
-        ? "checked"
-        : availableBoxes && availableBoxes.includes(id)
-          ? "available"
-          : "unavailable"}
+      state={getState(id, checkedBoxes, availableBoxes)}
       width={getWidth(id)}
     />
   {/each}

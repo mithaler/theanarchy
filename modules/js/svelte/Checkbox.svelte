@@ -1,8 +1,22 @@
+<script module lang="ts">
+  export type State = "checked" | "available" | "unavailable" | "unclickable";
+  export function getState(
+    id: number,
+    checkedBoxes: number[],
+    availableBoxes: number[] | null,
+  ): State {
+    return checkedBoxes.includes(id)
+      ? "checked"
+      : availableBoxes && availableBoxes.includes(id)
+        ? "available"
+        : "unavailable";
+  }
+</script>
+
 <script lang="ts">
   import type { AnarchyBga } from "../context.svelte";
   import { CheckBoxes } from "../states.svelte";
 
-  type State = "checked" | "available" | "unavailable" | "unclickable";
   interface Props {
     bga: AnarchyBga;
     section: string;
