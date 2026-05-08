@@ -3,7 +3,6 @@ import fs from "fs";
 import esbuild from "esbuild";
 import sveltePlugin from "esbuild-svelte";
 import { sveltePreprocess } from "svelte-preprocess";
-import { compile as sassCompile } from "sass";
 
 await esbuild.build({
   entryPoints: ["modules/js/Game.svelte.ts"],

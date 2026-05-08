@@ -8,6 +8,6 @@
   let { player }: Props = $props();
 </script>
 
-{#each ["serfs", "craftsmen", "materials", "patrons", "silver", "food", "soldiers", "knights"] as field}
+{#each ["serfs", "craftsmen", "materials", "patrons", "silver", "food", "soldiers", "knights"] as field (field)}
   <div>{field} {player[field as keyof AnarchyPlayer]}</div>
 {/each}

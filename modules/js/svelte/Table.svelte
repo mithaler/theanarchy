@@ -16,6 +16,6 @@
 {#if playerIds.includes(meId)}
   <PlayerBoard playerId={meId} isMe={true} />
 {/if}
-{#each playerIds.filter((p) => p !== meId) as playerId}
+{#each playerIds.filter((p) => p !== meId) as playerId (playerId)}
   <PlayerBoard {playerId} isMe={false} />
 {/each}

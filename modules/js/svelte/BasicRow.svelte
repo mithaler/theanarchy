@@ -2,7 +2,6 @@
   import Checkbox, { getState } from "./Checkbox.svelte";
 
   interface Props {
-    playerId: number;
     section: string;
     type: "resource" | "leadership";
     checkedBoxes: number[];
@@ -28,7 +27,7 @@
 </script>
 
 <div class={["basic-row", type, sectionClass]}>
-  {#each Array.from({ length: type === "resource" ? 13 : 9 }, (_, i) => i + 1) as id}
+  {#each Array.from({ length: type === "resource" ? 13 : 9 }, (_, i) => i + 1) as id (id)}
     <Checkbox
       {type}
       {section}

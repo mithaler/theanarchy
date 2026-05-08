@@ -11,7 +11,6 @@
 
 {#snippet leadershipRow(section: string)}
   <BasicRow
-    {playerId}
     {section}
     type="leadership"
     checkedBoxes={getCheckedBoxes(playerId, section)}

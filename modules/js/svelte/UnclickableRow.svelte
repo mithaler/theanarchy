@@ -24,7 +24,6 @@
   import Checkbox from "./Checkbox.svelte";
 
   interface Props {
-    playerId: number;
     type: "production" | "points";
     section: UnclickableType;
     checkedBoxes: number[];
@@ -33,7 +32,7 @@
 </script>
 
 <div class={["unclickable-row", type]}>
-  {#each Array.from({ length: UNCLICKABLE_ROWS[section] }, (_, i) => i + 1) as id}
+  {#each Array.from({ length: UNCLICKABLE_ROWS[section] }, (_, i) => i + 1) as id (id)}
     <Checkbox
       {type}
       {section}

@@ -1,5 +1,4 @@
 <script lang="ts">
-  import type { AnarchyContext } from "../context.svelte";
   import BasicRow from "./BasicRow.svelte";
   import { type UnclickableType } from "./UnclickableRow.svelte";
   import UnclickableRow from "./UnclickableRow.svelte";
@@ -15,7 +14,6 @@
 
 {#snippet resourceRow(section: string)}
   <BasicRow
-    {playerId}
     {section}
     type="resource"
     checkedBoxes={getCheckedBoxes(playerId, section)}
@@ -28,7 +26,6 @@
   type: "production" | "points",
 )}
   <UnclickableRow
-    {playerId}
     {type}
     section={section as UnclickableType}
     checkedBoxes={getCheckedBoxes(playerId, section)}
@@ -44,19 +41,18 @@
   </div>
 
   <div class="production-rows">
-    {#each ["SERFS", "CRAFTSMEN", "MATERIALS", "PARTRONS", "SILVER", "FOOD", "SOLDIERS", "KNIGHTS"] as productionRow}
+    {#each ["SERFS", "CRAFTSMEN", "MATERIALS", "PARTRONS", "SILVER", "FOOD", "SOLDIERS", "KNIGHTS"] as productionRow (productionRow)}
       {@render unclickableRow(productionRow as UnclickableType, "production")}
     {/each}
   </div>
 
   <div class="point-rows">
-    {#each ["BRAVERY", "LOYALTY", "INFLUENCE", "MIGHT"] as pointRow}
+    {#each ["BRAVERY", "LOYALTY", "INFLUENCE", "MIGHT"] as pointRow (pointRow)}
       {@render unclickableRow(pointRow as UnclickableType, "points")}
     {/each}
   </div>
 
   <Guildsmen
-    {playerId}
     checkedBoxes={getCheckedBoxes(playerId, "GUILDSMEN")}
     availableBoxes={isMe ? getAvailableBoxes(playerId, "GUILDSMEN") : null}
   />

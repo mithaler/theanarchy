@@ -5,6 +5,7 @@ abstract class State<ArgType> {
   game: Game;
   bga: AnarchyBga;
 
+  /* eslint-disable @typescript-eslint/no-unused-vars */
   onEnteringState(args: ArgType, isCurrentPlayerActive: boolean): void {}
   onLeavingState(args: ArgType, isCurrentPlayerActive: boolean): void {}
   onPlayerActivationChange(
