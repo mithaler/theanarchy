@@ -1,12 +1,10 @@
 <script lang="ts">
   import type { AnarchyContext } from "../context.svelte";
   import BasicRow from "./BasicRow.svelte";
-  import {
-    UNCLICKABLE_ROWS,
-    type UnclickableType,
-  } from "./UnclickableRow.svelte";
+  import { type UnclickableType } from "./UnclickableRow.svelte";
   import UnclickableRow from "./UnclickableRow.svelte";
   import { getCheckedBoxes, getAvailableBoxes } from "../context.svelte";
+  import Guildsmen from "./Guildsmen.svelte";
 
   interface Props {
     ctx: AnarchyContext;
@@ -59,6 +57,13 @@
       {@render unclickableRow(pointRow as UnclickableType, "points")}
     {/each}
   </div>
+
+  <Guildsmen
+    bga={ctx.bga!}
+    {playerId}
+    checkedBoxes={getCheckedBoxes(playerId, "GUILDSMEN")}
+    availableBoxes={getAvailableBoxes(playerId, "GUILDSMEN")}
+  />
 </div>
 
 <style lang="scss">

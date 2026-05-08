@@ -36,14 +36,14 @@ abstract class WealthWheel extends BoxType {
 abstract class WealthWheelSide extends WealthWheel {
     public function validBoxes(Game $game, int $playerId, array $currBoxes): array {
         // can the player pay?
-        if (!$game->resources(Resource::SILVER)->get($playerId) < 1) {
+        if ($game->resources(Resource::SILVER)->get($playerId) < 1) {
             return [];
         }
 
         $currBoxIds = $this->sectionBoxIds($playerId, $currBoxes);
         $outSet = [];
         foreach ($currBoxIds as $boxId) {
-            $outSet = [...$outSet, ...match ($boxId) {
+            $outSet += match ($boxId) {
                 1 => [2 => true, 3 => true],
                 2 => [4 => true, 5 => true],
                 3 => [5 => true, 6 => true],
@@ -52,9 +52,13 @@ abstract class WealthWheelSide extends WealthWheel {
                 6 => [10 => true],
                 8, 9 => [11 => true],
                 default => [],
-            }];
+            };
         }
-        return array_keys($outSet);
+
+        if (\count($outSet) == 0) {
+            return [1];
+        }
+        return array_values(array_diff(array_keys($outSet), $currBoxIds));
     }
 }
 
@@ -107,23 +111,27 @@ class Siegecraft extends WealthWheel {
 
     public function validBoxes(Game $game, int $playerId, array $currBoxes): array {
         // can the player pay?
-        if (!$game->resources(Resource::SILVER)->get($playerId) < 1) {
+        if ($game->resources(Resource::SILVER)->get($playerId) < 1) {
             return [];
         }
 
         $currBoxIds = $this->sectionBoxIds($playerId, $currBoxes);
         $outSet = [];
         foreach ($currBoxIds as $boxId) {
-            $outSet = [...$outSet, ...match ($boxId) {
+            $outSet += match ($boxId) {
                 1 => [2 => true, 3 => true, 4 => true],
                 4 => [5 => true, 6 => true, 10 => true],
                 5 => [8 => true, 9 => true],
                 10 => [7 => true],
                 7 => [8 => true, 9 => true],
                 default => [],
-            }];
+            };
         }
-        return array_keys($outSet);
+
+        if (\count($outSet) == 0) {
+            return [1];
+        }
+        return array_values(array_diff(array_keys($outSet), $currBoxIds));
     }
 
     protected function reward($boxId): Reward {

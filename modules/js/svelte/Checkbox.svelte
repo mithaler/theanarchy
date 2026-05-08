@@ -14,11 +14,10 @@
 </script>
 
 <script lang="ts">
-  import type { AnarchyBga } from "../context.svelte";
+  import { getBga, type AnarchyBga } from "../context.svelte";
   import { CheckBoxes } from "../states.svelte";
 
   interface Props {
-    bga: AnarchyBga;
     section: string;
     boxId: number;
     state: State;
@@ -26,11 +25,11 @@
 
     width?: string;
   }
-  const { bga, section, boxId, state, type, width }: Props = $props();
+  const { section, boxId, state, type, width }: Props = $props();
 
   const onclick = $derived.by(() => {
     if (state === "available") {
-      const gameState = bga.states.getCurrentMainStateClass();
+      const gameState = getBga().states.getCurrentMainStateClass();
       if (gameState instanceof CheckBoxes) {
         return (evt: Event) => {
           evt.preventDefault();
