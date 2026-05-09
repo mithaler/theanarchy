@@ -10,10 +10,15 @@ use BGA\Games\theanarchy\Resource;
 
 abstract class BasicRow extends BoxType {
     abstract public int $boxCount { get; }
-    abstract protected Resource $cost { get; }
+    abstract protected array $cost { get; }
 
     function canPay(Game $game, int $playerId): bool {
-        return $game->resources($this->cost)->get($playerId) > 0;
+        foreach ($this->cost as $resource) {
+            if ($game->resources($resource)->get($playerId) < 1) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public function validBoxes(Game $game, int $playerId, array $currBoxes): array {
@@ -27,7 +32,6 @@ abstract class BasicRow extends BoxType {
         }
         return [$highestFilled + 1];
     }
-
     abstract protected function reward(int $boxId): Reward;
 
     public function check(Game $game, int $playerId, int|null $boxId = null, bool $pay = true): Reward {
@@ -54,28 +58,28 @@ abstract class ResourceRow extends BasicRow {
 
 class QuarryForest extends ResourceRow {
     public string $name = "QUARRY & FOREST";
-    protected Resource $cost = Resource::SERFS;
+    protected array $cost = [Resource::SERFS];
     protected Resource $resourceReward = Resource::MATERIALS;
     protected string $incomeUpgrade = "MATERIALS";
 }
 
 class Farms extends ResourceRow {
     public string $name = "FARMS";
-    protected Resource $cost = Resource::SERFS;
+    protected array $cost = [Resource::SERFS];
     protected Resource $resourceReward = Resource::FOOD;
     protected string $incomeUpgrade = "FOOD";
 }
 
 class TrainingGrounds extends ResourceRow {
     public string $name = "TRAINING GROUNDS";
-    protected Resource $cost = Resource::SERFS;
+    protected array $cost = [Resource::SERFS];
     protected Resource $resourceReward = Resource::SOLDIERS;
     protected string $incomeUpgrade = "SOLDIERS";
 }
 
 abstract class LeadershipTrack extends BasicRow {
     public int $boxCount = 9;
-    public Resource $cost = Resource::PATRONS;
+    public array $cost = [Resource::PATRONS];
 }
 
 class Governance extends LeadershipTrack {

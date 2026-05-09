@@ -162,10 +162,12 @@ abstract class BoxType {
         ) != null;
     }
 
-    protected function basicCheckBox(Game &$game, int $playerId, int $boxId, bool $pay = true, Resource $cost, Reward &$reward): Reward {
+    protected function basicCheckBox(Game &$game, int $playerId, int $boxId, bool $pay = true, array $cost, Reward &$reward): Reward {
         Game::checkBox($playerId, $this->name, $boxId);
         if ($pay) {
-            $game->resources($cost)->inc($playerId, -1);
+            foreach ($cost as $resourceCost) {
+                $game->resources($resourceCost)->inc($playerId, -1);
+            }
         }
         $reward->grant($game, $playerId);
         return $reward;
