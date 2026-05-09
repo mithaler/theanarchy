@@ -1,4 +1,5 @@
 <script module lang="ts">
+  import { ctx } from "../context.svelte";
   export type State = "checked" | "available" | "unavailable" | "unclickable";
   export function getState(
     id: number,
@@ -7,7 +8,7 @@
   ): State {
     return checkedBoxes.includes(id)
       ? "checked"
-      : availableBoxes && availableBoxes.includes(id)
+      : !ctx.locked && availableBoxes && availableBoxes.includes(id)
         ? "available"
         : "unavailable";
   }

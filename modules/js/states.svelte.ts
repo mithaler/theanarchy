@@ -1,4 +1,9 @@
-import { ctx, type AnarchyBga, type PlayerBoxSet } from "./context.svelte";
+import {
+  ctx,
+  performAction,
+  type AnarchyBga,
+  type PlayerBoxSet,
+} from "./context.svelte";
 import type { Game } from "./Game.svelte";
 
 abstract class State<ArgType> {
@@ -44,6 +49,6 @@ export class CheckBoxes extends State<CheckBoxesArgs> {
   }
 
   async checkBox(section: string, boxId: number) {
-    return this.bga.actions.performAction("actCheckBox", { section, boxId });
+    return performAction("actCheckBox", { section, boxId });
   }
 }

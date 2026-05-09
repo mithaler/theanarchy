@@ -46,9 +46,23 @@ export interface AnarchyData extends Gamedatas<AnarchyPlayer> {
 export interface AnarchyContext {
   data?: AnarchyData;
   bga?: AnarchyBga;
+  locked: boolean;
 }
 
-export const ctx: AnarchyContext = $state({});
+export const ctx: AnarchyContext = $state({ locked: false });
+
+/**
+ * Wraps bga.actions.performAction, but sets the lock in the context around it,
+ * so the UI can react by locking.
+ */
+export async function performAction(action: string, args?: object) {
+  ctx.locked = true;
+  try {
+    return await ctx.bga!.actions.performAction(action, args);
+  } finally {
+    ctx.locked = false;
+  }
+}
 
 export interface BoxRewardArgs {
   player_id: number; // forced to be underscored by the framework
