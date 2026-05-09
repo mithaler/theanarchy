@@ -1,9 +1,9 @@
 <script lang="ts">
-  import BasicRow from "./BasicRow.svelte";
-  import { type UnclickableType } from "./UnclickableRow.svelte";
-  import UnclickableRow from "./UnclickableRow.svelte";
+  import BasicRow from "./sections/BasicRow.svelte";
+  import { type UnclickableType } from "./sections/UnclickableRow.svelte";
+  import UnclickableRow from "./sections/UnclickableRow.svelte";
   import { getCheckedBoxes, getAvailableBoxes } from "../context.svelte";
-  import Guildsmen from "./Guildsmen.svelte";
+  import Guildsmen from "./sections/Guildsmen.svelte";
 
   interface Props {
     playerId: number;

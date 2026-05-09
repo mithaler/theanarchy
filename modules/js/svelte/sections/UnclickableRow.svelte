@@ -21,7 +21,7 @@
 </script>
 
 <script lang="ts">
-  import Checkbox from "./Checkbox.svelte";
+  import Checkbox from "../Checkbox.svelte";
 
   interface Props {
     type: "production" | "points";

@@ -1,11 +1,8 @@
 <script lang="ts">
-  import Checkbox, { getState } from "./Checkbox.svelte";
+  import Checkbox, { getState } from "../Checkbox.svelte";
+  import type { SectionProps } from "./utils.svelte";
 
-  interface Props {
-    checkedBoxes: number[];
-    availableBoxes: number[] | null;
-  }
-  const { checkedBoxes, availableBoxes }: Props = $props();
+  const { checkedBoxes, availableBoxes }: SectionProps = $props();
 </script>
 
 <div class="guildsmen">
@@ -62,9 +59,9 @@
     }
 
     /*
-    &.guildsmen-7 {
-      width: 37px;
-    }*/
+      &.guildsmen-7 {
+        width: 37px;
+      }*/
 
     &.guildsmen-8 {
       top: 52px;
