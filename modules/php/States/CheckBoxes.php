@@ -2,6 +2,8 @@
 
 namespace BGA\Games\theanarchy\States;
 
+use Bga\GameFramework\Actions\Types\IntParam;
+
 require_once(__DIR__ . "/../Boxes/Sections.php");
 require_once(__DIR__ . "/../Constants.php");
 
@@ -11,6 +13,7 @@ use Bga\GameFramework\StateType;
 use Bga\GameFramework\States\GameState;
 use Bga\GameFramework\States\PossibleAction;
 use Bga\GameFramework\UserException;
+use Bga\GameFramework\Actions\Types\StringParam;
 
 use Bga\Games\theanarchy\Game;
 use BGA\Games\theanarchy\StateConstants;
@@ -61,7 +64,17 @@ class CheckBoxes extends GameState {
     }
 
     #[PossibleAction]
-    function actCheckBox(int $currentPlayerId, string $section, int $boxId, string | null $writtenValue = null) {
+    function actCheckBox(
+        int $currentPlayerId,
+        // spaces prevent alphanum validation; don't ever put this directly in SQL!
+        #[StringParam(name: "section")] string $section,
+        #[IntParam(name: "boxId")] int $boxId,
+        #[IntParam(name: "writtenValue")] int | null $writtenValue = null
+    ) {
+        if (!\array_key_exists($section, SECTIONS)) {
+            throw new UserException("Section $section does not exist");
+        }
+
         $currBoxes = $this->game->allCheckedBoxes($currentPlayerId);
         $validBoxes = SECTIONS[$section]->validBoxes($this->game, $currentPlayerId, $currBoxes);
         if (!\in_array($boxId, $validBoxes)) {
