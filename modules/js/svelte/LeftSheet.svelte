@@ -1,9 +1,11 @@
 <script lang="ts">
-  import BasicRow from "./BasicRow.svelte";
-  import { type UnclickableType } from "./UnclickableRow.svelte";
-  import UnclickableRow from "./UnclickableRow.svelte";
+  import BasicRow from "./sections/BasicRow.svelte";
+  import { type UnclickableType } from "./sections/UnclickableRow.svelte";
+  import UnclickableRow from "./sections/UnclickableRow.svelte";
   import { getCheckedBoxes, getAvailableBoxes } from "../context.svelte";
-  import Guildsmen from "./Guildsmen.svelte";
+  import WealthWheelSide, {
+    type WealthWheelSideType,
+  } from "./sections/WealthWheelSide.svelte";
 
   interface Props {
     playerId: number;
@@ -14,6 +16,7 @@
 
 {#snippet resourceRow(section: string)}
   <BasicRow
+    {isMe}
     {section}
     type="resource"
     checkedBoxes={getCheckedBoxes(playerId, section)}
@@ -52,10 +55,14 @@
     {/each}
   </div>
 
-  <Guildsmen
-    checkedBoxes={getCheckedBoxes(playerId, "GUILDSMEN")}
-    availableBoxes={isMe ? getAvailableBoxes(playerId, "GUILDSMEN") : null}
-  />
+  {#each ["GUILDSMEN", "ALLIES"] as side (side)}
+    <WealthWheelSide
+      {isMe}
+      section={side as WealthWheelSideType}
+      checkedBoxes={getCheckedBoxes(playerId, side)}
+      availableBoxes={isMe ? getAvailableBoxes(playerId, side) : null}
+    />
+  {/each}
 </div>
 
 <style lang="scss">

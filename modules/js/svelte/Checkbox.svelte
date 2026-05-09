@@ -3,6 +3,7 @@
   export type State = "checked" | "available" | "unavailable" | "unclickable";
   export function getState(
     id: number,
+    isMe: boolean,
     checkedBoxes: number[],
     availableBoxes: number[] | null,
   ): State {
@@ -10,7 +11,9 @@
       ? "checked"
       : !ctx.locked && availableBoxes && availableBoxes.includes(id)
         ? "available"
-        : "unavailable";
+        : isMe
+          ? "unavailable"
+          : "unclickable";
   }
 </script>
 
