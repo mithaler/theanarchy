@@ -11,7 +11,7 @@ abstract class WealthWheel extends BoxType {
 
     public function check(Game $game, int $playerId, int|null $boxId = null, bool $pay = true): Reward {
         $reward = $this->reward($boxId);
-        return $this->basicCheckBox($game, $playerId, $boxId, $pay, Resource::SILVER, $reward);
+        return $this->basicCheckBox($game, $playerId, $boxId, $pay, [Resource::SILVER], $reward);
     }
 
     protected function sectionBoxIds(int $playerId, array &$currBoxes): array {
