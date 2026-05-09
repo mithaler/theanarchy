@@ -16,8 +16,9 @@ import type {
   AnarchyBga,
   PlayerCounterArgs,
   BoxRewardArgs,
+  BoxSet,
 } from "./context.svelte";
-import { ctx, getPlayer } from "./context.svelte";
+import { ctx, getCurrentPlayer, getPlayer } from "./context.svelte";
 import { CheckBoxes } from "./states.svelte";
 
 export class Game {
@@ -82,11 +83,13 @@ export class Game {
     const section = player.checkedBoxes[args.boxSection] ?? [];
     section.push(args.boxId);
     ctx.data!.players[args.player_id]!.checkedBoxes[args.boxSection] = section;
+  }
 
-    player.availableBoxes![args.boxSection] = args.newAvailable;
+  async notif_newAvailable(args: BoxSet) {
+    getCurrentPlayer().availableBoxes = args;
   }
 
   async notif_setPlayerCounter(args: PlayerCounterArgs) {
-    (ctx.data!.players[args.playerId]![args.name] as number) = args.value;
+    (getPlayer(args.playerId)[args.name] as number) = args.value;
   }
 }

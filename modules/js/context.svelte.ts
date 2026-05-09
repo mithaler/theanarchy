@@ -88,6 +88,10 @@ export function getPlayer(playerId: number | string): AnarchyPlayer {
   ];
 }
 
+export function getCurrentPlayer(): AnarchyPlayer {
+  return ctx.data!.players[ctx.bga!.players.getCurrentPlayerId()];
+}
+
 export function getCheckedBoxes(
   playerId: number | string,
   section: string,

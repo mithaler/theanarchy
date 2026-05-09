@@ -63,26 +63,30 @@ class CheckBoxes extends GameState {
     #[PossibleAction]
     function actCheckBox(int $currentPlayerId, string $section, int $boxId, string | null $writtenValue = null) {
         $currBoxes = $this->game->allCheckedBoxes($currentPlayerId);
-        $validBoxes = $this->getAvailableBoxes($currentPlayerId, $currBoxes);
-        if (!\array_key_exists($section, $validBoxes) || !\in_array($boxId, $validBoxes[$section])) {
+        $validBoxes = SECTIONS[$section]->validBoxes($this->game, $currentPlayerId, $currBoxes);
+        if (!\in_array($boxId, $validBoxes)) {
             throw new UserException("Box not available");
         }
 
+        // notify rewards
         $reward = SECTIONS[$section]->check($this->game, $currentPlayerId, $boxId, true);
+        $this->notifyReward($reward, $currentPlayerId);
 
-        // requery here to make sure we're up to date
+        // notify new available boxes
         $newAllCheckedBoxes = $this->game->allCheckedBoxes($currentPlayerId);
-        $this->notifyReward($reward, $currentPlayerId, $newAllCheckedBoxes);
+        $this->notify->player(
+            $currentPlayerId, "newAvailable", "",
+            $this->getAvailableBoxes($currentPlayerId, $newAllCheckedBoxes)
+        );
     }
 
-    private function notifyReward(Reward &$reward, int $playerId, $currBoxes) {
+    private function notifyReward(Reward &$reward, int $playerId) {
         if (\count($reward->resources) == 0 && \count($reward->boxes) == 0) {
             $this->game->notify->all("boxReward", \clienttranslate('${player_name} checks ${boxSection}'), [
                 "player_id" => $playerId,
                 "player_name" => $this->game->getPlayerNameById($playerId),
                 "boxSection" => $reward->fromSection,
                 "boxId" => $reward->fromId,
-                "newAvailable" => SECTIONS[$reward->fromSection]->validBoxes($this->game, $playerId, $currBoxes),
             ]);
         } else {
             $resourceRewards = [];
@@ -96,7 +100,6 @@ class CheckBoxes extends GameState {
                 "player_name" => $this->game->getPlayerNameById($playerId),
                 "boxSection" => $reward->fromSection,
                 "boxId" => $reward->fromId,
-                "newAvailable" => SECTIONS[$reward->fromSection]->validBoxes($this->game, $playerId, $currBoxes),
                 // TODO make this pretty!
                 "rewards" => implode(" ", [...$resourceRewards, ...array_keys($reward->boxes)]),
                 // we don't include resources here, the framework auto-notifies setPlayerCounter for that
@@ -105,7 +108,7 @@ class CheckBoxes extends GameState {
 
         // DFS into the boxes and notify those too
         foreach ($reward->boxes as $boxReward) {
-            $this->notifyReward($boxReward, $playerId, $currBoxes);
+            $this->notifyReward($boxReward, $playerId);
         }
     }
 

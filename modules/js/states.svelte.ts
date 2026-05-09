@@ -1,5 +1,6 @@
 import {
   ctx,
+  getCurrentPlayer,
   performAction,
   type AnarchyBga,
   type PlayerBoxSet,
@@ -49,6 +50,10 @@ export class CheckBoxes extends State<CheckBoxesArgs> {
   }
 
   async checkBox(section: string, boxId: number) {
+    // zero out the player's available boxes while performing the action so it doesn't stutter
+    // the notification coming back will update it with the new options, see notif_newAvailable
+    getCurrentPlayer().availableBoxes = undefined;
+
     return performAction("actCheckBox", { section, boxId });
   }
 }
