@@ -148,15 +148,17 @@ abstract class BoxType {
     /**
      * Returns whether a specific ID is filled.
      * @param int $playerId The player to check.
+     * @param string $section The section of the box to check.
+     * @param int $boxId The ID of the box to check.
      * @param Box[] $currBoxes The player's checked boxes (or all players', doesn't matter).
      * @return bool True if the specified box is filled, false if not.
      */
-    public function idFilled(int $playerId, int $boxId, array &$currBoxes): bool {
+    public static function idFilled(int $playerId, string $section, int $boxId, array &$currBoxes): bool {
         return array_find(
             $currBoxes,
             fn (Box $box) => (
-                $box->$playerId == $playerId &&
-                $box->section == $this->name &&
+                $box->playerId == $playerId &&
+                $box->section == $section &&
                 $box->boxId == $boxId
             )
         ) != null;

@@ -36,6 +36,7 @@ const SECTIONS = [
     "ALLIES" => new Allies(),
     "MERCENARIES" => new Mercenaries(),
     "SIEGECRAFT" => new Siegecraft(),
+    "SIEGECRAFT_construction" => new SiegecraftConstruction(),
 
     // Leadership rows
     "GOVERNANCE" => new Governance(),

@@ -87,7 +87,10 @@ class Game extends \Bga\GameFramework\Table {
         return ($this->round->get()) - 1 * 20;
     }
 
-    public function resources(Resource $resource): PlayerCounter {
+    public function resources(Resource|string $resource): PlayerCounter {
+        if (\is_string($resource)) {
+            $resource = Resource::from($resource);
+        }
         return $this->playerResources[$resource->name];
     }
 
