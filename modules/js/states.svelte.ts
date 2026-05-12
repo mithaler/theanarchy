@@ -1,4 +1,10 @@
-import { ctx, type AnarchyBga, type PlayerBoxSet } from "./context.svelte";
+import {
+  ctx,
+  getCurrentPlayer,
+  performAction,
+  type AnarchyBga,
+  type PlayerBoxSet,
+} from "./context.svelte";
 import type { Game } from "./Game.svelte";
 
 abstract class State<ArgType> {
@@ -26,7 +32,10 @@ export interface CheckBoxesArgs {
 
 export class CheckBoxes extends State<CheckBoxesArgs> {
   onEnteringState(args: CheckBoxesArgs, isCurrentPlayerActive: boolean) {
-    CheckBoxes.updateCtx(args);
+    Object.entries(ctx.data!.players).forEach(([pid, p]) => {
+      p.availableBoxes = args.availableBoxes[parseInt(pid, 10)];
+      p.checkedBoxes = args.checkedBoxes[parseInt(pid, 10)] ?? {};
+    });
     if (isCurrentPlayerActive) {
       this.bga.statusBar.addActionButton(
         _("Pass"),
@@ -36,14 +45,23 @@ export class CheckBoxes extends State<CheckBoxesArgs> {
     }
   }
 
-  static updateCtx(args: CheckBoxesArgs) {
-    Object.entries(ctx.data!.players).forEach(([pid, p]) => {
-      p.availableBoxes = args.availableBoxes[parseInt(pid, 10)];
-      p.checkedBoxes = args.checkedBoxes[parseInt(pid, 10)] ?? {};
-    });
-  }
+  async checkBox(section: string, boxId: number, writtenValue?: number) {
+    // zero out the player's available boxes while performing the action so it doesn't stutter
+    // the notification coming back will update it with the new options, see notif_newAvailable
+    const player = getCurrentPlayer();
+    const oldAvailBoxes = player.availableBoxes;
+    player.availableBoxes = undefined;
 
-  async checkBox(section: string, boxId: number) {
-    return this.bga.actions.performAction("actCheckBox", { section, boxId });
+    try {
+      return await performAction("actCheckBox", {
+        section,
+        boxId,
+        writtenValue,
+      });
+    } catch (e) {
+      // on error, set them back so we don't leave the UI unusable
+      player.availableBoxes = oldAvailBoxes;
+      console.error("Error checking box", e);
+    }
   }
 }

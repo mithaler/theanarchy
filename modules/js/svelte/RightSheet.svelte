@@ -1,5 +1,5 @@
 <script lang="ts">
-  import BasicRow from "./BasicRow.svelte";
+  import BasicRow from "./sections/BasicRow.svelte";
   import { getCheckedBoxes, getAvailableBoxes } from "../context.svelte";
 
   interface Props {
@@ -11,6 +11,7 @@
 
 {#snippet leadershipRow(section: string)}
   <BasicRow
+    {isMe}
     {section}
     type="leadership"
     checkedBoxes={getCheckedBoxes(playerId, section)}

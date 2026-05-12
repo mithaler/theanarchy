@@ -14,6 +14,7 @@
     "*.d.ts",
     "modules/**/*.d.ts",
     "modules/**/*.ts",
-    "modules/**/*.svelte"
+    "modules/**/*.svelte",
+    "modules/**/*.svelte.ts"
   ]
 }
