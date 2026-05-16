@@ -11,9 +11,6 @@ class Box {
         /** Must be "ALL UPPERCASE", as it appears on the sheet. */
         public string $section,
 
-        /** Only for sections with multiple subsections, must be "all lowercase". */
-        public ?string $subsection,
-
         /** The number of the box. If the scheme for converting to a number is not obvious, it will be explained in the class' doc. */
         public int $boxId,
 
@@ -24,16 +21,14 @@ class Box {
     function toDbFields(): array {
         return [
             "player_id" => $this->playerId,
-            "section" => $this->subsection != null ? "{$this->section}_{$this->subsection}" : $this->section,
+            "section" => $this->section,
             "box_id" => $this->boxId,
         ];
     }
 
     public static function fromDb(array $fields): Box {
-        $sectionParts = explode("_", $fields["section"]);
         return new Box(
-            $sectionParts[0],
-            count($sectionParts) == 2 ? $sectionParts[1] : null,
+            (string) $fields["section"],
             (int) $fields["box_id"],
             (int) $fields["player_id"],
         );
@@ -148,24 +143,28 @@ abstract class BoxType {
     /**
      * Returns whether a specific ID is filled.
      * @param int $playerId The player to check.
+     * @param string $section The section of the box to check.
+     * @param int $boxId The ID of the box to check.
      * @param Box[] $currBoxes The player's checked boxes (or all players', doesn't matter).
      * @return bool True if the specified box is filled, false if not.
      */
-    public function idFilled(int $playerId, int $boxId, array &$currBoxes): bool {
+    public static function idFilled(int $playerId, string $section, int $boxId, array &$currBoxes): bool {
         return array_find(
             $currBoxes,
             fn (Box $box) => (
-                $box->$playerId == $playerId &&
-                $box->section == $this->name &&
+                $box->playerId == $playerId &&
+                $box->section == $section &&
                 $box->boxId == $boxId
             )
         ) != null;
     }
 
-    protected function basicCheckBox(Game &$game, int $playerId, int $boxId, bool $pay = true, Resource $cost, Reward &$reward): Reward {
+    protected function basicCheckBox(Game &$game, int $playerId, int $boxId, bool $pay = true, array $cost, Reward &$reward): Reward {
         Game::checkBox($playerId, $this->name, $boxId);
         if ($pay) {
-            $game->resources($cost)->inc($playerId, -1);
+            foreach ($cost as $resourceCost) {
+                $game->resources($resourceCost)->inc($playerId, -1);
+            }
         }
         $reward->grant($game, $playerId);
         return $reward;
