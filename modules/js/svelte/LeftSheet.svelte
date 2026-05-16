@@ -1,5 +1,5 @@
 <script lang="ts">
-  import BasicRow from "./sections/BasicRow.svelte";
+  import BasicRow, { type BasicRowType } from "./sections/BasicRow.svelte";
   import { type UnclickableType } from "./sections/UnclickableRow.svelte";
   import UnclickableRow from "./sections/UnclickableRow.svelte";
   import { getCheckedBoxes, getAvailableBoxes } from "../context.svelte";
@@ -17,11 +17,11 @@
   const { playerId, isMe }: Props = $props();
 </script>
 
-{#snippet resourceRow(section: string)}
+{#snippet basicRow(type: BasicRowType, section: string)}
   <BasicRow
     {isMe}
     {section}
-    type="resource"
+    {type}
     checkedBoxes={getCheckedBoxes(playerId, section)}
     availableBoxes={isMe ? getAvailableBoxes(playerId, section) : null}
   />
@@ -39,11 +39,15 @@
 {/snippet}
 
 <div class="anarchy-sheet anarchy-left-sheet">
+  <div class="fortification-rows">
+    {@render basicRow("fortification", "GATE")}
+  </div>
+
   <!-- TODO figure out how to make these translated -->
   <div class="resource-rows">
-    {@render resourceRow("QUARRY & FOREST")}
-    {@render resourceRow("FARMS")}
-    {@render resourceRow("TRAINING GROUNDS")}
+    {@render basicRow("resource", "QUARRY & FOREST")}
+    {@render basicRow("resource", "FARMS")}
+    {@render basicRow("resource", "TRAINING GROUNDS")}
   </div>
 
   <div class="production-rows">
@@ -84,6 +88,11 @@
 
     div {
       position: absolute;
+    }
+
+    .fortification-rows {
+      top: 60px;
+      left: 106px;
     }
 
     .resource-rows {

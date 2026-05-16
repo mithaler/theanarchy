@@ -1,10 +1,14 @@
+<script module lang="ts">
+  export type BasicRowType = "resource" | "leadership" | "fortification";
+</script>
+
 <script lang="ts">
   import Checkbox, { getState } from "../Checkbox.svelte";
   import type { SectionProps } from "./utils.svelte";
 
   interface Props extends SectionProps {
     section: string;
-    type: "resource" | "leadership";
+    type: BasicRowType;
   }
   const { section, isMe, type, checkedBoxes, availableBoxes }: Props = $props();
 
@@ -12,10 +16,11 @@
     if (type === "resource") {
       return [3, 7, 11].includes(id) ? "37px" : id === 13 ? "56px" : undefined;
     } else if (
-      type === "leadership" &&
-      ((id === 5 && section === "GOVERNANCE") ||
-        (id === 9 && ["WARCRAFT", "WORSHIP"].includes(section)) ||
-        (id === 3 && section === "ENTERTAINMENT"))
+      (type === "leadership" &&
+        ((id === 5 && section === "GOVERNANCE") ||
+          (id === 9 && ["WARCRAFT", "WORSHIP"].includes(section)) ||
+          (id === 3 && section === "ENTERTAINMENT"))) ||
+      section === "GATE"
     ) {
       return "37px";
     }
@@ -23,17 +28,22 @@
   }
 
   const sectionClass = $derived(section.split(" ")[0].toLowerCase());
+  const length = $derived(
+    type === "resource" ? 13 : type === "leadership" ? 9 : 6,
+  );
 </script>
 
 <div class={["basic-row", type, sectionClass]}>
-  {#each Array.from({ length: type === "resource" ? 13 : 9 }, (_, i) => i + 1) as id (id)}
-    <Checkbox
-      {type}
-      {section}
-      boxId={id}
-      state={getState(id, isMe, checkedBoxes, availableBoxes)}
-      width={getWidth(id)}
-    />
+  {#each Array.from({ length }, (_, i) => i + 1) as id (id)}
+    <div class={[`box-wrapper-${id}`]}>
+      <Checkbox
+        {type}
+        {section}
+        boxId={id}
+        state={getState(id, isMe, checkedBoxes, availableBoxes)}
+        width={getWidth(id)}
+      />
+    </div>
   {/each}
 </div>
 
@@ -61,6 +71,24 @@
 
     &.entertainment {
       top: 663px;
+    }
+  }
+
+  .gate {
+    .box-wrapper-1 {
+      margin-right: 76px;
+    }
+    .box-wrapper-2 {
+      margin-right: 105px;
+    }
+    .box-wrapper-3 {
+      margin-right: 51px;
+    }
+    .box-wrapper-4 {
+      margin-right: 103px;
+    }
+    .box-wrapper-5 {
+      margin-right: 50px;
     }
   }
 </style>
