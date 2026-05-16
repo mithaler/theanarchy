@@ -1,13 +1,12 @@
 <script lang="ts">
-  import Checkbox, { getState } from "./Checkbox.svelte";
+  import Checkbox, { getState } from "../Checkbox.svelte";
+  import type { SectionProps } from "./utils.svelte";
 
-  interface Props {
+  interface Props extends SectionProps {
     section: string;
     type: "resource" | "leadership";
-    checkedBoxes: number[];
-    availableBoxes: number[] | null;
   }
-  const { section, type, checkedBoxes, availableBoxes }: Props = $props();
+  const { section, isMe, type, checkedBoxes, availableBoxes }: Props = $props();
 
   function getWidth(id: number) {
     if (type === "resource") {
@@ -32,7 +31,7 @@
       {type}
       {section}
       boxId={id}
-      state={getState(id, checkedBoxes, availableBoxes)}
+      state={getState(id, isMe, checkedBoxes, availableBoxes)}
       width={getWidth(id)}
     />
   {/each}

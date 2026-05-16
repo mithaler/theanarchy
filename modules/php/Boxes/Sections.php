@@ -2,7 +2,10 @@
 
 namespace BGA\Games\theanarchy\Boxes;
 
+use Gate;
+
 require_once(__DIR__ . "/BasicRow.php");
+require_once(__DIR__ . "/FortificationRow.php");
 require_once(__DIR__ . "/UnclickableRow.php");
 require_once(__DIR__ . "/WealthWheel.php");
 
@@ -10,6 +13,9 @@ require_once(__DIR__ . "/WealthWheel.php");
  * @var array<string, BoxType>
  */
 const SECTIONS = [
+    // Fortification rows
+    "GATE" => new Gate(),
+
     // Basic resource rows
     "QUARRY & FOREST" => new QuarryForest(),
     "FARMS" => new Farms(),
@@ -36,6 +42,7 @@ const SECTIONS = [
     "ALLIES" => new Allies(),
     "MERCENARIES" => new Mercenaries(),
     "SIEGECRAFT" => new Siegecraft(),
+    "SIEGECRAFT_construction" => new SiegecraftConstruction(),
 
     // Leadership rows
     "GOVERNANCE" => new Governance(),

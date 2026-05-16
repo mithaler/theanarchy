@@ -121,7 +121,6 @@ class Siegecraft extends WealthWheel {
             $outSet += match ($boxId) {
                 1 => [2 => true, 3 => true, 4 => true],
                 4 => [5 => true, 6 => true, 10 => true],
-                5 => [8 => true, 9 => true],
                 10 => [7 => true],
                 7 => [8 => true, 9 => true],
                 default => [],
@@ -139,5 +138,68 @@ class Siegecraft extends WealthWheel {
             1, 10 => Reward::resources($this->name, $boxId, [Resource::SERFS->value => 1]),
             default => Reward::none($this->name, $boxId),
         };
+    }
+}
+
+class SiegecraftConstruction extends BoxType {
+    public string $name = "SIEGECRAFT_construction";
+
+    const array COSTS = [
+        1 => [Resource::CRAFTSMEN->value => 1, Resource::MATERIALS->value => 1],
+        2 => [Resource::CRAFTSMEN->value => 1, Resource::MATERIALS->value => 1],
+        3 => [Resource::CRAFTSMEN->value => 1, Resource::MATERIALS->value => 1],
+        4 => [Resource::CRAFTSMEN->value => 1, Resource::MATERIALS->value => 2],
+        5 => [Resource::CRAFTSMEN->value => 1, Resource::MATERIALS->value => 2],
+        6 => [Resource::CRAFTSMEN->value => 1, Resource::MATERIALS->value => 1],
+        7 => [Resource::CRAFTSMEN->value => 2, Resource::MATERIALS->value => 2],
+        8 => [Resource::CRAFTSMEN->value => 2, Resource::MATERIALS->value => 2],
+    ];
+
+    private function reward(int $id): Reward {
+        return match ($id) {
+            1, 2, 4, 5 => Reward::boxes($this->name, $id, ["MIGHT"]),
+            3, 6 => Reward::resources($this->name, $id, [Resource::SERFS->value => 1]),
+            7, 8 => new Reward($this->name, $id, [Resource::SOLDIERS->value => 1], ["MIGHT"]),
+        };
+    }
+
+    public function validBoxes(Game $game, int $playerId, array $currBoxes): array {
+        $out = [];
+        foreach (\range(1, 8) as $id) {
+            // is this box filled already?
+            if (self::idFilled($playerId, $this->name, $id, $currBoxes)) {
+                continue;
+            }
+
+            // is the tech box checked?
+            if (!self::idFilled($playerId, "SIEGECRAFT", $id + 1, $currBoxes)) {
+                continue;
+            }
+
+            // 4/5/6 require small crane, 7/8 require large crane
+            if (\in_array($id, [4, 5, 6]) && !self::idFilled($playerId, $this->name, 3, $currBoxes)) {
+                continue;
+            }
+            if (\in_array($id, [7, 8]) && !self::idFilled($playerId, $this->name, 6, $currBoxes)) {
+                continue;
+            }
+
+            // can the player pay?
+            foreach (self::COSTS[$id] as $res => $num) {
+                if ($game->resources($res)->get($playerId) < $num) {
+                    continue;
+                }
+            }
+            $out[] = $id;
+        }
+        return $out;
+    }
+
+    public function check(Game $game, int $playerId, int|null $boxId = null, bool $pay = true): Reward {
+        $reward = $this->reward($boxId);
+        foreach (self::COSTS[$boxId] as $res => $count) {
+            $game->resources($res)->inc($playerId, -$count);
+        }
+        return $this->basicCheckBox($game, $playerId, $boxId, false, [], $reward);
     }
 }

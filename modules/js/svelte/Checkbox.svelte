@@ -1,15 +1,19 @@
 <script module lang="ts">
+  import { ctx } from "../context.svelte";
   export type State = "checked" | "available" | "unavailable" | "unclickable";
   export function getState(
     id: number,
+    isMe: boolean,
     checkedBoxes: number[],
     availableBoxes: number[] | null,
   ): State {
     return checkedBoxes.includes(id)
       ? "checked"
-      : availableBoxes && availableBoxes.includes(id)
+      : !ctx.locked && availableBoxes && availableBoxes.includes(id)
         ? "available"
-        : "unavailable";
+        : isMe
+          ? "unavailable"
+          : "unclickable";
   }
 </script>
 
@@ -21,7 +25,7 @@
     section: string;
     boxId: number;
     state: State;
-    type: string;
+    type?: string; // TODO remove this and move this class logic out
 
     width?: string;
   }
