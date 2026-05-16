@@ -115,35 +115,11 @@ class Game extends \Bga\GameFramework\Table {
         $this->round->fillResult($result);
 
         $result["players"] = $this->getCollectionFromDb(
-            "SELECT
-                player_id AS id,
-                player_score AS score,
-                tent, gate, moat,
-                left_wall AS leftWall,
-                right_wall as rightWall,
-                bottom_wall as bottomWall,
-                top_wall AS topWall,
-                tower_left_top AS towerLeftTop,
-                tower_left_bottom AS towerLeftBottom,
-                tower_right_top AS towerRightTop,
-                tower_right_bottom AS towerRightBottom
-            FROM `player`"
+            "SELECT player_id AS id, player_score AS score FROM `player`"
         );
 
         foreach ($this->playerResources as $counter) {
             $counter->fillResult($result);
-        }
-
-        // Transform all those int fields into actual ints because this framework doesn't for some reason
-        foreach ($result["players"] as &$player) {
-            foreach ([
-                "tent", "gate", "moat",
-                "leftWall", "rightWall", "bottomWall", "topWall",
-                "towerLeftTop", "towerRightTop", "towerLeftBottom", "towerRightBottom",
-            ] as $field) {
-                $player[$field] = (int) ($player[$field]);
-            }
-            $player["checkedBoxes"] = [];
         }
 
         $checkedBoxes = $this->allCheckedBoxes();
@@ -190,7 +166,7 @@ class Game extends \Bga\GameFramework\Table {
         }
 
         static::DbQuery(
-            sprintf(
+            \sprintf(
                 "INSERT INTO `player` (`player_id`, `player_color`, `player_name`) VALUES %s",
                 implode(",", $query_values)
             )
@@ -240,8 +216,8 @@ class Game extends \Bga\GameFramework\Table {
 
     /** Debug: give me a pile of stuff to check boxes with. */
     public function debug_giveMeResources() {
-        $resources = array_reduce(Resource::cases(), function ($items, $resource) {
-            $items[$resource->value] = 10;
+        $resources = array_reduce(["serfs", "craftsmen", "patrons", "soldiers", "knights", "silver", "food", "materials"], function ($items, $resource) {
+            $items[$resource] = 10;
             return $items;
         }, []);
 

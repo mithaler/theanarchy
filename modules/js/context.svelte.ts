@@ -16,11 +16,11 @@ export interface AnarchyPlayer extends Player {
   // castle
   gate: number;
   moat: number;
-  leftWall: number;
-  rightWall: number;
-  bottomWall: number;
-  topWall: number;
-  towerLeftWop: number;
+  wallLeft: number;
+  wallRight: number;
+  wallBottom: number;
+  wallTop: number;
+  towerLeftTop: number;
   towerLeftBottom: number;
   towerRightTop: number;
   towerRightBottom: number;

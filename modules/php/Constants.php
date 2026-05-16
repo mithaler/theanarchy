@@ -14,6 +14,7 @@ class StateConstants {
     const GAME_END = 99;
 }
 
+/** Counters for each player. Values are camelCase so JS can use them comfortably. */
 enum Resource: string {
     case SERFS = "serfs";
     case CRAFTSMEN = "craftsmen";
@@ -23,5 +24,20 @@ enum Resource: string {
     case SILVER = "silver";
     case FOOD = "food";
     case MATERIALS = "materials";
-    case MUSTER_TOKENS = "muster_tokens";
+    case MUSTER_TOKENS = "musterTokens";
+
+    // not really "resources", but this hooks them into Rewards easily!
+    case TENT = "tent";
+    case GATE = "gate";
+    case MOAT = "moat";
+
+    case WALL_LEFT = "wallLeft";
+    case WALL_RIGHT = "wallRight";
+    case WALL_BOTTOM = "wallBottom";
+    case WALL_TOP = "wallTop";
+
+    case TOWER_LEFT_TOP = "towerLeftTop";
+    case TOWER_LEFT_BOTTOM = "towerLeftBottom";
+    case TOWER_RIGHT_TOP = "towerRightTop";
+    case TOWER_RIGHT_BOTTOM = "towerRightBottom";
 }
