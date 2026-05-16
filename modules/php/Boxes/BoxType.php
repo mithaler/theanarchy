@@ -119,7 +119,13 @@ abstract class BoxType {
      * @param bool $pay Whether to pay the cost in the process.
      * @return Reward The full reward.
      */
-    abstract public function check(Game $game, int $playerId, int|null $boxId = null, bool $pay = true): Reward;
+    abstract public function check(
+        Game $game,
+        int $playerId,
+        int|null $boxId = null,
+        bool $pay = true,
+        Resource|null $costChoice = null,
+    ): Reward;
 
     /**
      * Returns the ID of the highest checked box in this row.

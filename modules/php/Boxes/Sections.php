@@ -3,6 +3,7 @@
 namespace BGA\Games\theanarchy\Boxes;
 
 use Gate;
+use Moat;
 
 require_once(__DIR__ . "/BasicRow.php");
 require_once(__DIR__ . "/FortificationRow.php");
@@ -15,6 +16,7 @@ require_once(__DIR__ . "/WealthWheel.php");
 const SECTIONS = [
     // Fortification rows
     "GATE" => new Gate(),
+    "MOAT" => new Moat(),
 
     // Basic resource rows
     "QUARRY & FOREST" => new QuarryForest(),
