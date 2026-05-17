@@ -3,6 +3,7 @@
 namespace BGA\Games\theanarchy\States;
 
 use Bga\GameFramework\Actions\Types\IntParam;
+use BGA\Games\theanarchy\Resource;
 
 require_once(__DIR__ . "/../Boxes/Sections.php");
 require_once(__DIR__ . "/../Constants.php");
@@ -69,6 +70,7 @@ class CheckBoxes extends GameState {
         // spaces prevent alphanum validation; don't ever put this directly in SQL!
         #[StringParam(name: "section")] string $section,
         #[IntParam(name: "boxId")] int $boxId,
+        #[StringParam(name: "costChoice", alphanum: true)] string | null $costChoice,
         #[IntParam(name: "writtenValue")] int | null $writtenValue = null
     ) {
         if (!\array_key_exists($section, SECTIONS)) {
@@ -81,8 +83,15 @@ class CheckBoxes extends GameState {
             throw new UserException("Box not available");
         }
 
+        if ($costChoice != null) {
+            $costChoice = Resource::tryFrom($costChoice);
+            if ($costChoice == null) {
+                throw new UserException("Invalid cost choice");
+            }
+        }
+
         // notify rewards
-        $reward = SECTIONS[$section]->check($this->game, $currentPlayerId, $boxId, true);
+        $reward = SECTIONS[$section]->check($this->game, $currentPlayerId, $boxId, true, $costChoice);
         $this->notifyReward($reward, $currentPlayerId);
 
         // notify new available boxes

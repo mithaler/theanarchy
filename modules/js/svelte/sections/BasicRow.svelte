@@ -3,14 +3,17 @@
 </script>
 
 <script lang="ts">
+  import { getBga } from "../../context.svelte";
   import Checkbox, { getState } from "../Checkbox.svelte";
   import type { SectionProps } from "./utils.svelte";
 
   interface Props extends SectionProps {
     section: string;
+    length: number;
     type: BasicRowType;
   }
-  const { section, isMe, type, checkedBoxes, availableBoxes }: Props = $props();
+  const { section, length, isMe, type, checkedBoxes, availableBoxes }: Props =
+    $props();
 
   function getWidth(id: number) {
     if (type === "resource") {
@@ -23,25 +26,54 @@
       section === "GATE"
     ) {
       return "37px";
+    } else if (section === "MOAT") {
+      if (id % 6 === 0) {
+        return "54px";
+      } else if (id % 2 === 0) {
+        return "36px";
+      }
     }
     return undefined;
   }
 
   const sectionClass = $derived(section.split(" ")[0].toLowerCase());
-  const length = $derived(
-    type === "resource" ? 13 : type === "leadership" ? 9 : 6,
+  const click = $derived(
+    section === "MOAT"
+      ? async (doCheck: (costChoice: string) => Promise<void>) => {
+          // TODO FIXME: restoreServerGameState overwrites availableBoxes with original args
+          // need to figure out a way to restore it correctly
+          const bga = getBga();
+          bga.states.setClientState("moatChoice", {
+            descriptionmyturn: _("${you} must choose what to pay"),
+          });
+          bga.statusBar.addActionButton("SERF", async () => {
+            await doCheck("serfs");
+            bga.states.restoreServerGameState();
+          });
+          bga.statusBar.addActionButton("SOLDIER", async () => {
+            await doCheck("soldiers");
+            bga.states.restoreServerGameState();
+          });
+          bga.statusBar.addActionButton(
+            _("Cancel"),
+            () => bga.states.restoreServerGameState(),
+            { color: "secondary" },
+          );
+        }
+      : undefined,
   );
 </script>
 
 <div class={["basic-row", type, sectionClass]}>
   {#each Array.from({ length }, (_, i) => i + 1) as id (id)}
-    <div class={[`box-wrapper-${id}`]}>
+    <div class={["box-wrapper", `box-wrapper-${id}`]}>
       <Checkbox
         {type}
         {section}
         boxId={id}
         state={getState(id, isMe, checkedBoxes, availableBoxes)}
         width={getWidth(id)}
+        {click}
       />
     </div>
   {/each}
@@ -89,6 +121,22 @@
     }
     .box-wrapper-5 {
       margin-right: 50px;
+    }
+  }
+
+  .moat {
+    position: relative;
+    top: 58px;
+
+    .box-wrapper {
+      margin-right: 2px;
+    }
+
+    .box-wrapper-4 {
+      margin-right: 135px;
+    }
+    .box-wrapper-8 {
+      margin-right: 90px;
     }
   }
 </style>

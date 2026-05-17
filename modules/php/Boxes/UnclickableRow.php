@@ -16,7 +16,7 @@ abstract class UnclickableRow extends BoxType {
 
     abstract protected function reward(string $section, int $boxId): Reward;
 
-    public function check(Game $game, int $playerId, int|null $boxId = null, bool $pay = false): Reward {
+    public function check(Game $game, int $playerId, int|null $boxId = null, bool $pay = false, Resource|null $costChoice = null): Reward {
         $currValue = (int) Game::getUniqueValueFromDB(
             "SELECT MAX(box_id) FROM checked_box WHERE player_id = $playerId AND section = '$this->name'"
         );

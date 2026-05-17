@@ -45,7 +45,12 @@ export class CheckBoxes extends State<CheckBoxesArgs> {
     }
   }
 
-  async checkBox(section: string, boxId: number, writtenValue?: number) {
+  async checkBox(
+    section: string,
+    boxId: number,
+    costChoice?: string,
+    writtenValue?: number,
+  ) {
     // zero out the player's available boxes while performing the action so it doesn't stutter
     // the notification coming back will update it with the new options, see notif_newAvailable
     const player = getCurrentPlayer();
@@ -56,6 +61,7 @@ export class CheckBoxes extends State<CheckBoxesArgs> {
       return await performAction("actCheckBox", {
         section,
         boxId,
+        costChoice,
         writtenValue,
       });
     } catch (e) {

@@ -26,15 +26,31 @@
     boxId: number;
     state: State;
     type?: string; // TODO remove this and move this class logic out
+    click?: (
+      doCheck: (costChoice?: string, writtenValue?: number) => Promise<void>,
+    ) => void;
 
     width?: string;
   }
-  const { section, boxId, state, type, width }: Props = $props();
+  const { section, boxId, state, type, click, width }: Props = $props();
 
   const onclick = $derived.by(() => {
     if (state === "available") {
       const gameState = getBga().states.getCurrentMainStateClass();
       if (gameState instanceof CheckBoxes) {
+        if (click) {
+          return (evt: Event) => {
+            evt.preventDefault();
+            click(async (costChoice, writtenValue) => {
+              await gameState.checkBox(
+                section,
+                boxId,
+                costChoice,
+                writtenValue,
+              );
+            });
+          };
+        }
         return (evt: Event) => {
           evt.preventDefault();
           gameState.checkBox(section, boxId);

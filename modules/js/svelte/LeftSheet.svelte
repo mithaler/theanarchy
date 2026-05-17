@@ -17,11 +17,12 @@
   const { playerId, isMe }: Props = $props();
 </script>
 
-{#snippet basicRow(type: BasicRowType, section: string)}
+{#snippet basicRow(type: BasicRowType, section: string, length: number = 13)}
   <BasicRow
     {isMe}
     {section}
     {type}
+    {length}
     checkedBoxes={getCheckedBoxes(playerId, section)}
     availableBoxes={isMe ? getAvailableBoxes(playerId, section) : null}
   />
@@ -40,7 +41,8 @@
 
 <div class="anarchy-sheet anarchy-left-sheet">
   <div class="fortification-rows">
-    {@render basicRow("fortification", "GATE")}
+    {@render basicRow("fortification", "GATE", 6)}
+    {@render basicRow("fortification", "MOAT", 12)}
   </div>
 
   <!-- TODO figure out how to make these translated -->
