@@ -34,7 +34,7 @@ abstract class BasicRow extends BoxType {
     }
     abstract protected function reward(int $boxId): Reward;
 
-    public function check(Game $game, int $playerId, int|null $boxId = null, bool $pay = true, Resource|null $costChoice = null): Reward {
+    public function check(Game $game, int $playerId, int|null $boxId = null, bool $pay = true, string|null $choice = null): Reward {
         $reward = $this->reward($boxId);
         return $this->basicCheckBox($game, $playerId, $boxId, $pay, $this->cost, $reward);
     }

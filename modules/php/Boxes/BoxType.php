@@ -124,7 +124,7 @@ abstract class BoxType {
         int $playerId,
         int|null $boxId = null,
         bool $pay = true,
-        Resource|null $costChoice = null,
+        string|null $choice = null,
     ): Reward;
 
     /**

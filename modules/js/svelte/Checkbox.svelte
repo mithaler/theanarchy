@@ -27,7 +27,7 @@
     state: State;
     type?: string; // TODO remove this and move this class logic out
     click?: (
-      doCheck: (costChoice?: string, writtenValue?: number) => Promise<void>,
+      doCheck: (choice?: string, writtenValue?: number) => Promise<void>,
     ) => void;
 
     width?: string;

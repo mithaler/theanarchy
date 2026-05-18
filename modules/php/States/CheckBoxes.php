@@ -70,7 +70,7 @@ class CheckBoxes extends GameState {
         // spaces prevent alphanum validation; don't ever put this directly in SQL!
         #[StringParam(name: "section")] string $section,
         #[IntParam(name: "boxId")] int $boxId,
-        #[StringParam(name: "costChoice", alphanum: true)] string | null $costChoice,
+        #[StringParam(name: "string", alphanum: true)] string | null $choice,
         #[IntParam(name: "writtenValue")] int | null $writtenValue = null
     ) {
         if (!\array_key_exists($section, SECTIONS)) {
@@ -83,15 +83,8 @@ class CheckBoxes extends GameState {
             throw new UserException("Box not available");
         }
 
-        if ($costChoice != null) {
-            $costChoice = Resource::tryFrom($costChoice);
-            if ($costChoice == null) {
-                throw new UserException("Invalid cost choice");
-            }
-        }
-
         // notify rewards
-        $reward = SECTIONS[$section]->check($this->game, $currentPlayerId, $boxId, true, $costChoice);
+        $reward = SECTIONS[$section]->check($this->game, $currentPlayerId, $boxId, true, $choice);
         $this->notifyReward($reward, $currentPlayerId);
 
         // notify new available boxes

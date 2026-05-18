@@ -48,7 +48,7 @@ export class CheckBoxes extends State<CheckBoxesArgs> {
   async checkBox(
     section: string,
     boxId: number,
-    costChoice?: string,
+    choice?: string,
     writtenValue?: number,
   ) {
     // zero out the player's available boxes while performing the action so it doesn't stutter
@@ -61,7 +61,7 @@ export class CheckBoxes extends State<CheckBoxesArgs> {
       return await performAction("actCheckBox", {
         section,
         boxId,
-        costChoice,
+        choice,
         writtenValue,
       });
     } catch (e) {

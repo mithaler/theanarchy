@@ -39,7 +39,7 @@
   const sectionClass = $derived(section.split(" ")[0].toLowerCase());
   const click = $derived(
     section === "MOAT"
-      ? async (doCheck: (costChoice: string) => Promise<void>) => {
+      ? async (doCheck: (choice: string) => Promise<void>) => {
           // TODO FIXME: restoreServerGameState overwrites availableBoxes with original args
           // need to figure out a way to restore it correctly
           const bga = getBga();
