@@ -35,12 +35,12 @@ export interface AnarchyPlayer extends Player {
   silver: number;
   food: number;
 
-  availableBoxes?: BoxSet;
   checkedBoxes: BoxSet;
 }
 
 export interface AnarchyData extends Gamedatas<AnarchyPlayer> {
   round: number;
+  availableBoxes?: BoxSet;
 }
 
 export interface AnarchyContext {
@@ -99,13 +99,9 @@ export function getCheckedBoxes(
   return getPlayer(playerId).checkedBoxes[section] ?? [];
 }
 
-export function getAvailableBoxes(
-  playerId: number | string,
-  section: string,
-): number[] | null {
-  const availBoxes = getPlayer(playerId).availableBoxes;
-  if (availBoxes) {
-    return availBoxes[section];
+export function getAvailableBoxes(section: string): number[] | null {
+  if (ctx.data?.availableBoxes) {
+    return ctx.data.availableBoxes[section];
   }
   return null;
 }

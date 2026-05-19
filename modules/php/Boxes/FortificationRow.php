@@ -63,7 +63,7 @@ class Moat extends FortificationRow {
 
     public function check(Game $game, int $playerId, int|null $boxId = null, bool $pay = true, string|null $choice = null): Reward {
         if ($choice != Resource::SERFS->value && $choice != Resource::SOLDIERS->value) {
-            throw new UserException("costChoice for Moat must be either serfs or soldiers, got $choice");
+            throw new UserException("Cost choice for Moat must be either serfs or soldiers, got $choice");
         }
         $reward = $this->reward($boxId);
         return $this->basicCheckBox($game, $playerId, $boxId, $pay, [Resource::from($choice)], $reward);

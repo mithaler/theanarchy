@@ -18,7 +18,7 @@ import type {
   BoxRewardArgs,
   BoxSet,
 } from "./context.svelte";
-import { ctx, getCurrentPlayer, getPlayer } from "./context.svelte";
+import { ctx, getPlayer } from "./context.svelte";
 import { CheckBoxes } from "./states.svelte";
 
 export class Game {
@@ -86,7 +86,7 @@ export class Game {
   }
 
   async notif_newAvailable(args: BoxSet) {
-    getCurrentPlayer().availableBoxes = args;
+    ctx.data!.availableBoxes = args;
   }
 
   async notif_setPlayerCounter(args: PlayerCounterArgs) {

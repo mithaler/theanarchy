@@ -1,6 +1,5 @@
 import {
   ctx,
-  getCurrentPlayer,
   performAction,
   type AnarchyBga,
   type PlayerBoxSet,
@@ -27,21 +26,29 @@ abstract class State<ArgType> {
 
 export interface CheckBoxesArgs {
   availableBoxes: PlayerBoxSet;
-  checkedBoxes: PlayerBoxSet;
 }
 
 export class CheckBoxes extends State<CheckBoxesArgs> {
   onEnteringState(args: CheckBoxesArgs, isCurrentPlayerActive: boolean) {
-    Object.entries(ctx.data!.players).forEach(([pid, p]) => {
-      p.availableBoxes = args.availableBoxes[parseInt(pid, 10)];
-      p.checkedBoxes = args.checkedBoxes[parseInt(pid, 10)] ?? {};
-    });
+    if (!ctx.data?.availableBoxes) {
+      ctx.data!.availableBoxes =
+        args.availableBoxes[this.bga.players.getCurrentPlayerId()];
+    }
     if (isCurrentPlayerActive) {
       this.bga.statusBar.addActionButton(
         _("Pass"),
         () => this.bga.actions.performAction("actPass"),
         { color: "secondary" },
       );
+    }
+  }
+
+  onPlayerActivationChange(
+    args: CheckBoxesArgs,
+    isCurrentPlayerActive: boolean,
+  ): void {
+    if (!isCurrentPlayerActive) {
+      ctx.data!.availableBoxes = undefined;
     }
   }
 
@@ -53,9 +60,8 @@ export class CheckBoxes extends State<CheckBoxesArgs> {
   ) {
     // zero out the player's available boxes while performing the action so it doesn't stutter
     // the notification coming back will update it with the new options, see notif_newAvailable
-    const player = getCurrentPlayer();
-    const oldAvailBoxes = player.availableBoxes;
-    player.availableBoxes = undefined;
+    const oldAvailBoxes = ctx.data!.availableBoxes;
+    ctx.data!.availableBoxes = undefined;
 
     try {
       return await performAction("actCheckBox", {
@@ -66,7 +72,7 @@ export class CheckBoxes extends State<CheckBoxesArgs> {
       });
     } catch (e) {
       // on error, set them back so we don't leave the UI unusable
-      player.availableBoxes = oldAvailBoxes;
+      ctx.data!.availableBoxes = oldAvailBoxes;
       console.error("Error checking box", e);
     }
   }

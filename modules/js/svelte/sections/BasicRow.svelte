@@ -40,8 +40,6 @@
   const click = $derived(
     section === "MOAT"
       ? async (doCheck: (choice: string) => Promise<void>) => {
-          // TODO FIXME: restoreServerGameState overwrites availableBoxes with original args
-          // need to figure out a way to restore it correctly
           const bga = getBga();
           bga.states.setClientState("moatChoice", {
             descriptionmyturn: _("${you} must choose what to pay"),

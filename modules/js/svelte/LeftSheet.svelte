@@ -24,7 +24,7 @@
     {type}
     {length}
     checkedBoxes={getCheckedBoxes(playerId, section)}
-    availableBoxes={isMe ? getAvailableBoxes(playerId, section) : null}
+    availableBoxes={isMe ? getAvailableBoxes(section) : null}
   />
 {/snippet}
 
@@ -69,7 +69,7 @@
       {isMe}
       section={side as WealthWheelSideSection}
       checkedBoxes={getCheckedBoxes(playerId, side)}
-      availableBoxes={isMe ? getAvailableBoxes(playerId, side) : null}
+      availableBoxes={isMe ? getAvailableBoxes(side) : null}
     />
   {/each}
   {#each ["SIEGECRAFT", "SIEGECRAFT_construction"] as sec (sec)}
@@ -77,7 +77,7 @@
       section={sec as SiegecraftSection}
       {isMe}
       checkedBoxes={getCheckedBoxes(playerId, sec)}
-      availableBoxes={isMe ? getAvailableBoxes(playerId, sec) : null}
+      availableBoxes={isMe ? getAvailableBoxes(sec) : null}
     />
   {/each}
 </div>

@@ -16,7 +16,7 @@
     length={9}
     type="leadership"
     checkedBoxes={getCheckedBoxes(playerId, section)}
-    availableBoxes={isMe ? getAvailableBoxes(playerId, section) : null}
+    availableBoxes={isMe ? getAvailableBoxes(section) : null}
   />
 {/snippet}
 
