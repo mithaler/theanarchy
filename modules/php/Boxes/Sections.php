@@ -3,12 +3,14 @@
 namespace BGA\Games\theanarchy\Boxes;
 
 use Gate;
+use Keep;
 use Moat;
 
 require_once(__DIR__ . "/BasicRow.php");
 require_once(__DIR__ . "/FortificationRow.php");
 require_once(__DIR__ . "/UnclickableRow.php");
 require_once(__DIR__ . "/WealthWheel.php");
+require_once(__DIR__ . "/Keep.php");
 
 /**
  * @var array<string, BoxType>
@@ -51,4 +53,6 @@ const SECTIONS = [
     "WARCRAFT" => new Warcraft(),
     "WORSHIP" => new Worship(),
     "ENTERTAINMENT" => new Entertainment(),
+
+    "KEEP" => new Keep(),
 ];

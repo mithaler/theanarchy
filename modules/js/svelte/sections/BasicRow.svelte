@@ -5,7 +5,7 @@
 <script lang="ts">
   import { getBga } from "../../context.svelte";
   import Checkbox, { getState } from "../Checkbox.svelte";
-  import type { SectionProps } from "./utils.svelte";
+  import { basicChoice, type SectionProps } from "./utils.svelte";
 
   interface Props extends SectionProps {
     section: string;
@@ -39,25 +39,7 @@
   const sectionClass = $derived(section.split(" ")[0].toLowerCase());
   const click = $derived(
     section === "MOAT"
-      ? async (doCheck: (choice: string) => Promise<void>) => {
-          const bga = getBga();
-          bga.states.setClientState("moatChoice", {
-            descriptionmyturn: _("${you} must choose what to pay"),
-          });
-          bga.statusBar.addActionButton("SERF", async () => {
-            await doCheck("serfs");
-            bga.states.restoreServerGameState();
-          });
-          bga.statusBar.addActionButton("SOLDIER", async () => {
-            await doCheck("soldiers");
-            bga.states.restoreServerGameState();
-          });
-          bga.statusBar.addActionButton(
-            _("Cancel"),
-            () => bga.states.restoreServerGameState(),
-            { color: "secondary" },
-          );
-        }
+      ? basicChoice(_("${you} must choose what to pay"), ["serfs", "soldiers"])
       : undefined,
   );
 </script>

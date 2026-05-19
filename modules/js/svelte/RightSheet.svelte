@@ -1,6 +1,7 @@
 <script lang="ts">
   import BasicRow from "./sections/BasicRow.svelte";
   import { getCheckedBoxes, getAvailableBoxes } from "../context.svelte";
+  import Keep from "./sections/Keep.svelte";
 
   interface Props {
     playerId: number;
@@ -25,6 +26,12 @@
   {@render leadershipRow("WARCRAFT")}
   {@render leadershipRow("WORSHIP")}
   {@render leadershipRow("ENTERTAINMENT")}
+
+  <Keep
+    {isMe}
+    checkedBoxes={getCheckedBoxes(playerId, "KEEP")}
+    availableBoxes={isMe ? getAvailableBoxes("KEEP") : null}
+  />
 </div>
 
 <style lang="scss">
