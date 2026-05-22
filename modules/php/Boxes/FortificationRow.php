@@ -46,19 +46,28 @@ class Moat extends FortificationRow {
     protected int $smallCraneThreshold = 5;
     protected int $largeCraneThreshold = 9;
 
+    // overridden, because checking cost is an OR
+    public function validBoxes(Game $game, int $playerId, array $currBoxes): array {
+        if (
+            !$this->canPay($game, $playerId, [Resource::SERFS]) &&
+            !$this->canPay($game, $playerId, [Resource::SOLDIERS])
+        ) {
+            return [];
+        }
+
+        $highestFilled = $this->highestCheckedBox($playerId, $currBoxes);
+        if ($highestFilled == $this->boxCount) {
+            return [];
+        }
+        return [$highestFilled + 1];
+    }
+
     protected function reward(int $boxId): Reward {
         return match ($boxId) {
             1, 3, 5, 7, 9, 11 => Reward::none("MOAT", $boxId),
             2, 4, 8, 10 => Reward::resources("MOAT", $boxId, [Resource::MATERIALS->value => 1, Resource::MOAT->value => 1]),
             6, 12 => new Reward("MOAT", $boxId, [Resource::MATERIALS->value => 1, Resource::MOAT->value => 1], ["MIGHT"]),
         };
-    }
-
-    public function canPay(Game $game, int $playerId): bool {
-        return (
-            $game->resources(Resource::SERFS)->get($playerId) > 0 ||
-            $game->resources(Resource::SOLDIERS)->get($playerId) > 0
-        );
     }
 
     public function check(Game $game, int $playerId, int|null $boxId = null, bool $pay = true, string|null $choice = null): Reward {

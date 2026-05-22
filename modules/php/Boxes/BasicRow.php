@@ -12,17 +12,8 @@ abstract class BasicRow extends BoxType {
     abstract public int $boxCount { get; }
     abstract protected array $cost { get; }
 
-    function canPay(Game $game, int $playerId): bool {
-        foreach ($this->cost as $resource) {
-            if ($game->resources($resource)->get($playerId) < 1) {
-                return false;
-            }
-        }
-        return true;
-    }
-
     public function validBoxes(Game $game, int $playerId, array $currBoxes): array {
-        if (!$this->canPay($game, $playerId)) {
+        if (!$this->canPay($game, $playerId, $this->cost)) {
             return [];
         }
 

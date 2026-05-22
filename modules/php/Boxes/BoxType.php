@@ -127,6 +127,16 @@ abstract class BoxType {
         string|null $choice = null,
     ): Reward;
 
+    /** Returns whether the player can pay the specified resources. */
+    protected function canPay(Game &$game, int $playerId, array $resources): bool {
+        foreach ($resources as $res) {
+            if ($game->resources($res)->get($playerId) < 1) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     /**
      * Returns the ID of the highest checked box in this row.
      * (This is not meaningful for some box types, it's pretty obvious which ones.)

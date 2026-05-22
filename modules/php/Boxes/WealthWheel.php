@@ -36,7 +36,7 @@ abstract class WealthWheel extends BoxType {
 abstract class WealthWheelSide extends WealthWheel {
     public function validBoxes(Game $game, int $playerId, array $currBoxes): array {
         // can the player pay?
-        if ($game->resources(Resource::SILVER)->get($playerId) < 1) {
+        if (!$this->canPay($game, $playerId, [Resource::SILVER])) {
             return [];
         }
 
@@ -185,10 +185,8 @@ class SiegecraftConstruction extends BoxType {
             }
 
             // can the player pay?
-            foreach (self::COSTS[$id] as $res => $num) {
-                if ($game->resources($res)->get($playerId) < $num) {
-                    continue;
-                }
+            if (!$this->canPay($game, $playerId, self::COSTS[$id])) {
+                continue;
             }
             $out[] = $id;
         }
