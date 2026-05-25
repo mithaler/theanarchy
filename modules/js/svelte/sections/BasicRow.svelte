@@ -3,7 +3,6 @@
 </script>
 
 <script lang="ts">
-  import { getBga } from "../../context.svelte";
   import Checkbox, { getState } from "../Checkbox.svelte";
   import { basicChoice, type SectionProps } from "./utils.svelte";
 

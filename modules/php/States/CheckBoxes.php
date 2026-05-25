@@ -37,29 +37,12 @@ class CheckBoxes extends GameState {
         $this->gamestate->setAllPlayersMultiactive();
     }
 
-    /**
-     * Returns all boxes currently checkable by the player.
-     * @param int $playerId The player to check.
-     * @param array $allCheckedBoxes All boxes checked by the player.
-     * @return array<string, int[]>
-     */
-    private function getAvailableBoxes(int $playerId, array $allCheckedBoxes): array {
-        return array_reduce(
-            SECTIONS,
-            function($acc, $section) use ($allCheckedBoxes, $playerId) {
-                $acc[$section->name] = $section->validBoxes($this->game, $playerId, $allCheckedBoxes);
-                return $acc;
-            },
-            [],
-        );
-    }
-
     function getArgs() {
         $playerIds = $this->game->allPlayerIds();
         $boxes = $this->game->allCheckedBoxes();
         $out = [];
         foreach ($playerIds as $playerId) {
-            $out[$playerId] = $this->getAvailableBoxes($playerId, $boxes);
+            $out[$playerId] = $this->game->getAvailableBoxes($playerId, $boxes);
         }
         return ["availableBoxes" => $out];
     }
@@ -91,7 +74,7 @@ class CheckBoxes extends GameState {
         $newAllCheckedBoxes = $this->game->allCheckedBoxes($currentPlayerId);
         $this->notify->player(
             $currentPlayerId, "newAvailable", "",
-            $this->getAvailableBoxes($currentPlayerId, $newAllCheckedBoxes)
+            $this->game->getAvailableBoxes($currentPlayerId, $newAllCheckedBoxes)
         );
     }
 

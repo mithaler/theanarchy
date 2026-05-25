@@ -15,6 +15,9 @@ export default defineConfig(
         ...globals.browser,
         // for Sveltekit in non-SPA mode
         ...globals.node,
+
+        // provided as a global by the BGA framework for translation
+        _: "readonly",
       },
     },
     // ...
