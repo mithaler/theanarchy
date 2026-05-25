@@ -127,11 +127,28 @@ abstract class BoxType {
         string|null $choice = null,
     ): Reward;
 
-    /** Returns whether the player can pay the specified resources. */
+    /**
+     * Returns whether the player can pay the specified resources. Can take a resources
+     * array of one of two forms:
+     *
+     *   [RESOURCE::Something, RESOURCE::Another]
+     *
+     * or
+     *
+     *   [RESOURCE::Something->value => 1, RESOURCE::Another->value => 2]
+     */
     protected function canPay(Game &$game, int $playerId, array $resources): bool {
-        foreach ($resources as $res) {
-            if ($game->resources($res)->get($playerId) < 1) {
-                return false;
+        if (\array_is_list($resources)) {
+            foreach ($resources as $res) {
+                if ($game->resources($res)->get($playerId) < 1) {
+                    return false;
+                }
+            }
+        } else {
+            foreach ($resources as $res => $count) {
+                if ($game->resources($res)->get($playerId) < $count) {
+                    return false;
+                }
             }
         }
         return true;
