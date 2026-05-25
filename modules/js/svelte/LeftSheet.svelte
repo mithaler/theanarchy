@@ -93,23 +93,23 @@
     }
 
     .fortification-rows {
-      top: 60px;
-      left: 106px;
+      top: 14px;
+      left: 103px;
     }
 
     .resource-rows {
-      top: 175px;
-      left: 106px;
+      top: 129px;
+      left: 103px;
     }
 
     .production-rows {
-      top: 408px;
-      left: 124px;
+      top: 362px;
+      left: 121px;
     }
 
     .point-rows {
-      top: 638px;
-      left: 106px;
+      top: 592px;
+      left: 103px;
     }
   }
 </style>

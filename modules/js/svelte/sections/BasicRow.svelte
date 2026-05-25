@@ -104,9 +104,6 @@
   }
 
   .moat {
-    position: relative;
-    top: 58px;
-
     .box-wrapper {
       margin-right: 2px;
     }
