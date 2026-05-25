@@ -225,6 +225,12 @@ class Game extends \Bga\GameFramework\Table {
         }, []);
 
         Reward::resources("DEBUG", 0, $resources)->grant($this, (int) $this->getCurrentPlayerId());
+        $currPlayerId = (int) $this->getCurrentPlayerId();
+        $newAllCheckedBoxes = $this->allCheckedBoxes($currPlayerId);
+        $this->notify->player(
+            $currPlayerId, "newAvailable", "",
+            $this->getAvailableBoxes($currPlayerId, $newAllCheckedBoxes)
+        );
     }
 
     public function allPlayerIds(): array {
@@ -246,6 +252,23 @@ class Game extends \Bga\GameFramework\Table {
          $boxes = $this->getObjectListFromDB($query);
          return array_map(Box::fromDb(...), $boxes);
      }
+
+    /**
+     * Returns all boxes currently checkable by the player.
+     * @param int $playerId The player to check.
+     * @param array $allCheckedBoxes All boxes checked by the player.
+     * @return array<string, int[]>
+     */
+    public function getAvailableBoxes(int $playerId, array $allCheckedBoxes): array {
+        return array_reduce(
+            SECTIONS,
+            function($acc, $section) use ($allCheckedBoxes, $playerId) {
+                $acc[$section->name] = $section->validBoxes($this, $playerId, $allCheckedBoxes);
+                return $acc;
+            },
+            [],
+        );
+    }
 
      public function boxesByPlayer(array $boxes): array {
         $out = [];
