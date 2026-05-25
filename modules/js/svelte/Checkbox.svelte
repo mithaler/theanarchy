@@ -60,23 +60,13 @@
     return null;
   });
 
-  const classes = $derived([
-    {
-      checkbox: true,
-      available: state === "available",
-      checked: state === "checked",
-      disabled: state === "unavailable",
-    },
-    type,
-  ]);
-
   const style = $derived(width ? `width: ${width}` : undefined);
 </script>
 
 <button
   type="button"
   {style}
-  class={classes}
+  class={["checkbox", state, type]}
   title={`${section} ${boxId}`}
   {onclick}
 >
@@ -109,7 +99,7 @@
     box-shadow: 0px 0px 6px 5px rgba(255, 46, 46, 0.9);
   }
 
-  .disabled {
+  .unavailable {
     background-color: lightgray;
     opacity: 0.6;
   }

@@ -40,6 +40,68 @@ class Gate extends FortificationRow {
     }
 }
 
+class Tower extends FortificationRow {
+    public string $name = "TOWER";
+    public int $boxCount = 8;
+    protected int $smallCraneThreshold = 5;
+    protected int $largeCraneThreshold = 7;
+
+    // excludes the tower part! must be added by the caller.
+    protected function reward(int $boxId): Reward {
+        return match ($boxId) {
+            1, 4, 5, 7 => Reward::resources("TOWER", $boxId, [Resource::PATRONS->value => 1]),
+            3, 6, 8 => Reward::boxes("TOWER", $boxId, ["MIGHT"]),
+            default => Reward::none("TOWER", $boxId),
+        };
+    }
+
+    public function check(Game $game, int $playerId, int|null $boxId = null, bool $pay = true, string|null $choice = null): Reward {
+        if (!\in_array($choice, ["towerLeftBottom", "towerLeftTop", "towerRightBottom", "towerRightTop"])) {
+            throw new UserException("Tower choice must be set");
+        }
+
+        $tower = Resource::from($choice);
+        if ($game->resources($tower)->get($playerId) >= 2) {
+            throw new UserException("That tower is already maxed out");
+        }
+
+        $reward = $this->reward($boxId);
+        $reward->resources[$tower->value] = 1;
+        return $this->basicCheckBox($game, $playerId, $boxId, $pay, $this->cost, $reward);
+    }
+}
+
+class Wall extends FortificationRow {
+    public string $name = "WALL";
+    public int $boxCount = 16;
+    protected int $smallCraneThreshold = 7;
+    protected int $largeCraneThreshold = 12;
+
+    // excludes the wall part! must be added by the caller.
+    protected function reward(int $boxId): Reward {
+        return match ($boxId) {
+            1, 4, 7, 10, 12, 15 => Reward::resources("WALL", $boxId, [Resource::PATRONS->value => 1]),
+            3, 6, 8, 11, 13, 16 => Reward::boxes("WALL", $boxId, ["MIGHT"]),
+            default => Reward::none("WALL", $boxId),
+        };
+    }
+
+    public function check(Game $game, int $playerId, int|null $boxId = null, bool $pay = true, string|null $choice = null): Reward {
+        if (!\in_array($choice, ["wallTop", "wallLeft", "wallBottom", "wallRight"])) {
+            throw new UserException("Wall choice must be set");
+        }
+
+        $wall = Resource::from($choice);
+        if ($game->resources($wall)->get($playerId) >= 4) {
+            throw new UserException("That wall is already maxed out");
+        }
+
+        $reward = $this->reward($boxId);
+        $reward->resources[$wall->value] = 1;
+        return $this->basicCheckBox($game, $playerId, $boxId, $pay, $this->cost, $reward);
+    }
+}
+
 class Moat extends FortificationRow {
     public string $name = "MOAT";
     public int $boxCount = 12;

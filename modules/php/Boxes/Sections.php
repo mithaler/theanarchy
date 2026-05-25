@@ -7,6 +7,8 @@ use Keep;
 use Mint;
 use Moat;
 use Stables;
+use Tower;
+use Wall;
 
 require_once(__DIR__ . "/BasicRow.php");
 require_once(__DIR__ . "/FortificationRow.php");
@@ -20,6 +22,8 @@ require_once(__DIR__ . "/SimpleBuildings.php");
 const SECTIONS = [
     // Fortification rows
     "GATE" => new Gate(),
+    "TOWER" => new Tower(),
+    "WALL" => new Wall(),
     "MOAT" => new Moat(),
 
     // Basic resource rows
