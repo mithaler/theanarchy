@@ -19,10 +19,18 @@
     "food",
     "materials",
   ]);
-  const choiceFunc = (id: number) => {
+  const keepChoiceFunc = (id: number) => {
     if (id === 4) return leadershipChoice;
     else if ([3, 7, 11].includes(id)) return resourceChoice;
     return undefined;
+  };
+  const stableChoiceFunc = (id: number) => {
+    if (![1, 5].includes(id)) {
+      return basicChoice(_("${you} must choose what to pay"), [
+        "serfs",
+        "soldiers",
+      ]);
+    }
   };
 
   function keepWidth(id: number): string | undefined {
@@ -41,6 +49,8 @@
       return { 1: "small-build", 5: "medium-build", 9: "large-build" }[id];
     } else if (section === "MINT") {
       return { 1: "small-build", 4: "medium-build", 7: "large-build" }[id];
+    } else if (section === "STABLES") {
+      return { 1: "small-build", 5: "medium-build" }[id];
     }
     return undefined;
   }
@@ -53,7 +63,11 @@
         {section}
         boxId={id}
         state={getState(id, isMe, checkedBoxes, availableBoxes)}
-        click={section === "KEEP" ? choiceFunc(id) : undefined}
+        click={section === "KEEP"
+          ? keepChoiceFunc(id)
+          : section === "STABLES"
+            ? stableChoiceFunc(id)
+            : undefined}
         width={section === "KEEP"
           ? keepWidth(id)
           : section === "MINT"
@@ -106,6 +120,20 @@
     }
     .box-wrapper-6 {
       margin-right: 89px;
+    }
+  }
+
+  .stables {
+    top: 115px;
+
+    .box-wrapper-2 {
+      margin-left: 17px;
+    }
+    .box-wrapper-4 {
+      margin-right: 71px;
+    }
+    .box-wrapper-6 {
+      margin-left: 26px;
     }
   }
 </style>

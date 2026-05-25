@@ -35,6 +35,15 @@
       availableBoxes={isMe ? getAvailableBoxes(section) : null}
     />
   {/each}
+
+  <!-- TODO spies, tactics, ramparts -->
+
+  <SimpleBuilding
+    {isMe}
+    section="STABLES"
+    checkedBoxes={getCheckedBoxes(playerId, "STABLES")}
+    availableBoxes={isMe ? getAvailableBoxes("STABLES") : null}
+  />
 </div>
 
 <style lang="scss">
