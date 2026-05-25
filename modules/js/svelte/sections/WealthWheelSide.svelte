@@ -29,8 +29,8 @@
 <style lang="scss">
   .guildsmen {
     position: absolute;
-    left: 501px;
-    top: 246px;
+    top: 200px;
+    left: 498px;
   }
 
   .guildsmen-box {
@@ -93,8 +93,8 @@
 
   .allies {
     position: absolute;
-    left: 651px;
-    top: 246px;
+    top: 200px;
+    left: 648px;
   }
 
   .allies-box {

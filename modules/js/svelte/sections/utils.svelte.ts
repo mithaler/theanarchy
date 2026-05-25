@@ -1,4 +1,5 @@
 import { getBga } from "../../context.svelte";
+import type { ChoiceFunc } from "../Checkbox.svelte";
 
 export interface SectionProps {
   isMe: boolean;
@@ -9,8 +10,8 @@ export interface SectionProps {
 export function basicChoice(
   question: string,
   choices: string[],
-): (doCheck: (choice: string) => Promise<void>) => void {
-  return (doCheck: (choice: string) => Promise<void>) => {
+): (doCheck: ChoiceFunc) => void {
+  return (doCheck: ChoiceFunc) => {
     const bga = getBga();
     bga.states.setClientState("basicChoice", {
       descriptionmyturn: question,

@@ -43,8 +43,8 @@
   }
 
   .siegecraft {
-    top: 350px;
-    left: 546px;
+    top: 304px;
+    left: 543px;
 
     .siegecraft-1 {
       position: relative;
@@ -78,8 +78,8 @@
   }
 
   .siegecraft-construction {
-    top: 403px;
-    left: 737px;
+    top: 357px;
+    left: 734px;
     align-items: flex-end;
   }
 </style>

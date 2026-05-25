@@ -15,6 +15,15 @@
           ? "unavailable"
           : "unclickable";
   }
+
+  /**
+   * A function, bound to a specific checkbox, which checks that box with the
+   * given player choices set.
+   */
+  export type ChoiceFunc = (
+    choice?: string,
+    writtenValue?: number,
+  ) => Promise<void>;
 </script>
 
 <script lang="ts">
@@ -26,9 +35,7 @@
     boxId: number;
     state: State;
     type?: string; // TODO remove this and move this class logic out
-    click?: (
-      doCheck: (choice?: string, writtenValue?: number) => Promise<void>,
-    ) => void;
+    click?: (doCheck: ChoiceFunc) => void;
 
     width?: string;
   }

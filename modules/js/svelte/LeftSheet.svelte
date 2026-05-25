@@ -9,6 +9,7 @@
   import Siegecraft, {
     type SiegecraftSection,
   } from "./sections/Siegecraft.svelte";
+  import TowerWallRow from "./sections/TowerWallRow.svelte";
 
   interface Props {
     playerId: number;
@@ -42,6 +43,18 @@
 <div class="anarchy-sheet anarchy-left-sheet">
   <div class="fortification-rows">
     {@render basicRow("fortification", "GATE", 6)}
+    <TowerWallRow
+      section="TOWER"
+      {isMe}
+      checkedBoxes={getCheckedBoxes(playerId, "TOWER")}
+      availableBoxes={isMe ? getAvailableBoxes("TOWER") : null}
+    />
+    <TowerWallRow
+      section="WALL"
+      {isMe}
+      checkedBoxes={getCheckedBoxes(playerId, "WALL")}
+      availableBoxes={isMe ? getAvailableBoxes("WALL") : null}
+    />
     {@render basicRow("fortification", "MOAT", 12)}
   </div>
 
@@ -93,23 +106,23 @@
     }
 
     .fortification-rows {
-      top: 60px;
-      left: 106px;
+      top: 14px;
+      left: 103px;
     }
 
     .resource-rows {
-      top: 175px;
-      left: 106px;
+      top: 129px;
+      left: 103px;
     }
 
     .production-rows {
-      top: 408px;
-      left: 124px;
+      top: 362px;
+      left: 121px;
     }
 
     .point-rows {
-      top: 638px;
-      left: 106px;
+      top: 592px;
+      left: 103px;
     }
   }
 </style>
