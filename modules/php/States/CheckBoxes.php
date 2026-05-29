@@ -40,11 +40,13 @@ class CheckBoxes extends GameState {
     function getArgs() {
         $playerIds = $this->game->allPlayerIds();
         $boxes = $this->game->allCheckedBoxes();
-        $out = [];
+        $availboxes = [];
+        $walls = [];
         foreach ($playerIds as $playerId) {
-            $out[$playerId] = $this->game->getAvailableBoxes($playerId, $boxes);
+            $availboxes[$playerId] = $this->game->getAvailableBoxes($playerId, $boxes);
+            $walls[$playerId] = availableWalls($this->game, $playerId);
         }
-        return ["availableBoxes" => $out];
+        return ["availableBoxes" => $availboxes, "availableWalls" => $walls];
     }
 
     #[PossibleAction]

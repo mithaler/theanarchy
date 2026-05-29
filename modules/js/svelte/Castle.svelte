@@ -6,7 +6,12 @@
 </script>
 
 <script lang="ts">
-  import { getBga, getPlayer, type AnarchyPlayer } from "../context.svelte";
+  import {
+    ctx,
+    getBga,
+    getPlayer,
+    type AnarchyPlayer,
+  } from "../context.svelte";
   import type { ChoiceFunc } from "./Checkbox.svelte";
   import type { PlayerBoardProps } from "./PlayerBoard.svelte";
   const { playerId, isMe }: PlayerBoardProps = $props();
@@ -25,10 +30,11 @@
     "towerRightTop",
   ];
 
-  function maxed(choice: keyof AnarchyPlayer): boolean {
+  function available(choice: keyof AnarchyPlayer): boolean {
     return (
-      (choice.startsWith("wall") && player[choice] >= 4) ||
-      (choice.startsWith("tower") && player[choice] >= 2)
+      (choice.startsWith("wall") &&
+        (ctx.data?.availableWalls ?? []).includes(choice)) ||
+      (choice.startsWith("tower") && player[choice] < 2)
     );
   }
 
@@ -37,7 +43,7 @@
     choiceFunc: ChoiceFunc,
   ): (e: Event) => Promise<void> {
     return async () => {
-      if (!isMe || maxed(choice)) {
+      if (!isMe || !available(choice)) {
         return;
       }
       await choiceFunc(choice);
@@ -71,7 +77,7 @@
           "tower-walls-sprite",
           `wall-${player[wall]}`,
           player[wall] > 0 ? "built" : null,
-          isMe && castleState.wallChoiceFunc && !maxed(wall)
+          isMe && castleState.wallChoiceFunc && available(wall)
             ? "clickable"
             : null,
         ],
@@ -90,7 +96,7 @@
           "tower-walls-sprite",
           `tower-${player[tower]}`,
           player[tower] > 0 ? "built" : null,
-          isMe && castleState.towerChoiceFunc && !maxed(tower)
+          isMe && castleState.towerChoiceFunc && available(tower)
             ? "clickable"
             : null,
         ],

@@ -2,6 +2,7 @@ import {
   ctx,
   performAction,
   type AnarchyBga,
+  type AnarchyPlayer,
   type PlayerBoxSet,
 } from "./context.svelte";
 import type { Game } from "./Game.svelte";
@@ -26,6 +27,7 @@ abstract class State<ArgType> {
 
 export interface CheckBoxesArgs {
   availableBoxes: PlayerBoxSet;
+  availableWalls: { [key: number]: (keyof AnarchyPlayer)[] };
 }
 
 export class CheckBoxes extends State<CheckBoxesArgs> {
@@ -33,6 +35,10 @@ export class CheckBoxes extends State<CheckBoxesArgs> {
     if (!ctx.data?.availableBoxes) {
       ctx.data!.availableBoxes =
         args.availableBoxes[this.bga.players.getCurrentPlayerId()];
+    }
+    if (!ctx.data?.availableWalls) {
+      ctx.data!.availableWalls =
+        args.availableWalls[this.bga.players.getCurrentPlayerId()];
     }
     if (isCurrentPlayerActive) {
       this.bga.statusBar.addActionButton(

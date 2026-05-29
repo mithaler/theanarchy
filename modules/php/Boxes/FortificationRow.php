@@ -6,6 +6,37 @@ use BGA\Games\theanarchy\Resource;
 use BGA\Games\theanarchy\Boxes\BasicRow;
 use BGA\Games\theanarchy\Boxes\Reward;
 
+const WALLS = [Resource::WALL_LEFT, Resource::WALL_TOP, Resource::WALL_RIGHT, Resource::WALL_BOTTOM];
+
+/**
+ * Returns which walls are available to the player (taking into account the
+ * wall difference rule).
+ * @param Game $game
+ * @param int $playerId
+ * @return Resource[] A list of available walls.
+ */
+function availableWalls(Game $game, int $playerId): array {
+    $currWalls = [];
+    // preload them so we don't hammer the DB
+    foreach (WALLS as $wall) {
+        $currWalls[$wall->value] = $game->resources($wall)->get($playerId);
+    }
+
+    $out = [];
+    foreach (WALLS as $idx => $wall) {
+        $curr = $currWalls[$wall->value];
+        if ($curr >= 4) {
+            continue;
+        }
+        $prev = $currWalls[WALLS[$idx == 0 ? 3 : $idx - 1]->value];
+        $next = $currWalls[WALLS[(($idx + 1) % 4)]->value];
+        if ($curr <= $prev && $curr <= $next) {
+            $out[] = $wall;
+        }
+    }
+    return $out;
+}
+
 abstract class FortificationRow extends BasicRow {
     public array $cost = [Resource::CRAFTSMEN, Resource::MATERIALS];
 
@@ -92,13 +123,19 @@ class Wall extends FortificationRow {
         }
 
         $wall = Resource::from($choice);
-        if ($game->resources($wall)->get($playerId) >= 4) {
-            throw new UserException("That wall is already maxed out");
+        if (!\in_array($wall, availableWalls($game, $playerId))) {
+            throw new UserException("That wall is unavailable");
         }
 
         $reward = $this->reward($boxId);
         $reward->resources[$wall->value] = 1;
-        return $this->basicCheckBox($game, $playerId, $boxId, $pay, $this->cost, $reward);
+        $this->basicCheckBox($game, $playerId, $boxId, $pay, $this->cost, $reward);
+
+        // special notification: new available walls
+        $newAvailWalls = availableWalls($game, $playerId);
+        $game->notify->player($playerId, "newAvailableWalls", "", $newAvailWalls);
+
+        return $reward;
     }
 }
 

@@ -41,6 +41,7 @@ export interface AnarchyPlayer extends Player {
 export interface AnarchyData extends Gamedatas<AnarchyPlayer> {
   round: number;
   availableBoxes?: BoxSet;
+  availableWalls?: (keyof AnarchyPlayer)[];
 }
 
 export interface AnarchyContext {
