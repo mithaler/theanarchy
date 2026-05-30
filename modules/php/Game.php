@@ -25,6 +25,7 @@ require_once(__DIR__ . "/Boxes/Sections.php");
 
 use Bga\GameFramework\Components\Counters\PlayerCounter;
 use Bga\GameFramework\Components\Counters\TableCounter;
+use Bga\GameFramework\Components\Deck;
 
 use const Bga\Games\theanarchy\Boxes\SECTIONS;
 use Bga\Games\theanarchy\States\InitialSetup;
@@ -36,6 +37,8 @@ class Game extends \Bga\GameFramework\Table {
     public static array $CARD_TYPES;
 
     public TableCounter $round;
+
+    public Deck $domainCards;
 
     /**
      * All player resource counters.
@@ -61,21 +64,7 @@ class Game extends \Bga\GameFramework\Table {
         foreach (Resource::cases() as $resource) {
             $this->playerResources[$resource->name] = $this->bga->counterFactory->createPlayerCounter($resource->value);
         }
-
-        /* example of notification decorator.
-        // automatically complete notification args when needed
-        $this->bga->notify->addDecorator(function(string $message, array $args) {
-            if (isset($args['player_id']) && !isset($args['player_name']) && str_contains($message, '${player_name}')) {
-                $args['player_name'] = $this->getPlayerNameById($args['player_id']);
-            }
-
-            if (isset($args['card_id']) && !isset($args['card_name']) && str_contains($message, '${card_name}')) {
-                $args['card_name'] = self::$CARD_TYPES[$args['card_id']]['card_name'];
-                $args['i18n'][] = ['card_name'];
-            }
-
-            return $args;
-        });*/
+        $this->domainCards = $this->deckFactory->createDeck("domain_card");
     }
 
     /**
@@ -133,6 +122,18 @@ class Game extends \Bga\GameFramework\Table {
         return $result;
     }
 
+    private function initializePlayerDecks(array $playerIds) {
+        $cards = [];
+        for ($i = 1; $i <= 24; $i++) {
+            $cards[] = ["type" => (string) $i, "type_arg" => 0, "nbr" => 1];
+        }
+        foreach ($playerIds as $playerId) {
+            $playerDeck = $playerId . "_deck";
+            $this->domainCards->createCards($cards, $playerDeck);
+            $this->domainCards->shuffle($playerDeck);
+        }
+    }
+
     /**
      * This method is called only once, when a new game is launched. In this method, you must setup the game
      *  according to the game rules, so that the game is ready to be played.
@@ -176,6 +177,7 @@ class Game extends \Bga\GameFramework\Table {
         );
 
         $this->insertInitialProduction(array_keys($players));
+        $this->initializePlayerDecks(array_keys($players));
         $this->reattributeColorsBasedOnPreferences($players, $gameinfos["player_colors"]);
         $this->reloadPlayersBasicInfos();
 

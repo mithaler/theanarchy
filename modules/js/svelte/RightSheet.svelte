@@ -1,7 +1,7 @@
 <script lang="ts">
   import BasicRow from "./sections/BasicRow.svelte";
   import { getCheckedBoxes, getAvailableBoxes } from "../context.svelte";
-  import Keep from "./sections/Keep.svelte";
+  import SimpleBuilding from "./sections/SimpleBuilding.svelte";
 
   interface Props {
     playerId: number;
@@ -27,10 +27,22 @@
   {@render leadershipRow("WORSHIP")}
   {@render leadershipRow("ENTERTAINMENT")}
 
-  <Keep
+  {#each ["KEEP", "MINT"] as section (section)}
+    <SimpleBuilding
+      {isMe}
+      section={section as "KEEP" | "MINT"}
+      checkedBoxes={getCheckedBoxes(playerId, section)}
+      availableBoxes={isMe ? getAvailableBoxes(section) : null}
+    />
+  {/each}
+
+  <!-- TODO spies, tactics, ramparts -->
+
+  <SimpleBuilding
     {isMe}
-    checkedBoxes={getCheckedBoxes(playerId, "KEEP")}
-    availableBoxes={isMe ? getAvailableBoxes("KEEP") : null}
+    section="STABLES"
+    checkedBoxes={getCheckedBoxes(playerId, "STABLES")}
+    availableBoxes={isMe ? getAvailableBoxes("STABLES") : null}
   />
 </div>
 

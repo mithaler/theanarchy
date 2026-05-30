@@ -132,16 +132,18 @@ class Stables extends SimpleBuilding {
     }
 
     public function check(Game $game, int $playerId, int|null $boxId = null, bool $pay = true, string|null $choice = null): Reward {
-        if ($choice != Resource::SERFS->value && $choice != Resource::SOLDIERS->value) {
+        $building = \in_array($boxId, [1, 5]);
+        if (!$building && $choice != Resource::SERFS->value && $choice != Resource::SOLDIERS->value) {
             throw new UserException("Cost choice for Stables must be either serfs or soldiers, got $choice");
         }
 
+        $cost = $building ? [Resource::CRAFTSMEN, Resource::MATERIALS] : [Resource::from($choice)];
         $reward = match ($boxId) {
             1, 5 => Reward::boxes($this->name, $boxId, ["INFLUENCE"]),
             2, 6 => Reward::resources($this->name, $boxId, [Resource::FOOD->value => 1]),
             3, 7 => Reward::resources($this->name, $boxId, [Resource::SILVER->value => 1]),
             4, 8 => Reward::resources($this->name, $boxId, [Resource::KNIGHTS->value => 1]),
         };
-        return $this->basicCheckBox($game, $playerId, $boxId, $pay, [Resource::from($choice)], $reward);
+        return $this->basicCheckBox($game, $playerId, $boxId, $pay, $cost, $reward);
     }
 }

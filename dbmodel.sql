@@ -66,3 +66,14 @@ CREATE TABLE IF NOT EXISTS checked_box (
 
     PRIMARY KEY (player_id, section, box_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Domain cards; this is actually one deck per player.
+-- Do not use the standard deck/discard locations!
+CREATE TABLE IF NOT EXISTS domain_card (
+    `card_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+    `card_type` varchar(2) NOT NULL,
+    `card_type_arg` int(11) NOT NULL,
+    `card_location` varchar(40) NOT NULL,
+    `card_location_arg` int(11) NOT NULL,
+    PRIMARY KEY (`card_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
