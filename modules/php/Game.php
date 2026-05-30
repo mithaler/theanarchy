@@ -28,8 +28,10 @@ use Bga\GameFramework\Components\Counters\TableCounter;
 use Bga\GameFramework\Components\Deck;
 
 use const Bga\Games\theanarchy\Boxes\SECTIONS;
+use const Bga\Games\theanarchy\DOMAIN_CARDS;
 use Bga\Games\theanarchy\States\InitialSetup;
 use Bga\Games\theanarchy\Resource;
+use Bga\Games\theanarchy\PlayerDomainCard;
 use Bga\Games\theanarchy\Boxes\Box;
 use Bga\Games\theanarchy\Boxes\Reward;
 
@@ -213,10 +215,13 @@ class Game extends \Bga\GameFramework\Table {
         $this->gamestate->jumpToState($state);
     }
 
-
     /** Debug: test zombie code. */
     public function debug_playOneMove() {
         $this->bga->debug->playUntil(fn(int $count) => $count == 1);
+    }
+
+    public function notifyNewAvailable($playerId, $availBoxes) {
+        $this->notify->player($playerId, "newAvailable", "", $availBoxes);
     }
 
     /** Debug: give me a pile of stuff to check boxes with. */
@@ -229,10 +234,7 @@ class Game extends \Bga\GameFramework\Table {
         Reward::resources("DEBUG", 0, $resources)->grant($this, (int) $this->getCurrentPlayerId());
         $currPlayerId = (int) $this->getCurrentPlayerId();
         $newAllCheckedBoxes = $this->allCheckedBoxes($currPlayerId);
-        $this->notify->player(
-            $currPlayerId, "newAvailable", "",
-            $this->getAvailableBoxes($currPlayerId, $newAllCheckedBoxes)
-        );
+        $this->notifyNewAvailable($currPlayerId, $this->getAvailableBoxes($currPlayerId, $newAllCheckedBoxes));
     }
 
     public function allPlayerIds(): array {
@@ -278,6 +280,68 @@ class Game extends \Bga\GameFramework\Table {
             $out[$box->playerId][$box->section][] = $box->boxId;
         }
         return $out;
+     }
+
+     /**
+      * Draws cards from a player's domain card deck, and returns them as rich DomainCard
+      * objects with all their hard-coded constants. Includes auto-reshuffling and notifications.
+      * @param int $playerId The player ID to draw from.
+      * @param int $count The number of cards to draw (we always want 2 or more).
+      * @param bool $hold If true, moves the cards to the player's hand; if false, immediately discards.
+      * @return PlayerDomainCard[] The cards drawn.
+      */
+     public function drawDomainCards(int $playerId, int $count, bool $hold): array {
+        $playerDeck = $playerId . "_deck";
+        $playerDiscard = $playerId . "_discard";
+        $target = $hold ? $playerId . "_hand" : $playerDiscard;
+
+        // implement my own reshuffle, the built-in one only supports the magic locations "deck"/"discard"
+        $deckCount = $this->domainCards->countCardsInLocation($playerDeck);
+        if ($deckCount < $count) {
+            // if there are any cards in the deck, draw them first
+            $restCards = $deckCount > 0 ?
+                $this->domainCards->pickCardsForLocation(
+                    $deckCount, $playerDeck, $target, no_deck_reform: true
+                )
+                : [];
+
+            // reshuffle the deck
+            $this->domainCards->moveAllCardsInLocation($playerDiscard, $playerDeck);
+            $this->domainCards->shuffle($playerDeck);
+
+            // draw whatever we still need to
+            $addlCards = $this->domainCards->pickCardsForLocation(
+                $count - $deckCount, $playerDeck, $target, no_deck_reform: true
+            );
+
+            // combine draws from before + after reshuffle
+            $cards = [...$restCards, ...$addlCards];
+
+            // notify a reshuffle happened
+            $this->notify->all(
+                "domainReshuffle",
+                \clienttranslate('${playerName} reshuffles his domain deck'),
+                ["player_id" => $playerId, "player_name" => $this->getPlayerNameById($playerId)],
+            );
+        } else {
+            $cards = $this->domainCards->pickCardsForLocation(
+                $count, $playerDeck, $target, no_deck_reform: true
+            );
+        }
+
+        $this->notify->all("domainDraw", \clienttranslate('${player_name} draws ${cardCount} domain cards'), [
+            "player_id" => $playerId,
+            "player_name" => $this->getPlayerNameById($playerId),
+            "cardCount" => \count($cards),
+            "cardIds" => array_map(fn ($card) => (int) $card["type"], $cards),
+        ]);
+
+        // convert to rich domain card objects with all the data
+        $richCards = array_map(
+            fn ($card) => new PlayerDomainCard($card["id"], DOMAIN_CARDS[(int) $card["type"]]),
+            $cards,
+        );
+        return $richCards;
      }
 
      public static function checkBox(int $playerId, string $section, int $boxId, string|null $writtenValue = null) {

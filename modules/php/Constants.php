@@ -11,6 +11,7 @@ class StateConstants {
     const int CHOOSE_PATH_CARDS = 5;
     const int CHECK_BOXES_LOOP = 6;
     const int CHECK_BOXES = 7;
+    const int ST_VALENTINES_FESTIVAL = 8;
 
     const int GAME_END = 99;
 }
@@ -105,3 +106,11 @@ const DOMAIN_CARDS = [
     23 => new DomainCard(KnightsTraining::ARMS, 3, 2, Tournament::CENTER, Tournament::LEFT, Brewhouse::WATER, Lemmas::RED),
     24 => new DomainCard(KnightsTraining::BOW, 4, 5, Tournament::RIGHT, Tournament::LEFT, Brewhouse::GRAIN, Lemmas::YELLOW),
 ];
+
+/** A domain card held by a player, containing its ID (so it can be moved easily). */
+class PlayerDomainCard {
+    public function __construct(
+        public string $id,
+        public DomainCard $card,
+    ) {}
+}

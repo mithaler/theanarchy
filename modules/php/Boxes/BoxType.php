@@ -2,6 +2,7 @@
 
 namespace BGA\Games\theanarchy\Boxes;
 
+use Bga\GameFramework\UserException;
 use BGA\Games\theanarchy\Game;
 use BGA\Games\theanarchy\Resource;
 
@@ -46,7 +47,7 @@ class Reward {
     public array $resources;
 
     /**
-     * @var array<string, Reward|null>
+     * @var array<string, Reward[]|null>
      */
     public array $boxes;
 
@@ -60,11 +61,21 @@ class Reward {
         $this->fromId = $fromId;
         $this->resources = $resources;
 
+        /*
+            this can be either of the form:
+                ["SOMETHING", "ANOTHER"]
+            in which case it becomes ["SOMETHING" => null, "ANOTHER" => null], or:
+                ["SOMETHING" => [10]]
+            in which case it will treat the numbers as multiple rewards to grant
+        */
         if (\count($boxesToCheck) > 0) {
             $boxes = [];
-            foreach ($boxesToCheck as $box) {
-                // not yet resolved! call grant() to resolve them
-                $boxes[$box] = null;
+            foreach ($boxesToCheck as $idx => $box) {
+                if (\is_string($idx)) {
+                    $boxes[$idx] = $box;
+                } else {
+                    $boxes[$box] = null;
+                }
             }
             $this->boxes = $boxes;
         } else {
@@ -91,9 +102,52 @@ class Reward {
             }
         }
         if ($this->boxes) {
-            foreach ($this->boxes as $box => $unused) {
-                $subreward = SECTIONS[$box]->check($game, $playerId, null, false);
-                $this->boxes[$box] = $subreward;
+            foreach ($this->boxes as $box => $ids) {
+                $subrewards = [];
+                if (\is_array($ids)) {
+                    foreach ($ids as $id) {
+                        $subrewards[] = SECTIONS[$box]->check($game, $playerId, $id, false);
+                    }
+                } else {
+                    $subrewards[] = SECTIONS[$box]->check($game, $playerId, null, false);
+                }
+                $this->boxes[$box] = $subrewards;
+            }
+        }
+    }
+
+    public function notify(Game $game, int $playerId) {
+        if (\count($this->resources) == 0 && \count($this->boxes) == 0) {
+            $game->notify->all("boxReward", \clienttranslate('${player_name} checks ${boxSection}'), [
+                "player_id" => $playerId,
+                "player_name" => $game->getPlayerNameById($playerId),
+                "boxSection" => $this->fromSection,
+                "boxId" => $this->fromId,
+            ]);
+        } else {
+            $resourceRewards = [];
+            foreach ($this->resources as $resource => $count) {
+                for ($i = 0; $i < $count; $i++) {
+                    $resourceRewards[] = $resource;
+                }
+            }
+            $game->notify->all("boxReward", \clienttranslate('${player_name} checks ${boxSection} and earns ${rewards}'), [
+                "player_id" => $playerId,
+                "player_name" => $game->getPlayerNameById($playerId),
+                "boxSection" => $this->fromSection,
+                "boxId" => $this->fromId,
+                // TODO make this pretty!
+                "rewards" => implode(" ", [...$resourceRewards, ...array_keys($this->boxes)]),
+                // we don't include resources here, the framework auto-notifies setPlayerCounter for that
+            ]);
+        }
+
+        // DFS into the boxes and notify those too
+        if ($this->boxes) {
+            foreach ($this->boxes as $boxRewards) {
+                foreach ($boxRewards as $boxReward) {
+                    $boxReward->notify($game, $playerId);
+                }
             }
         }
     }
@@ -159,11 +213,15 @@ abstract class BoxType {
      * (This is not meaningful for some box types, it's pretty obvious which ones.)
      * @var int $playerId The player to check.
      * @var Box[] $currBoxes The player's checked boxes (or all players', doesn't matter).
+     * @var int|null $ignoreAbove If passed, ignores boxes above this.
      */
-    public function highestCheckedBox(int $playerId, array &$currBoxes): int {
+    public function highestCheckedBox(int $playerId, array &$currBoxes, int|null $ignoreAbove = null): int {
         return array_reduce(
             $currBoxes,
-            function (int $max, Box $box) use ($playerId) {
+            function (int $max, Box $box) use ($playerId, $ignoreAbove) {
+                if ($ignoreAbove != null && $box->boxId > $ignoreAbove) {
+                    return $max;
+                }
                 if ($box->playerId == $playerId && $box->section == $this->name && $box->boxId > $max) {
                     return $box->boxId;
                 }
