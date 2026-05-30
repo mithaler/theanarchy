@@ -9,7 +9,8 @@ class StateConstants {
     const int INITIAL_SETUP = 3;
     const int ROUND_SETUP = 4;
     const int CHOOSE_PATH_CARDS = 5;
-    const int CHECK_BOXES = 6;
+    const int CHECK_BOXES_LOOP = 6;
+    const int CHECK_BOXES = 7;
 
     const int GAME_END = 99;
 }

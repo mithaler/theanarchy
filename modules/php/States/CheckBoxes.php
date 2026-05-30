@@ -3,7 +3,6 @@
 namespace BGA\Games\theanarchy\States;
 
 use Bga\GameFramework\Actions\Types\IntParam;
-use BGA\Games\theanarchy\Resource;
 
 require_once(__DIR__ . "/../Boxes/Sections.php");
 require_once(__DIR__ . "/../Constants.php");
@@ -20,16 +19,19 @@ use Bga\Games\theanarchy\Game;
 use BGA\Games\theanarchy\StateConstants;
 use BGA\Games\theanarchy\Boxes\Reward;
 
+/**
+ * The basic "checking boxes" state (private, coming from CheckBoxesLoop).
+ * Other private states are for when the player has to make a choice based
+ * on something they previously did (such as allocating domain cards).
+ */
 class CheckBoxes extends GameState {
 
     public function __construct(protected Game $game) {
         parent::__construct(
             $game,
             id: StateConstants::CHECK_BOXES,
-            type: StateType::MULTIPLE_ACTIVE_PLAYER,
-            description: clienttranslate('${actplayer} may check boxes'),
+            type: StateType::PRIVATE,
             descriptionMyTurn: clienttranslate('${you} may check boxes'),
-            updateGameProgression: true,
         );
     }
 
@@ -37,15 +39,10 @@ class CheckBoxes extends GameState {
         $this->gamestate->setAllPlayersMultiactive();
     }
 
-    function getArgs() {
-        $playerIds = $this->game->allPlayerIds();
-        $boxes = $this->game->allCheckedBoxes();
-        $availboxes = [];
-        $walls = [];
-        foreach ($playerIds as $playerId) {
-            $availboxes[$playerId] = $this->game->getAvailableBoxes($playerId, $boxes);
-            $walls[$playerId] = availableWalls($this->game, $playerId);
-        }
+    function getArgs(int $playerId) {
+        $boxes = $this->game->allCheckedBoxes($playerId);
+        $availboxes = [$playerId => $this->game->getAvailableBoxes($playerId, $boxes)];
+        $walls = [$playerId => availableWalls($this->game, $playerId)];
         return ["availableBoxes" => $availboxes, "availableWalls" => $walls];
     }
 

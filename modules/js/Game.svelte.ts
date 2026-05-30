@@ -29,7 +29,6 @@ export class Game {
     console.log("theanarchy constructor");
     this.bga = bga;
 
-    // Declare the State classes
     this.bga.states.register("CheckBoxes", new CheckBoxes(this, bga));
 
     // Uncomment the next line to show debug informations about state changes in the console. Remove before going to production!
@@ -66,6 +65,9 @@ export class Game {
 
     this.setupNotifications();
     console.log("Ending game setup");
+
+    // @ts-expect-error: For debugging
+    window.game = this;
   }
 
   setupNotifications() {

@@ -55,6 +55,7 @@ export class CheckBoxes extends State<CheckBoxesArgs> {
   ): void {
     if (!isCurrentPlayerActive) {
       ctx.data!.availableBoxes = undefined;
+      ctx.data!.availableWalls = undefined;
     }
   }
 

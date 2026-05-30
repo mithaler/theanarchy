@@ -18,7 +18,7 @@ class InitialSetup extends GameState {
             id: 10,
             type: StateType::GAME,
             transitions: [
-                "checkBoxes" => StateConstants::CHECK_BOXES,
+                "checkBoxes" => StateConstants::CHECK_BOXES_LOOP,
             ]
         );
     }

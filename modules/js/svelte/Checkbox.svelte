@@ -43,7 +43,7 @@
 
   const onclick = $derived.by(() => {
     if (state === "available") {
-      const gameState = getBga().states.getCurrentMainStateClass();
+      const gameState = getBga().states.getCurrentPlayerStateClass();
       if (gameState instanceof CheckBoxes) {
         if (click) {
           return (evt: Event) => {
