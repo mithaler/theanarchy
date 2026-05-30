@@ -38,10 +38,12 @@ export interface AnarchyPlayer extends Player {
   checkedBoxes: BoxSet;
 }
 
+export type PlayerKey = keyof AnarchyPlayer;
+
 export interface AnarchyData extends Gamedatas<AnarchyPlayer> {
   round: number;
   availableBoxes?: BoxSet;
-  availableWalls?: (keyof AnarchyPlayer)[];
+  availableWalls?: PlayerKey[];
 }
 
 export interface AnarchyContext {
@@ -75,7 +77,7 @@ export interface BoxRewardArgs {
 export interface PlayerCounterArgs {
   inc: number;
   value: number;
-  name: keyof AnarchyPlayer;
+  name: PlayerKey;
   playerId: number;
 }
 

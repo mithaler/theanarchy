@@ -17,7 +17,7 @@ import type {
   PlayerCounterArgs,
   BoxRewardArgs,
   BoxSet,
-  AnarchyPlayer,
+  PlayerKey,
 } from "./context.svelte";
 import { ctx, getPlayer } from "./context.svelte";
 import { CheckBoxes } from "./states.svelte";
@@ -90,7 +90,7 @@ export class Game {
     ctx.data!.availableBoxes = args;
   }
 
-  async notif_newAvailableWalls(args: (keyof AnarchyPlayer)[]) {
+  async notif_newAvailableWalls(args: PlayerKey[]) {
     ctx.data!.availableWalls = args;
   }
 

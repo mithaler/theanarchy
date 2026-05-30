@@ -6,31 +6,21 @@
 </script>
 
 <script lang="ts">
-  import {
-    ctx,
-    getBga,
-    getPlayer,
-    type AnarchyPlayer,
-  } from "../context.svelte";
+  import { ctx, getBga, getPlayer, type PlayerKey } from "../context.svelte";
   import type { ChoiceFunc } from "./Checkbox.svelte";
   import type { PlayerBoardProps } from "./PlayerBoard.svelte";
   const { playerId, isMe }: PlayerBoardProps = $props();
   const player = $derived(getPlayer(playerId));
 
-  const WALLS: (keyof AnarchyPlayer)[] = [
-    "wallTop",
-    "wallRight",
-    "wallBottom",
-    "wallLeft",
-  ];
-  const TOWERS: (keyof AnarchyPlayer)[] = [
+  const WALLS: PlayerKey[] = ["wallTop", "wallRight", "wallBottom", "wallLeft"];
+  const TOWERS: PlayerKey[] = [
     "towerLeftBottom",
     "towerLeftTop",
     "towerRightBottom",
     "towerRightTop",
   ];
 
-  function available(choice: keyof AnarchyPlayer): boolean {
+  function available(choice: PlayerKey): boolean {
     return (
       (choice.startsWith("wall") &&
         (ctx.data?.availableWalls ?? []).includes(choice)) ||
@@ -39,7 +29,7 @@
   }
 
   function doCheck(
-    choice: keyof AnarchyPlayer,
+    choice: PlayerKey,
     choiceFunc: ChoiceFunc,
   ): (e: Event) => Promise<void> {
     return async () => {
@@ -55,7 +45,7 @@
 </script>
 
 {#snippet div(
-  choice: keyof AnarchyPlayer,
+  choice: PlayerKey,
   classes: (string | null)[],
   choiceFunc?: ChoiceFunc,
 )}

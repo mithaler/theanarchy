@@ -2,8 +2,8 @@ import {
   ctx,
   performAction,
   type AnarchyBga,
-  type AnarchyPlayer,
   type PlayerBoxSet,
+  type PlayerKey,
 } from "./context.svelte";
 import type { Game } from "./Game.svelte";
 
@@ -27,7 +27,7 @@ abstract class State<ArgType> {
 
 export interface CheckBoxesArgs {
   availableBoxes: PlayerBoxSet;
-  availableWalls: { [key: number]: (keyof AnarchyPlayer)[] };
+  availableWalls: { [key: number]: PlayerKey[] };
 }
 
 export class CheckBoxes extends State<CheckBoxesArgs> {
