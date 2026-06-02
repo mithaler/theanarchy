@@ -67,6 +67,31 @@ export async function performAction(action: string, args?: object) {
   }
 }
 
+export async function checkBox(
+  section: string,
+  boxId: number,
+  choice?: string,
+  writtenValue?: number,
+) {
+  // zero out the player's available boxes while performing the action so it doesn't stutter
+  // the notification coming back will update it with the new options, see notif_newAvailable
+  const oldAvailBoxes = ctx.data!.availableBoxes;
+  ctx.data!.availableBoxes = undefined;
+
+  try {
+    return await performAction("actCheckBox", {
+      section,
+      boxId,
+      choice,
+      writtenValue,
+    });
+  } catch (e) {
+    // on error, set them back so we don't leave the UI unusable
+    ctx.data!.availableBoxes = oldAvailBoxes;
+    console.error("Error checking box", e);
+  }
+}
+
 export interface BoxRewardArgs {
   player_id: number; // forced to be underscored by the framework
   boxSection: string;

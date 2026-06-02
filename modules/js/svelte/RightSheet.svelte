@@ -2,6 +2,7 @@
   import BasicRow from "./sections/BasicRow.svelte";
   import { getCheckedBoxes, getAvailableBoxes } from "../context.svelte";
   import SimpleBuilding from "./sections/SimpleBuilding.svelte";
+  import StValentinesFestival from "./sections/StValentinesFestival.svelte";
 
   interface Props {
     playerId: number;
@@ -43,6 +44,12 @@
     section="STABLES"
     checkedBoxes={getCheckedBoxes(playerId, "STABLES")}
     availableBoxes={isMe ? getAvailableBoxes("STABLES") : null}
+  />
+
+  <StValentinesFestival
+    {isMe}
+    checkedBoxes={getCheckedBoxes(playerId, "ST VALENTINES FESTIVAL")}
+    availableBoxes={isMe ? getAvailableBoxes("ST VALENTINES FESTIVAL") : null}
   />
 </div>
 

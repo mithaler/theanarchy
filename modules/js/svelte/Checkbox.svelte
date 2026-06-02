@@ -1,5 +1,5 @@
 <script module lang="ts">
-  import { ctx } from "../context.svelte";
+  import { checkBox, ctx } from "../context.svelte";
   export type State = "checked" | "available" | "unavailable" | "unclickable";
   export function getState(
     id: number,
@@ -27,9 +27,6 @@
 </script>
 
 <script lang="ts">
-  import { getBga } from "../context.svelte";
-  import { CheckBoxes } from "../states.svelte";
-
   interface Props {
     section: string;
     boxId: number;
@@ -43,26 +40,18 @@
 
   const onclick = $derived.by(() => {
     if (state === "available") {
-      const gameState = getBga().states.getCurrentPlayerStateClass();
-      if (gameState instanceof CheckBoxes) {
-        if (click) {
-          return (evt: Event) => {
-            evt.preventDefault();
-            click(async (costChoice, writtenValue) => {
-              await gameState.checkBox(
-                section,
-                boxId,
-                costChoice,
-                writtenValue,
-              );
-            });
-          };
-        }
+      if (click) {
         return (evt: Event) => {
           evt.preventDefault();
-          gameState.checkBox(section, boxId);
+          click(async (costChoice, writtenValue) => {
+            await checkBox(section, boxId, costChoice, writtenValue);
+          });
         };
       }
+      return (evt: Event) => {
+        evt.preventDefault();
+        checkBox(section, boxId);
+      };
     }
     return null;
   });

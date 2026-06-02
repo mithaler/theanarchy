@@ -20,7 +20,11 @@ import type {
   PlayerKey,
 } from "./context.svelte";
 import { ctx, getPlayer } from "./context.svelte";
-import { CheckBoxes } from "./states.svelte";
+import {
+  CheckBoxes,
+  StValentinesFestival,
+  type StValentinesFestivalArgs,
+} from "./states.svelte";
 
 export class Game {
   bga: AnarchyBga;
@@ -30,6 +34,10 @@ export class Game {
     this.bga = bga;
 
     this.bga.states.register("CheckBoxes", new CheckBoxes(this, bga));
+    this.bga.states.register(
+      "StValentinesFestival",
+      new StValentinesFestival(this, bga),
+    );
 
     // Uncomment the next line to show debug informations about state changes in the console. Remove before going to production!
     this.bga.states.logger = console.log;
@@ -89,7 +97,20 @@ export class Game {
   }
 
   async notif_newAvailable(args: BoxSet) {
-    ctx.data!.availableBoxes = args;
+    // this notification is for the main CheckBoxes state only
+    // sometimes we get this notification late after a state change; if that happens ignore it
+    if (ctx.bga?.states.getCurrentPlayerStateName() === "CheckBoxes") {
+      ctx.data!.availableBoxes = args;
+    }
+  }
+
+  async notif_newValentinesAvailable(args: StValentinesFestivalArgs) {
+    ctx.data!.availableBoxes = {
+      "ST VALENTINES FESTIVAL": [
+        ...(args.availableBoxes.female ?? []),
+        ...(args.availableBoxes.male ?? []),
+      ],
+    };
   }
 
   async notif_newAvailableWalls(args: PlayerKey[]) {

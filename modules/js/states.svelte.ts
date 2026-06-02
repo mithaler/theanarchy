@@ -1,6 +1,5 @@
 import {
   ctx,
-  performAction,
   type AnarchyBga,
   type PlayerBoxSet,
   type PlayerKey,
@@ -58,29 +57,24 @@ export class CheckBoxes extends State<CheckBoxesArgs> {
       ctx.data!.availableWalls = undefined;
     }
   }
+}
 
-  async checkBox(
-    section: string,
-    boxId: number,
-    choice?: string,
-    writtenValue?: number,
+export interface StValentinesFestivalArgs {
+  availableBoxes: { female?: number[]; male?: number[] };
+}
+
+export class StValentinesFestival extends State<StValentinesFestivalArgs> {
+  onEnteringState(
+    args: StValentinesFestivalArgs,
+    isCurrentPlayerActive: boolean,
   ) {
-    // zero out the player's available boxes while performing the action so it doesn't stutter
-    // the notification coming back will update it with the new options, see notif_newAvailable
-    const oldAvailBoxes = ctx.data!.availableBoxes;
-    ctx.data!.availableBoxes = undefined;
-
-    try {
-      return await performAction("actCheckBox", {
-        section,
-        boxId,
-        choice,
-        writtenValue,
-      });
-    } catch (e) {
-      // on error, set them back so we don't leave the UI unusable
-      ctx.data!.availableBoxes = oldAvailBoxes;
-      console.error("Error checking box", e);
+    if (!ctx.data?.availableBoxes) {
+      ctx.data!.availableBoxes = {
+        "ST VALENTINES FESTIVAL": [
+          ...(args.availableBoxes.female ?? []),
+          ...(args.availableBoxes.male ?? []),
+        ],
+      };
     }
   }
 }
