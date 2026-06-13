@@ -2,8 +2,6 @@
 
 namespace BGA\Games\theanarchy\States;
 
-use Bga\GameFramework\Actions\Types\IntParam;
-
 require_once(__DIR__ . "/../Boxes/Sections.php");
 require_once(__DIR__ . "/../Constants.php");
 
@@ -14,10 +12,10 @@ use Bga\GameFramework\States\GameState;
 use Bga\GameFramework\States\PossibleAction;
 use Bga\GameFramework\UserException;
 use Bga\GameFramework\Actions\Types\StringParam;
+use Bga\GameFramework\Actions\Types\IntParam;
 
 use Bga\Games\theanarchy\Game;
 use BGA\Games\theanarchy\StateConstants;
-use BGA\Games\theanarchy\Boxes\Reward;
 
 /**
  * The basic "checking boxes" state (private, coming from CheckBoxesLoop).
@@ -32,6 +30,9 @@ class CheckBoxes extends GameState {
             id: StateConstants::CHECK_BOXES,
             type: StateType::PRIVATE,
             descriptionMyTurn: clienttranslate('${you} may check boxes'),
+            transitions: [
+                'stvalentinesfestival' => StateConstants::ST_VALENTINES_FESTIVAL,
+            ]
         );
     }
 
@@ -67,46 +68,14 @@ class CheckBoxes extends GameState {
 
         // notify rewards
         $reward = SECTIONS[$section]->check($this->game, $currentPlayerId, $boxId, true, $choice);
-        $this->notifyReward($reward, $currentPlayerId);
+        $reward->notify($this->game, $currentPlayerId);
 
         // notify new available boxes
         $newAllCheckedBoxes = $this->game->allCheckedBoxes($currentPlayerId);
-        $this->notify->player(
-            $currentPlayerId, "newAvailable", "",
-            $this->game->getAvailableBoxes($currentPlayerId, $newAllCheckedBoxes)
+        $this->game->notifyNewAvailable(
+            $currentPlayerId,
+            $this->game->getAvailableBoxes($currentPlayerId, $newAllCheckedBoxes),
         );
-    }
-
-    private function notifyReward(Reward &$reward, int $playerId) {
-        if (\count($reward->resources) == 0 && \count($reward->boxes) == 0) {
-            $this->game->notify->all("boxReward", \clienttranslate('${player_name} checks ${boxSection}'), [
-                "player_id" => $playerId,
-                "player_name" => $this->game->getPlayerNameById($playerId),
-                "boxSection" => $reward->fromSection,
-                "boxId" => $reward->fromId,
-            ]);
-        } else {
-            $resourceRewards = [];
-            foreach ($reward->resources as $resource => $count) {
-                for ($i = 0; $i < $count; $i++) {
-                    $resourceRewards[] = $resource;
-                }
-            }
-            $this->game->notify->all("boxReward", \clienttranslate('${player_name} checks ${boxSection} and earns ${rewards}'), [
-                "player_id" => $playerId,
-                "player_name" => $this->game->getPlayerNameById($playerId),
-                "boxSection" => $reward->fromSection,
-                "boxId" => $reward->fromId,
-                // TODO make this pretty!
-                "rewards" => implode(" ", [...$resourceRewards, ...array_keys($reward->boxes)]),
-                // we don't include resources here, the framework auto-notifies setPlayerCounter for that
-            ]);
-        }
-
-        // DFS into the boxes and notify those too
-        foreach ($reward->boxes as $boxReward) {
-            $this->notifyReward($boxReward, $playerId);
-        }
     }
 
     #[PossibleAction]

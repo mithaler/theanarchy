@@ -10,11 +10,14 @@ use Stables;
 use Tower;
 use Wall;
 
+use StValentinesFestival;
+
 require_once(__DIR__ . "/BasicRow.php");
 require_once(__DIR__ . "/FortificationRow.php");
 require_once(__DIR__ . "/UnclickableRow.php");
 require_once(__DIR__ . "/WealthWheel.php");
 require_once(__DIR__ . "/SimpleBuildings.php");
+require_once(__DIR__ . "/StValentinesFestival.php");
 
 /**
  * @var array<string, BoxType>
@@ -63,4 +66,6 @@ const SECTIONS = [
     "KEEP" => new Keep(),
     "MINT" => new Mint(),
     "STABLES" => new Stables(),
+
+    "ST VALENTINES FESTIVAL" => new StValentinesFestival(),
 ];
