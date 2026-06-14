@@ -4,7 +4,7 @@
 
 <script lang="ts">
   import Checkbox, { getState } from "../Checkbox.svelte";
-  import type { SectionProps } from "./utils.svelte";
+  import { ids, type SectionProps } from "./utils.svelte";
 
   interface Props extends SectionProps {
     section: WealthWheelSideSection;
@@ -14,7 +14,7 @@
 </script>
 
 <div class={sectionLower}>
-  {#each Array.from({ length: 11 }, (_, i) => i + 1) as id (id)}
+  {#each ids(11) as id (id)}
     <div class="{sectionLower}-box {sectionLower}-{id}">
       <Checkbox
         type={sectionLower}

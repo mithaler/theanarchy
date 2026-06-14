@@ -1,6 +1,6 @@
 <script lang="ts">
   import Checkbox, { getState } from "../Checkbox.svelte";
-  import { basicChoice, type SectionProps } from "./utils.svelte";
+  import { basicChoice, ids, type SectionProps } from "./utils.svelte";
 
   interface Props extends SectionProps {
     section: "KEEP" | "MINT" | "STABLES";
@@ -57,7 +57,7 @@
 </script>
 
 <div class={["simple-building", section.toLowerCase()]}>
-  {#each Array.from({ length }, (_, i) => i + 1) as id (id)}
+  {#each ids(length) as id (id)}
     <div class={["box-wrapper", `box-wrapper-${id}`, build(id)]}>
       <Checkbox
         {section}
