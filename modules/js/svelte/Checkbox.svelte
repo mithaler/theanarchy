@@ -86,6 +86,10 @@
     margin-right: 3px;
   }
 
+  .tactics-use {
+    margin-right: -2px;
+  }
+
   .resource {
     margin-right: 3px;
   }
