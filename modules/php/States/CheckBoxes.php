@@ -53,7 +53,7 @@ class CheckBoxes extends GameState {
         // spaces prevent alphanum validation; don't ever put this directly in SQL!
         #[StringParam(name: "section")] string $section,
         #[IntParam(name: "boxId")] int $boxId,
-        #[StringParam(name: "choice", alphanum: true)] string | null $choice,
+        #[StringParam(name: "choice", alphanum_dash: true)] string | null $choice,
         #[IntParam(name: "writtenValue")] int | null $writtenValue = null
     ) {
         if (!\array_key_exists($section, SECTIONS)) {

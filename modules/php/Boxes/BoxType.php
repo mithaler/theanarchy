@@ -213,15 +213,17 @@ abstract class BoxType {
      * @param int $playerId The player to check.
      * @param Box[] $currBoxes The player's checked boxes (or all players', doesn't matter).
      * @param ?int $ignoreAbove If passed, ignores boxes above this.
+     * @param ?string $section If passed, returns the highest for the specified section; if not, this type's section.
      */
-    public function highestCheckedBox(int $playerId, array &$currBoxes, ?int $ignoreAbove = null): int {
+    public function highestCheckedBox(int $playerId, array $currBoxes, ?int $ignoreAbove = null, ?string $section = null): int {
+        $section = $section == null ? $this->name : $section;
         return array_reduce(
             $currBoxes,
-            function (int $max, Box $box) use ($playerId, $ignoreAbove) {
+            function (int $max, Box $box) use ($playerId, $ignoreAbove, $section) {
                 if ($ignoreAbove != null && $box->boxId > $ignoreAbove) {
                     return $max;
                 }
-                if ($box->playerId == $playerId && $box->section == $this->name && $box->boxId > $max) {
+                if ($box->playerId == $playerId && $box->section == $section && $box->boxId > $max) {
                     return $box->boxId;
                 }
                 return $max;

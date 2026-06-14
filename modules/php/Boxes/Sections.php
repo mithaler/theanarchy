@@ -2,11 +2,17 @@
 
 namespace BGA\Games\theanarchy\Boxes;
 
+use Bolts;
+use Covers;
 use Gate;
+use HotOil;
 use Keep;
+use Logs;
 use Mint;
 use Moat;
+use Rocks;
 use Stables;
+use Tactics;
 use Tower;
 use Wall;
 
@@ -18,6 +24,7 @@ require_once(__DIR__ . "/UnclickableRow.php");
 require_once(__DIR__ . "/WealthWheel.php");
 require_once(__DIR__ . "/SimpleBuildings.php");
 require_once(__DIR__ . "/StValentinesFestival.php");
+require_once(__DIR__ . "/Tactics.php");
 
 /**
  * @param array<string, BoxType>
@@ -33,6 +40,12 @@ const SECTIONS = [
     "QUARRY & FOREST" => new QuarryForest(),
     "FARMS" => new Farms(),
     "TRAINING GROUNDS" => new TrainingGrounds(),
+
+    "COVERS" => new Covers(),
+    "ROCKS" => new Rocks(),
+    "HOT OIL" => new HotOil(),
+    "LOGS" => new Logs(),
+    "BOLTS" => new Bolts(),
 
     // Production rows
     "SERFS" => new Serfs(),
@@ -66,6 +79,7 @@ const SECTIONS = [
     "KEEP" => new Keep(),
     "MINT" => new Mint(),
     "STABLES" => new Stables(),
+    "TACTICS" => new Tactics(),
 
     "ST VALENTINES FESTIVAL" => new StValentinesFestival(),
 ];

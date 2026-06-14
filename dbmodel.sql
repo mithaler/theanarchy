@@ -61,7 +61,7 @@ CREATE TABLE IF NOT EXISTS checked_box (
     box_id TINYINT NOT NULL,
 
     -- For cases where a number is written in the box, NULL if not needed.
-    -- I think this is only MICHAELMAS.
+    -- This is used for Michaelmas and bubbles that get circled and then filled (Tactics/Discontent).
     written_value TINYINT,
 
     PRIMARY KEY (player_id, section, box_id)
