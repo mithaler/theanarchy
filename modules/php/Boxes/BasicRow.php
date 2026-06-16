@@ -146,3 +146,31 @@ class Entertainment extends LeadershipTrack {
         };
     }
 }
+
+class Ramparts extends BasicRow {
+    public string $name = "RAMPARTS";
+    public int $boxCount = 5;
+    public array $cost = [Resource::CRAFTSMEN];
+
+    const array REQUIRED_WARCRAFT = [1 => 1, 2 => 2, 3 => 4, 4 => 6, 5 => 7, 6 => 9];
+
+    public function validBoxes(Game $game, int $playerId, array $currBoxes): array {
+        $next = parent::validBoxes($game, $playerId, $currBoxes);
+        if (\count($next) > 0) {
+            $warcraft = $this->highestCheckedBox($playerId, $currBoxes, section: "WARCRAFT");
+            if ($warcraft >= self::REQUIRED_WARCRAFT[$next[0]]) {
+                return $next;
+            }
+        }
+        return [];
+    }
+
+    protected function reward(int $boxId): Reward {
+        return match ($boxId) {
+            1, 5 => Reward::resources($this->name, $boxId, [Resource::SOLDIERS->value => 1]),
+            3 => new Reward($this->name, $boxId, [Resource::SOLDIERS->value => 1], ["SOLDIERS"]),
+            2, 4 => Reward::resources($this->name, $boxId, [Resource::MUSTER_TOKENS->value => 1]),
+            6 => new Reward($this->name, $boxId, [Resource::MUSTER_TOKENS->value => 1], ["INFLUENCE"]),
+        };
+    }
+}

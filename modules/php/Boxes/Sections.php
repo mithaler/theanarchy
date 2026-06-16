@@ -79,6 +79,7 @@ const SECTIONS = [
     "KEEP" => new Keep(),
     "MINT" => new Mint(),
     "STABLES" => new Stables(),
+    "RAMPARTS" => new Ramparts(),
     "TACTICS" => new Tactics(),
 
     "ST VALENTINES FESTIVAL" => new StValentinesFestival(),
