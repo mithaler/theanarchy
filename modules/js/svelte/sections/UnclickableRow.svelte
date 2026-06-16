@@ -22,6 +22,7 @@
 
 <script lang="ts">
   import Checkbox from "../Checkbox.svelte";
+  import { ids } from "./utils.svelte";
 
   interface Props {
     type: "production" | "points";
@@ -32,7 +33,7 @@
 </script>
 
 <div class={["unclickable-row", type]}>
-  {#each Array.from({ length: UNCLICKABLE_ROWS[section] }, (_, i) => i + 1) as id (id)}
+  {#each ids(UNCLICKABLE_ROWS[section]) as id (id)}
     <Checkbox
       {type}
       {section}

@@ -4,6 +4,7 @@ use BGA\Games\theanarchy\Boxes\BoxType;
 use BGA\Games\theanarchy\Boxes\Reward;
 use BGA\Games\theanarchy\Game;
 use BGA\Games\theanarchy\Resource;
+use BGA\Games\theanarchy\States\CheckBoxes;
 
 /**
  * Returns the box ID of a given Valentine number as it appears on a domain card.
@@ -69,18 +70,18 @@ class StValentinesFestival extends BoxType {
                     ];
                     $notFilled = array_filter(
                         $options,
-                        fn ($opt) => $this->idFilled($playerId, NAME, $opt, $currBoxes)
+                        fn ($opt) => !$this->idFilled($playerId, NAME, $opt, $currBoxes)
                     );
                     $notFilledCount = count($notFilled);
 
-                    if ($notFilledCount == 0) {
+                    if ($notFilledCount == 2) {
                         // there are two options, we need a choice from the player
                         // move the card to the player's hand with location_arg et
                         $needsChoice = true;
                         $game->domainCards->moveCard($card->id, "{$playerId}_hand", $idx);
                     } else if ($notFilledCount == 1) {
                         // there's only one option, check it and discard the card
-                        $reward->boxes[NAME][] = $notFilled[0];
+                        $reward->boxes[NAME][] = array_values($notFilled)[0];
                         $game->domainCards->moveCard($card->id, "{$playerId}_discard");
                     } else if ($notFilledCount == 0) {
                         // there are no options, discard the card with no reward

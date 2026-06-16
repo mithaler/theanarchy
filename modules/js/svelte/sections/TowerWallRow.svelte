@@ -2,7 +2,7 @@
   import { getBga } from "../../context.svelte";
   import { castleState } from "../Castle.svelte";
   import Checkbox, { getState, type ChoiceFunc } from "../Checkbox.svelte";
-  import type { SectionProps } from "./utils.svelte";
+  import { addCancelButton, ids, type SectionProps } from "./utils.svelte";
 
   interface Props extends SectionProps {
     section: "WALL" | "TOWER";
@@ -20,14 +20,9 @@
     const prop: keyof typeof castleState =
       section === "WALL" ? "wallChoiceFunc" : "towerChoiceFunc";
 
-    bga.statusBar.addActionButton(
-      _("Cancel"),
-      () => {
-        castleState[prop] = undefined;
-        bga.states.restoreServerGameState();
-      },
-      { color: "secondary" },
-    );
+    addCancelButton(bga, () => {
+      castleState[prop] = undefined;
+    });
     castleState[prop] = doCheck;
   }
 
@@ -44,7 +39,7 @@
 </script>
 
 <div class={["fort-row", section.toLowerCase()]}>
-  {#each Array.from({ length }, (_, i) => i + 1) as id (id)}
+  {#each ids(length) as id (id)}
     <div class={["box-wrapper", `box-wrapper-${id}`]}>
       <Checkbox
         {section}

@@ -10,6 +10,7 @@
     type SiegecraftSection,
   } from "./sections/Siegecraft.svelte";
   import TowerWallRow from "./sections/TowerWallRow.svelte";
+  import TacticsUse, { TACTICS } from "./sections/TacticsUse.svelte";
 
   interface Props {
     playerId: number;
@@ -65,6 +66,17 @@
     {@render basicRow("resource", "TRAINING GROUNDS")}
   </div>
 
+  <div class="tactic-use-rows">
+    {#each TACTICS as tactic (tactic)}
+      <TacticsUse
+        section={tactic}
+        {isMe}
+        checkedBoxes={getCheckedBoxes(playerId, tactic)}
+        availableBoxes={isMe ? getAvailableBoxes(tactic) : null}
+      />
+    {/each}
+  </div>
+
   <div class="production-rows">
     {#each ["SERFS", "CRAFTSMEN", "MATERIALS", "PARTRONS", "SILVER", "FOOD", "SOLDIERS", "KNIGHTS"] as productionRow (productionRow)}
       {@render unclickableRow(productionRow as UnclickableType, "production")}
@@ -113,6 +125,11 @@
     .resource-rows {
       top: 129px;
       left: 103px;
+    }
+
+    .tactic-use-rows {
+      top: 215px;
+      left: 119px;
     }
 
     .production-rows {

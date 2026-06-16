@@ -3,6 +3,8 @@
   import { getCheckedBoxes, getAvailableBoxes } from "../context.svelte";
   import SimpleBuilding from "./sections/SimpleBuilding.svelte";
   import StValentinesFestival from "./sections/StValentinesFestival.svelte";
+  import Tactics from "./sections/Tactics.svelte";
+  import Ramparts from "./sections/Ramparts.svelte";
 
   interface Props {
     playerId: number;
@@ -37,7 +39,18 @@
     />
   {/each}
 
-  <!-- TODO spies, tactics, ramparts -->
+  <Tactics
+    {isMe}
+    checkedBoxes={getCheckedBoxes(playerId, "TACTICS")}
+    availableBoxes={isMe ? getAvailableBoxes("TACTICS") : null}
+  />
+  <Ramparts
+    {isMe}
+    checkedBoxes={getCheckedBoxes(playerId, "RAMPARTS")}
+    availableBoxes={isMe ? getAvailableBoxes("RAMPARTS") : null}
+  />
+
+  <!-- TODO spies, ramparts -->
 
   <SimpleBuilding
     {isMe}

@@ -1,6 +1,6 @@
 <script lang="ts">
   import Checkbox, { getState } from "../Checkbox.svelte";
-  import type { SectionProps } from "./utils.svelte";
+  import { ids, type SectionProps } from "./utils.svelte";
   const { availableBoxes, checkedBoxes, isMe }: SectionProps = $props();
 </script>
 

@@ -4,7 +4,7 @@
 
 <script lang="ts">
   import Checkbox, { getState } from "../Checkbox.svelte";
-  import type { SectionProps } from "./utils.svelte";
+  import { ids, type SectionProps } from "./utils.svelte";
 
   interface Props extends SectionProps {
     section: SiegecraftSection;
@@ -22,7 +22,7 @@
 </script>
 
 <div class={[className, "siegecraft-section"]}>
-  {#each Array.from({ length }, (_, i) => i + 1) as id (id)}
+  {#each ids(length) as id (id)}
     <div class={`${className}-${id}`}>
       <Checkbox
         {section}
