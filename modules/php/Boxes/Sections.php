@@ -20,7 +20,7 @@ require_once(__DIR__ . "/SimpleBuildings.php");
 require_once(__DIR__ . "/StValentinesFestival.php");
 
 /**
- * @var array<string, BoxType>
+ * @param array<string, BoxType>
  */
 const SECTIONS = [
     // Fortification rows

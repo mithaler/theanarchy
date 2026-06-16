@@ -25,7 +25,7 @@ abstract class BasicRow extends BoxType {
     }
     abstract protected function reward(int $boxId): Reward;
 
-    public function check(Game $game, int $playerId, int|null $boxId = null, bool $pay = true, string|null $choice = null): Reward {
+    public function check(Game $game, int $playerId, ?int $boxId = null, bool $pay = true, ?string $choice = null): Reward {
         if (!$pay && $boxId == null) {
             // look up current value
             $currValue = (int) Game::getUniqueValueFromDB(

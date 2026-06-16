@@ -2,7 +2,6 @@
 
 namespace BGA\Games\theanarchy\Boxes;
 
-use Bga\GameFramework\UserException;
 use BGA\Games\theanarchy\Game;
 use BGA\Games\theanarchy\Resource;
 
@@ -176,9 +175,9 @@ abstract class BoxType {
     abstract public function check(
         Game $game,
         int $playerId,
-        int|null $boxId = null,
+        ?int $boxId = null,
         bool $pay = true,
-        string|null $choice = null,
+        ?string $choice = null,
     ): Reward;
 
     /**
@@ -211,11 +210,11 @@ abstract class BoxType {
     /**
      * Returns the ID of the highest checked box in this row.
      * (This is not meaningful for some box types, it's pretty obvious which ones.)
-     * @var int $playerId The player to check.
-     * @var Box[] $currBoxes The player's checked boxes (or all players', doesn't matter).
-     * @var int|null $ignoreAbove If passed, ignores boxes above this.
+     * @param int $playerId The player to check.
+     * @param Box[] $currBoxes The player's checked boxes (or all players', doesn't matter).
+     * @param ?int $ignoreAbove If passed, ignores boxes above this.
      */
-    public function highestCheckedBox(int $playerId, array &$currBoxes, int|null $ignoreAbove = null): int {
+    public function highestCheckedBox(int $playerId, array &$currBoxes, ?int $ignoreAbove = null): int {
         return array_reduce(
             $currBoxes,
             function (int $max, Box $box) use ($playerId, $ignoreAbove) {

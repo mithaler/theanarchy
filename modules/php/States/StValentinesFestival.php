@@ -5,12 +5,7 @@ namespace BGA\Games\theanarchy\States;
 require_once(__DIR__ . "/../Boxes/StValentinesFestival.php");
 
 use Bga\GameFramework\States\GameState;
-use BGA\Games\theanarchy\Boxes\Box;
-use BGA\Games\theanarchy\Boxes\BoxType;
-use BGA\Games\theanarchy\Boxes\Reward;
 use BGA\Games\theanarchy\Game;
-use BGA\Games\theanarchy\Resource;
-use BGA\Games\theanarchy\States\CheckBoxes;
 
 use Bga\GameFramework\States\PossibleAction;
 use Bga\GameFramework\UserException;
@@ -43,7 +38,7 @@ class StValentinesFestival extends GameState {
             "SELECT box_id FROM checked_box WHERE player_id = $playerId AND section = '" . NAME . "'",
             true,
         );
-        $cards = $this->game->domainCards->getCardsInLocation($playerId . "_hand");
+        $cards = $this->game->domainCards->getCardsInLocation("{$playerId}_hand");
 
         $availBoxes = [];
         foreach ($cards as $card) {
@@ -76,15 +71,15 @@ class StValentinesFestival extends GameState {
 
                 // discard the card for that gender
                 $this->game->domainCards->moveAllCardsInLocation(
-                    $currentPlayerId . "_hand",
-                    $currentPlayerId . "_discard",
+                    "{$currentPlayerId}_hand",
+                    "{$currentPlayerId}_discard",
                     $gender == "female" ? 0 : 1,
                 );
 
                 $reward->notify($this->game, $currentPlayerId);
 
                 // if that's the last card, return to main checkboxing
-                if ($this->game->domainCards->countCardInLocation($currentPlayerId . "_hand") == 0) {
+                if ($this->game->domainCards->countCardInLocation("{$currentPlayerId}_hand") == 0) {
                     $this->game->gamestate->nextPrivateState($currentPlayerId, "checkboxes");
                 } else {
                     $this->game->notify->player(

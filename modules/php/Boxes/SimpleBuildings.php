@@ -52,7 +52,7 @@ class Keep extends SimpleBuilding {
         return Reward::boxes($this->name, 4, [$choice, "INFLUENCE"]);
     }
 
-    public function check(Game $game, int $playerId, int|null $boxId = null, bool $pay = true, string|null $choice = null): Reward {
+    public function check(Game $game, int $playerId, ?int $boxId = null, bool $pay = true, ?string $choice = null): Reward {
         $cost = \in_array($boxId, [1, 5, 9])
             ? [Resource::CRAFTSMEN, Resource::MATERIALS]
             : [Resource::PATRONS];
@@ -94,7 +94,7 @@ class Mint extends SimpleBuilding {
         return [];
     }
 
-    public function check(Game $game, int $playerId, int|null $boxId = null, bool $pay = true, string|null $choice = null): Reward {
+    public function check(Game $game, int $playerId, ?int $boxId = null, bool $pay = true, ?string $choice = null): Reward {
         $cost = \in_array($boxId, [1, 4, 7])
             ? [Resource::CRAFTSMEN, Resource::MATERIALS]
             : [Resource::SERFS];
@@ -131,7 +131,7 @@ class Stables extends SimpleBuilding {
         return [];
     }
 
-    public function check(Game $game, int $playerId, int|null $boxId = null, bool $pay = true, string|null $choice = null): Reward {
+    public function check(Game $game, int $playerId, ?int $boxId = null, bool $pay = true, ?string $choice = null): Reward {
         $building = \in_array($boxId, [1, 5]);
         if (!$building && $choice != Resource::SERFS->value && $choice != Resource::SOLDIERS->value) {
             throw new UserException("Cost choice for Stables must be either serfs or soldiers, got $choice");

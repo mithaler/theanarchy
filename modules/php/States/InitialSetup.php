@@ -6,8 +6,6 @@ namespace Bga\Games\theanarchy\States;
 
 use Bga\GameFramework\StateType;
 use Bga\GameFramework\States\GameState;
-use Bga\GameFramework\States\PossibleAction;
-use Bga\GameFramework\UserException;
 
 use Bga\Games\theanarchy\Game;
 use BGA\Games\theanarchy\StateConstants;

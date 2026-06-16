@@ -4,7 +4,6 @@ use BGA\Games\theanarchy\Boxes\BoxType;
 use BGA\Games\theanarchy\Boxes\Reward;
 use BGA\Games\theanarchy\Game;
 use BGA\Games\theanarchy\Resource;
-use BGA\Games\theanarchy\States\CheckBoxes;
 
 /**
  * Returns the box ID of a given Valentine number as it appears on a domain card.
@@ -35,7 +34,7 @@ class StValentinesFestival extends BoxType {
         return [];
     }
 
-    public function check(Game $game, int $playerId, int|null $boxId = null, bool $pay = true, string|null $choice = null): Reward {
+    public function check(Game $game, int $playerId, ?int $boxId = null, bool $pay = true, ?string $choice = null): Reward {
         $currBoxes = $game->allCheckedBoxes($playerId);
 
         if ($pay && $boxId <= 6) {
@@ -61,7 +60,7 @@ class StValentinesFestival extends BoxType {
                 if (!$this->idFilled($playerId, NAME, $targetId, $currBoxes)) {
                     // easy case: it isn't filled, just fill it and move on
                     $reward->boxes[NAME][] = $targetId;
-                    $game->domainCards->moveCard($card->id, $playerId . "_discard");
+                    $game->domainCards->moveCard($card->id, "{$playerId}_discard");
                 } else {
                     // get the left and right boxes
                     $options = [
@@ -78,14 +77,14 @@ class StValentinesFestival extends BoxType {
                         // there are two options, we need a choice from the player
                         // move the card to the player's hand with location_arg et
                         $needsChoice = true;
-                        $game->domainCards->moveCard($card->id, $playerId . "_hand", $idx);
+                        $game->domainCards->moveCard($card->id, "{$playerId}_hand", $idx);
                     } else if ($notFilledCount == 1) {
                         // there's only one option, check it and discard the card
                         $reward->boxes[NAME][] = $notFilled[0];
-                        $game->domainCards->moveCard($card->id, $playerId . "_discard");
+                        $game->domainCards->moveCard($card->id, "{$playerId}_discard");
                     } else if ($notFilledCount == 0) {
                         // there are no options, discard the card with no reward
-                        $game->domainCards->moveCard($card->id, $playerId . "_discard");
+                        $game->domainCards->moveCard($card->id, "{$playerId}_discard");
                     }
                 }
             }

@@ -9,7 +9,7 @@ use BGA\Games\theanarchy\Resource;
 abstract class WealthWheel extends BoxType {
     abstract protected function reward($boxId): Reward;
 
-    public function check(Game $game, int $playerId, int|null $boxId = null, bool $pay = true, string|null $choice = null): Reward {
+    public function check(Game $game, int $playerId, ?int $boxId = null, bool $pay = true, ?string $choice = null): Reward {
         $reward = $this->reward($boxId);
         return $this->basicCheckBox($game, $playerId, $boxId, $pay, [Resource::SILVER], $reward);
     }
@@ -193,7 +193,7 @@ class SiegecraftConstruction extends BoxType {
         return $out;
     }
 
-    public function check(Game $game, int $playerId, int|null $boxId = null, bool $pay = true, string|null $choice = null): Reward {
+    public function check(Game $game, int $playerId, ?int $boxId = null, bool $pay = true, ?string $choice = null): Reward {
         $reward = $this->reward($boxId);
         foreach (self::COSTS[$boxId] as $res => $count) {
             $game->resources($res)->inc($playerId, -$count);

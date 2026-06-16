@@ -86,7 +86,7 @@ class Tower extends FortificationRow {
         };
     }
 
-    public function check(Game $game, int $playerId, int|null $boxId = null, bool $pay = true, string|null $choice = null): Reward {
+    public function check(Game $game, int $playerId, ?int $boxId = null, bool $pay = true, ?string $choice = null): Reward {
         if (!\in_array($choice, ["towerLeftBottom", "towerLeftTop", "towerRightBottom", "towerRightTop"])) {
             throw new UserException("Tower choice must be set");
         }
@@ -117,7 +117,7 @@ class Wall extends FortificationRow {
         };
     }
 
-    public function check(Game $game, int $playerId, int|null $boxId = null, bool $pay = true, string|null $choice = null): Reward {
+    public function check(Game $game, int $playerId, ?int $boxId = null, bool $pay = true, ?string $choice = null): Reward {
         if (!\in_array($choice, ["wallTop", "wallLeft", "wallBottom", "wallRight"])) {
             throw new UserException("Wall choice must be set");
         }
@@ -169,7 +169,7 @@ class Moat extends FortificationRow {
         };
     }
 
-    public function check(Game $game, int $playerId, int|null $boxId = null, bool $pay = true, string|null $choice = null): Reward {
+    public function check(Game $game, int $playerId, ?int $boxId = null, bool $pay = true, ?string $choice = null): Reward {
         if ($choice != Resource::SERFS->value && $choice != Resource::SOLDIERS->value) {
             throw new UserException("Cost choice for Moat must be either serfs or soldiers, got $choice");
         }

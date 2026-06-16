@@ -130,7 +130,7 @@ class Game extends \Bga\GameFramework\Table {
             $cards[] = ["type" => (string) $i, "type_arg" => 0, "nbr" => 1];
         }
         foreach ($playerIds as $playerId) {
-            $playerDeck = $playerId . "_deck";
+            $playerDeck = "{$playerId}_deck";
             $this->domainCards->createCards($cards, $playerDeck);
             $this->domainCards->shuffle($playerDeck);
         }
@@ -244,7 +244,7 @@ class Game extends \Bga\GameFramework\Table {
     /**
      * Returns all checked boxes.
      * If playerId is not null, filters down to boxes checked by that player.
-     * @param int|null $playerId An optional player ID to filter on.
+     * @param ?int $playerId An optional player ID to filter on.
      * @return Box[] A list of boxes.
      */
     public function allCheckedBoxes(int | null $playerId = null): array {
@@ -291,9 +291,9 @@ class Game extends \Bga\GameFramework\Table {
       * @return PlayerDomainCard[] The cards drawn.
       */
      public function drawDomainCards(int $playerId, int $count, bool $hold): array {
-        $playerDeck = $playerId . "_deck";
-        $playerDiscard = $playerId . "_discard";
-        $target = $hold ? $playerId . "_hand" : $playerDiscard;
+        $playerDeck = "{$playerId}_deck";
+        $playerDiscard = "{$playerId}_discard";
+        $target = $hold ? "{$playerId}_hand" : $playerDiscard;
 
         // implement my own reshuffle, the built-in one only supports the magic locations "deck"/"discard"
         $deckCount = $this->domainCards->countCardsInLocation($playerDeck);
@@ -344,7 +344,7 @@ class Game extends \Bga\GameFramework\Table {
         return $richCards;
      }
 
-     public static function checkBox(int $playerId, string $section, int $boxId, string|null $writtenValue = null) {
+     public static function checkBox(int $playerId, string $section, int $boxId, ?string $writtenValue = null) {
         if ($writtenValue) {
             Game::DbQuery("INSERT INTO checked_box (player_id, section, box_id, written_value) VALUES ($playerId, '$section', $boxId, '$writtenValue')");
         } else {
