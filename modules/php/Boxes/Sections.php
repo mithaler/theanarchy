@@ -3,6 +3,7 @@
 namespace BGA\Games\theanarchy\Boxes;
 
 use Bolts;
+use Chapel;
 use Covers;
 use Gate;
 use HotOil;
@@ -25,6 +26,7 @@ require_once(__DIR__ . "/WealthWheel.php");
 require_once(__DIR__ . "/SimpleBuildings.php");
 require_once(__DIR__ . "/StValentinesFestival.php");
 require_once(__DIR__ . "/Tactics.php");
+require_once(__DIR__ . "/Chapel.php");
 
 /**
  * @param array<string, BoxType>
@@ -82,5 +84,6 @@ const SECTIONS = [
     "RAMPARTS" => new Ramparts(),
     "TACTICS" => new Tactics(),
 
+    "CHAPEL" => new Chapel(),
     "ST VALENTINES FESTIVAL" => new StValentinesFestival(),
 ];

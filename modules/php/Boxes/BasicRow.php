@@ -46,9 +46,9 @@ abstract class ResourceRow extends BasicRow {
 
     protected function reward(int $boxId): Reward {
         return match ($boxId) {
-            1, 5, 9 => Reward::resources($this->name, $boxId, [$this->resourceReward->value => 1]),
-            3, 7, 11 => new Reward($this->name, $boxId, [$this->resourceReward->value => 1], [$this->incomeUpgrade]),
-            13 => new Reward($this->name, $boxId, [$this->resourceReward->value => 1], [$this->incomeUpgrade, "LOYALTY"]),
+            1, 5, 9 => Reward::resources($this->name, $boxId, [$this->resourceReward]),
+            3, 7, 11 => new Reward($this->name, $boxId, [$this->resourceReward], [$this->incomeUpgrade]),
+            13 => new Reward($this->name, $boxId, [$this->resourceReward], [$this->incomeUpgrade, "LOYALTY"]),
             default => Reward::none($this->name, $boxId),
         };
     }
@@ -85,13 +85,13 @@ class Governance extends LeadershipTrack {
 
     protected function reward(int $boxId): Reward {
         return match ($boxId) {
-            1 => Reward::resources($this->name, $boxId, [Resource::SILVER->value => 1]),
+            1 => Reward::resources($this->name, $boxId, [Resource::SILVER]),
             3 => Reward::boxes($this->name, $boxId, ["LOYALTY"]),
-            5 => new Reward($this->name, $boxId, [Resource::SERFS->value => 1], ["SERFS"]),
-            6 => Reward::resources($this->name, $boxId, [Resource::MATERIALS->value => 1]),
-            7 => Reward::resources($this->name, $boxId, [Resource::KNIGHTS->value => 1]),
+            5 => new Reward($this->name, $boxId, [Resource::SERFS], ["SERFS"]),
+            6 => Reward::resources($this->name, $boxId, [Resource::MATERIALS]),
+            7 => Reward::resources($this->name, $boxId, [Resource::KNIGHTS]),
             8 => Reward::boxes($this->name, $boxId, ["INFLUENCE"]),
-            9 => Reward::resources($this->name, $boxId, [Resource::CRAFTSMEN->value => 1]),
+            9 => Reward::resources($this->name, $boxId, [Resource::CRAFTSMEN]),
             default => Reward::none($this->name, $boxId),
         };
     }
@@ -102,12 +102,12 @@ class Warcraft extends LeadershipTrack {
 
     protected function reward(int $boxId): Reward {
         return match ($boxId) {
-            1 => Reward::resources($this->name, $boxId, [Resource::SOLDIERS->value => 1]),
+            1 => Reward::resources($this->name, $boxId, [Resource::SOLDIERS]),
             3 => Reward::boxes($this->name, $boxId, ["INFLUENCE"]),
-            5 => Reward::resources($this->name, $boxId, [Resource::MATERIALS->value => 1]),
-            7 => Reward::resources($this->name, $boxId, [Resource::CRAFTSMEN->value => 1]),
+            5 => Reward::resources($this->name, $boxId, [Resource::MATERIALS]),
+            7 => Reward::resources($this->name, $boxId, [Resource::CRAFTSMEN]),
             8 => Reward::boxes($this->name, $boxId, ["INFLUENCE"]),
-            9 => new Reward($this->name, $boxId, [Resource::KNIGHTS->value => 1], ["KNIGHTS"]),
+            9 => new Reward($this->name, $boxId, [Resource::KNIGHTS], ["KNIGHTS"]),
             default => Reward::none($this->name, $boxId),
         };
     }
@@ -118,11 +118,11 @@ class Worship extends LeadershipTrack {
 
     protected function reward(int $boxId): Reward {
         return match ($boxId) {
-            1 => Reward::resources($this->name, $boxId, [Resource::SILVER->value => 1]),
+            1 => Reward::resources($this->name, $boxId, [Resource::SILVER]),
             3 => Reward::boxes($this->name, $boxId, ["LOYALTY"]),
-            5 => Reward::resources($this->name, $boxId, [Resource::FOOD->value => 1]),
-            7 => Reward::resources($this->name, $boxId, [Resource::CRAFTSMEN->value => 1]),
-            9 => new Reward($this->name, $boxId, [Resource::SILVER->value => 1], ["LOYALTY"]),
+            5 => Reward::resources($this->name, $boxId, [Resource::FOOD]),
+            7 => Reward::resources($this->name, $boxId, [Resource::CRAFTSMEN]),
+            9 => new Reward($this->name, $boxId, [Resource::SILVER], ["LOYALTY"]),
             default => Reward::none($this->name, $boxId),
         };
     }
@@ -133,15 +133,15 @@ class Entertainment extends LeadershipTrack {
 
     protected function reward(int $boxId): Reward {
         return match ($boxId) {
-            1 => Reward::resources($this->name, $boxId, [Resource::MATERIALS->value => 1]),
+            1 => Reward::resources($this->name, $boxId, [Resource::MATERIALS]),
             2 => Reward::boxes($this->name, $boxId, ["BREWHOUSE"]),
-            3 => new Reward($this->name, $boxId, [Resource::FOOD->value => 1], ["LOYALTY"]),
+            3 => new Reward($this->name, $boxId, [Resource::FOOD], ["LOYALTY"]),
             4 => Reward::boxes($this->name, $boxId, ["BREWHOUSE"]),
-            5 => Reward::resources($this->name, $boxId, [Resource::SILVER->value => 1]),
+            5 => Reward::resources($this->name, $boxId, [Resource::SILVER]),
             6 => Reward::boxes($this->name, $boxId, ["BREWHOUSE"]),
-            7 => Reward::resources($this->name, $boxId, [Resource::CRAFTSMEN->value => 1]),
+            7 => Reward::resources($this->name, $boxId, [Resource::CRAFTSMEN]),
             8 => Reward::boxes($this->name, $boxId, ["BREWHOUSE", "BREWHOUSE", "LOYALTY"]),
-            9 => new Reward($this->name, $boxId, [Resource::SERFS->value => 1], ["BREWHOUSE", "SERFS"]),
+            9 => new Reward($this->name, $boxId, [Resource::SERFS], ["BREWHOUSE", "SERFS"]),
             default => Reward::none($this->name, $boxId),
         };
     }
@@ -167,10 +167,10 @@ class Ramparts extends BasicRow {
 
     protected function reward(int $boxId): Reward {
         return match ($boxId) {
-            1, 5 => Reward::resources($this->name, $boxId, [Resource::SOLDIERS->value => 1]),
-            3 => new Reward($this->name, $boxId, [Resource::SOLDIERS->value => 1], ["SOLDIERS"]),
-            2, 4 => Reward::resources($this->name, $boxId, [Resource::MUSTER_TOKENS->value => 1]),
-            6 => new Reward($this->name, $boxId, [Resource::MUSTER_TOKENS->value => 1], ["INFLUENCE"]),
+            1, 5 => Reward::resources($this->name, $boxId, [Resource::SOLDIERS]),
+            3 => new Reward($this->name, $boxId, [Resource::SOLDIERS], ["SOLDIERS"]),
+            2, 4 => Reward::resources($this->name, $boxId, [Resource::MUSTER_TOKENS]),
+            6 => new Reward($this->name, $boxId, [Resource::MUSTER_TOKENS], ["INFLUENCE"]),
         };
     }
 }

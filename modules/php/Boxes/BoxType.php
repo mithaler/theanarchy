@@ -41,7 +41,7 @@ class Reward {
     public int $fromId;
 
     /**
-     * @var array<Resource, int>
+     * @var array<string, int>
      */
     public array $resources;
 
@@ -58,10 +58,28 @@ class Reward {
     ) {
         $this->fromSection = $fromSection;
         $this->fromId = $fromId;
-        $this->resources = $resources;
 
         /*
-            this can be either of the form:
+            this can be either:
+                [Resource::SOME, Resource::ANOTHER]
+            or:
+                [Resource::SOME, Resource::ANOTHER->value => 2]
+            we always transform it to the second form
+        */
+        $this->resources = [];
+        foreach ($resources as $idx => $value) {
+            if (\is_string($idx) && \is_numeric($value)) {
+                // it's enum(string) => count
+                $this->resources[$idx] = $value;
+            } else {
+                // it's an enum variant
+                $this->resources[$value->value] = 1;
+            }
+        }
+        
+
+        /*
+            this can be either:
                 ["SOMETHING", "ANOTHER"]
             in which case it becomes ["SOMETHING" => null, "ANOTHER" => null], or:
                 ["SOMETHING" => [10]]
@@ -182,7 +200,7 @@ abstract class BoxType {
      *
      * or
      *
-     *   [RESOURCE::Something->value => 1, RESOURCE::Another->value => 2]
+     *   [RESOURCE::Something, RESOURCE::Another->value => 2]
      */
     protected function canPay(Game &$game, int $playerId, array $resources): bool {
         if (\array_is_list($resources)) {

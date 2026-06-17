@@ -73,8 +73,8 @@ abstract class PointRow extends UnclickableRow {
 
     protected function reward(string $section, int $boxId): Reward {
         return match ($boxId) {
-            2, 8, 14, 22 => Reward::resources($section, $boxId, [$this->firstWorkerReward->value => 1]),
-            5, 11, 18 => Reward::resources($section, $boxId, [$this->secondWorkerReward->value => 1]),
+            2, 8, 14, 22 => Reward::resources($section, $boxId, [$this->firstWorkerReward]),
+            5, 11, 18 => Reward::resources($section, $boxId, [$this->secondWorkerReward]),
             // there's a pattern here, but it's not worth proving how clever I am by not just hard-coding it
             16 => Reward::boxes($section, $boxId, [$this->firstPointReward]),
             20 => Reward::boxes($section, $boxId, [$this->secondPointReward]),
