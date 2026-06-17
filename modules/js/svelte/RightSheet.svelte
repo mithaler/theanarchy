@@ -5,6 +5,7 @@
   import Tactics from "./sections/Tactics.svelte";
   import Ramparts from "./sections/Ramparts.svelte";
   import { sectionProps } from "./sections/utils.svelte";
+  import Chapel from "./sections/Chapel.svelte";
 
   interface Props {
     playerId: number;
@@ -45,6 +46,7 @@
     section="STABLES"
   />
 
+  <Chapel {...sectionProps(isMe, playerId, "CHAPEL")} />
   <StValentinesFestival
     {...sectionProps(isMe, playerId, "ST VALENTINES FESTIVAL")}
   />

@@ -7,7 +7,7 @@
 
 <div class="ramparts">
   {#each ids(6) as id (id)}
-    <div class="box-wrapper box-wrapper-${id}">
+    <div class="box-wrapper box-wrapper-{id}">
       <Checkbox
         section="RAMPARTS"
         boxId={id}

@@ -50,7 +50,7 @@
 
   <!-- Checkbox bubbles, start from 2 (1 is above) -->
   {#each ids(15) as id (id)}
-    <div class="box-wrapper box-wrapper-${id + 1}">
+    <div class="box-wrapper box-wrapper-{id + 1}">
       <Checkbox
         type="tactics-use"
         {section}

@@ -1,10 +1,10 @@
-{    
-    // Statistics for the table
-    "table": {},
-    
-    // Statistics for each player
-    "player": {
-      /* 
+{
+  // Statistics for the table
+  "table": {},
+
+  // Statistics for each player
+  "player": {
+    /* 
       EXAMPLE:
 
       "turns_number": {
@@ -23,6 +23,5 @@
         "type": "float"
       }
       */
-
-    }
+  },
 }

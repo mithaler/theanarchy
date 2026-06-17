@@ -45,7 +45,7 @@
 
 <div class={["basic-row", type, sectionClass]}>
   {#each ids(length) as id (id)}
-    <div class={["box-wrapper", `box-wrapper-${id}`]}>
+    <div class="box-wrapper box-wrapper-{id}">
       <Checkbox
         {type}
         {section}

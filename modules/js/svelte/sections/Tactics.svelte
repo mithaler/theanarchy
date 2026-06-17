@@ -55,7 +55,7 @@
 
 <div class="tactics">
   {#each ids(5) as id (id)}
-    <div class="box-wrapper box-wrapper-${id}">
+    <div class="box-wrapper box-wrapper-{id}">
       <Checkbox
         section="TACTICS"
         boxId={id}
