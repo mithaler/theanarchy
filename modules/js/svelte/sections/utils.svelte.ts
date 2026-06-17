@@ -1,10 +1,27 @@
-import { getBga, type AnarchyBga } from "../../context.svelte";
+import {
+  getAvailableBoxes,
+  getBga,
+  getCheckedBoxes,
+  type AnarchyBga,
+} from "../../context.svelte";
 import type { ChoiceFunc } from "../Checkbox.svelte";
 
 export interface SectionProps {
   isMe: boolean;
   checkedBoxes: number[];
   availableBoxes: number[] | null;
+}
+
+export function sectionProps(
+  isMe: boolean,
+  playerId: number,
+  section: string,
+): SectionProps {
+  return {
+    isMe,
+    checkedBoxes: getCheckedBoxes(playerId, section),
+    availableBoxes: isMe ? getAvailableBoxes(section) : null,
+  };
 }
 
 export function addCancelButton(bga: AnarchyBga, addlCleanup?: () => void) {

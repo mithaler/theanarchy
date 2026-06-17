@@ -2,7 +2,7 @@
   import BasicRow, { type BasicRowType } from "./sections/BasicRow.svelte";
   import { type UnclickableType } from "./sections/UnclickableRow.svelte";
   import UnclickableRow from "./sections/UnclickableRow.svelte";
-  import { getCheckedBoxes, getAvailableBoxes } from "../context.svelte";
+  import { getCheckedBoxes } from "../context.svelte";
   import WealthWheelSide, {
     type WealthWheelSideSection,
   } from "./sections/WealthWheelSide.svelte";
@@ -11,6 +11,7 @@
   } from "./sections/Siegecraft.svelte";
   import TowerWallRow from "./sections/TowerWallRow.svelte";
   import TacticsUse, { TACTICS } from "./sections/TacticsUse.svelte";
+  import { sectionProps } from "./sections/utils.svelte";
 
   interface Props {
     playerId: number;
@@ -21,12 +22,10 @@
 
 {#snippet basicRow(type: BasicRowType, section: string, length: number = 13)}
   <BasicRow
-    {isMe}
     {section}
     {type}
     {length}
-    checkedBoxes={getCheckedBoxes(playerId, section)}
-    availableBoxes={isMe ? getAvailableBoxes(section) : null}
+    {...sectionProps(isMe, playerId, section)}
   />
 {/snippet}
 
@@ -44,18 +43,8 @@
 <div class="anarchy-sheet anarchy-left-sheet">
   <div class="fortification-rows">
     {@render basicRow("fortification", "GATE", 6)}
-    <TowerWallRow
-      section="TOWER"
-      {isMe}
-      checkedBoxes={getCheckedBoxes(playerId, "TOWER")}
-      availableBoxes={isMe ? getAvailableBoxes("TOWER") : null}
-    />
-    <TowerWallRow
-      section="WALL"
-      {isMe}
-      checkedBoxes={getCheckedBoxes(playerId, "WALL")}
-      availableBoxes={isMe ? getAvailableBoxes("WALL") : null}
-    />
+    <TowerWallRow section="TOWER" {...sectionProps(isMe, playerId, "TOWER")} />
+    <TowerWallRow section="WALL" {...sectionProps(isMe, playerId, "WALL")} />
     {@render basicRow("fortification", "MOAT", 12)}
   </div>
 
@@ -68,12 +57,7 @@
 
   <div class="tactic-use-rows">
     {#each TACTICS as tactic (tactic)}
-      <TacticsUse
-        section={tactic}
-        {isMe}
-        checkedBoxes={getCheckedBoxes(playerId, tactic)}
-        availableBoxes={isMe ? getAvailableBoxes(tactic) : null}
-      />
+      <TacticsUse section={tactic} {...sectionProps(isMe, playerId, tactic)} />
     {/each}
   </div>
 
@@ -91,18 +75,14 @@
 
   {#each ["GUILDSMEN", "ALLIES"] as side (side)}
     <WealthWheelSide
-      {isMe}
       section={side as WealthWheelSideSection}
-      checkedBoxes={getCheckedBoxes(playerId, side)}
-      availableBoxes={isMe ? getAvailableBoxes(side) : null}
+      {...sectionProps(isMe, playerId, side)}
     />
   {/each}
   {#each ["SIEGECRAFT", "SIEGECRAFT_construction"] as sec (sec)}
     <Siegecraft
       section={sec as SiegecraftSection}
-      {isMe}
-      checkedBoxes={getCheckedBoxes(playerId, sec)}
-      availableBoxes={isMe ? getAvailableBoxes(sec) : null}
+      {...sectionProps(isMe, playerId, sec)}
     />
   {/each}
 </div>
