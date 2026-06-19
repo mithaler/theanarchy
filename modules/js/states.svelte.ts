@@ -64,10 +64,7 @@ export interface StValentinesFestivalArgs {
 }
 
 export class StValentinesFestival extends State<StValentinesFestivalArgs> {
-  onEnteringState(
-    args: StValentinesFestivalArgs,
-    isCurrentPlayerActive: boolean,
-  ) {
+  onEnteringState(args: StValentinesFestivalArgs) {
     if (!ctx.data?.availableBoxes) {
       ctx.data!.availableBoxes = {
         "ST VALENTINES FESTIVAL": [
@@ -76,5 +73,16 @@ export class StValentinesFestival extends State<StValentinesFestivalArgs> {
         ],
       };
     }
+  }
+}
+
+export class KnightsTraining extends State<never> {
+  onEnteringState(): void {
+    // TODO make these look nice
+    ["soldiers", "KNIGHTS"].forEach((choice) => {
+      this.bga.statusBar.addActionButton(choice, () =>
+        this.bga.actions.performAction("actMakeChoice", { choice }),
+      );
+    });
   }
 }

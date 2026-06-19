@@ -23,6 +23,7 @@ import { ctx, getPlayer } from "./context.svelte";
 import {
   CheckBoxes,
   StValentinesFestival,
+  KnightsTraining,
   type StValentinesFestivalArgs,
 } from "./states.svelte";
 
@@ -34,6 +35,7 @@ export class Game {
     this.bga = bga;
 
     this.bga.states.register("CheckBoxes", new CheckBoxes(this, bga));
+    this.bga.states.register("KnightsTraining", new KnightsTraining(this, bga));
     this.bga.states.register(
       "StValentinesFestival",
       new StValentinesFestival(this, bga),
