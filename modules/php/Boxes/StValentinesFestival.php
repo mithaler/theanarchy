@@ -108,7 +108,7 @@ class StValentinesFestival extends BoxType {
             $reward = new Reward(
                 NAME,
                 $boxId,
-                [Resource::SERFS->value => 1],
+                [Resource::SERFS],
                 $boxId % 2 == 1 ? ["LOYALTY"] : ["LOYALTY", "SERFS"]
             );
         }

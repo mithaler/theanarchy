@@ -62,7 +62,7 @@ abstract class TacticsUse extends BoxType {
     public function check(Game $game, int $playerId, ?int $boxId = null, bool $pay = true, ?string $choice = null): Reward {
         if (!$pay && $boxId == null) {
             $boxId = 1;
-            $reward = new Reward($this->name, 1, [Resource::SOLDIERS->value => 1], [$this->name => [2]]);
+            $reward = new Reward($this->name, 1, [Resource::SOLDIERS], [$this->name => [2]]);
         } else if ($boxId > 1 && $boxId < 16) {
             $reward = Reward::none($this->name, $boxId);
         } else {
