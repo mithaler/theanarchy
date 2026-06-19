@@ -320,7 +320,7 @@ class Game extends \Bga\GameFramework\Table {
             // notify a reshuffle happened
             $this->notify->all(
                 "domainReshuffle",
-                \clienttranslate('${playerName} reshuffles his domain deck'),
+                \clienttranslate('${player_name} reshuffles his domain deck'),
                 ["player_id" => $playerId, "player_name" => $this->getPlayerNameById($playerId)],
             );
         } else {

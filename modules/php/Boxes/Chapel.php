@@ -90,3 +90,60 @@ class Chapel extends BoxType {
         return $this->basicCheckBox($game, $playerId, $boxId, $pay, $this->cost($boxId), $reward);
     }
 }
+
+class KnightsTraining extends BoxType {
+    public string $name = "KNIGHTS TRAINING";
+
+    private const array WORSHIP_THRESHOLDS = [1 => 2, 2 => 4, 3 => 6, 4 => 7, 5 => 8, 6 => 9]; 
+
+    public function validBoxes(Game $game, int $playerId, array $currBoxes): array {
+        $highest = $this->highestCheckedBox($playerId, $currBoxes);
+        if (
+            $highest == 6 ||
+            ($highest == 0 && !$this->idFilled($playerId, "CHAPEL", 1, $currBoxes))
+        ) {
+            return [];
+        }
+
+        $worship = $this->highestCheckedBox($playerId, $currBoxes, section: "WORSHIP");
+        if (
+            $worship >= self::WORSHIP_THRESHOLDS[$highest + 1] &&
+            $this->canPay($game, $playerId, [Resource::PATRONS])
+        ) {
+            return [$highest + 1];
+        }
+        return [];
+    }
+
+    public function check(Game $game, int $playerId, ?int $boxId = null, bool $pay = true, ?string $choice = null): Reward {
+        $count = 2 + intdiv($boxId - 1, 2);
+        $cards = $game->drawDomainCards($playerId, $count, false);
+        $uniqSymbols = array_reduce($cards, function ($set, $card) {
+            $set[$card->card->symbol->value] = true;
+            return $set;
+        }, []);
+
+        // TODO: make this notification way better
+        $game->notify->all("knightstraining", \clienttranslate('${player_name} sees symbols: ${symbols}'), [
+            "player_id" => $playerId,
+            "player_name" => $game->getPlayerNameById($playerId),
+            "symbols" => implode(", ", array_keys($uniqSymbols)),
+            "boxSection" => $this->name,
+            "boxId" => $boxId,
+        ]);
+
+        $symbolCount = count($uniqSymbols);
+        if ($symbolCount < 2) {
+            $reward = Reward::none($this->name, $boxId);
+        } else if ($symbolCount == 2) {
+            $reward = Reward::resources($this->name, $boxId, [Resource::SOLDIERS]);
+        } else if ($symbolCount == 3) {
+            // no reward immediately; we have to change states to get a choice
+            $reward = Reward::none($this->name, $boxId);
+            $game->gamestate->nextPrivateState($playerId, "knightstraining");
+        } else if ($symbolCount == 4) {
+            $reward = new Reward($this->name, $boxId, [Resource::SOLDIERS->value => 1], ["KNIGHTS", "MIGHT"]);
+        }
+        return $this->basicCheckBox($game, $playerId, $boxId, $pay, [Resource::PATRONS], $reward);
+    }
+}

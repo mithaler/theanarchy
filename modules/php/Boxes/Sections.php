@@ -8,6 +8,7 @@ use Covers;
 use Gate;
 use HotOil;
 use Keep;
+use KnightsTraining;
 use Logs;
 use Mint;
 use Moat;
@@ -85,5 +86,6 @@ const SECTIONS = [
     "TACTICS" => new Tactics(),
 
     "CHAPEL" => new Chapel(),
+    "KNIGHTS TRAINING" => new KnightsTraining(),
     "ST VALENTINES FESTIVAL" => new StValentinesFestival(),
 ];

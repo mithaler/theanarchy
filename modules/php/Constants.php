@@ -12,6 +12,7 @@ class StateConstants {
     const int CHECK_BOXES_LOOP = 6;
     const int CHECK_BOXES = 7;
     const int ST_VALENTINES_FESTIVAL = 8;
+    const int KNIGHTS_TRAINING = 9;
 
     const int GAME_END = 99;
 }
@@ -44,11 +45,11 @@ enum Resource: string {
     case TOWER_RIGHT_BOTTOM = "towerRightBottom";
 }
 
-enum KnightsTraining {
-    case SCROLL;
-    case ARMS;
-    case BOW;
-    case HORSESHOE;
+enum KnightsTraining: string {
+    case SCROLL = "scroll";
+    case ARMS = "arms";
+    case BOW = "bow";
+    case HORSESHOE = "horseshoe";
 }
 enum Brewhouse {
     case GRAIN;

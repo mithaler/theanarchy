@@ -31,6 +31,7 @@ class CheckBoxes extends GameState {
             type: StateType::PRIVATE,
             descriptionMyTurn: clienttranslate('${you} may check boxes'),
             transitions: [
+                'knightstraining' => StateConstants::KNIGHTS_TRAINING,
                 'stvalentinesfestival' => StateConstants::ST_VALENTINES_FESTIVAL,
             ]
         );
