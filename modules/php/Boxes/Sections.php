@@ -14,11 +14,11 @@ use Mint;
 use Moat;
 use Rocks;
 use Stables;
+use StValentinesFestival;
 use Tactics;
 use Tower;
 use Wall;
 
-use StValentinesFestival;
 
 require_once(__DIR__ . "/BasicRow.php");
 require_once(__DIR__ . "/FortificationRow.php");
@@ -28,6 +28,7 @@ require_once(__DIR__ . "/SimpleBuildings.php");
 require_once(__DIR__ . "/StValentinesFestival.php");
 require_once(__DIR__ . "/Tactics.php");
 require_once(__DIR__ . "/Chapel.php");
+require_once(__DIR__ . "/Brewhouse.php");
 
 /**
  * @param array<string, BoxType>
@@ -88,4 +89,5 @@ const SECTIONS = [
     "CHAPEL" => new Chapel(),
     "KNIGHTS TRAINING" => new KnightsTraining(),
     "ST VALENTINES FESTIVAL" => new StValentinesFestival(),
+    "BREWHOUSE" => new Brewhouse(),
 ];

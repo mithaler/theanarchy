@@ -140,7 +140,7 @@ class Entertainment extends LeadershipTrack {
             5 => Reward::resources($this->name, $boxId, [Resource::SILVER]),
             6 => Reward::boxes($this->name, $boxId, ["BREWHOUSE"]),
             7 => Reward::resources($this->name, $boxId, [Resource::CRAFTSMEN]),
-            8 => Reward::boxes($this->name, $boxId, ["BREWHOUSE", "BREWHOUSE", "LOYALTY"]),
+            8 => Reward::boxes($this->name, $boxId, ["BREWHOUSE" => [null, null], "LOYALTY"]),
             9 => new Reward($this->name, $boxId, [Resource::SERFS], ["BREWHOUSE", "SERFS"]),
             default => Reward::none($this->name, $boxId),
         };

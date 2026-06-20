@@ -274,23 +274,23 @@ class Game extends \Bga\GameFramework\Table {
         );
     }
 
-     public function boxesByPlayer(array $boxes): array {
+    public function boxesByPlayer(array $boxes): array {
         $out = [];
         foreach ($boxes as $box) {
             $out[$box->playerId][$box->section][] = $box->boxId;
         }
         return $out;
-     }
+    }
 
-     /**
-      * Draws cards from a player's domain card deck, and returns them as rich DomainCard
-      * objects with all their hard-coded constants. Includes auto-reshuffling and notifications.
-      * @param int $playerId The player ID to draw from.
-      * @param int $count The number of cards to draw (we always want 2 or more).
-      * @param bool $hold If true, moves the cards to the player's hand; if false, immediately discards.
-      * @return PlayerDomainCard[] The cards drawn.
-      */
-     public function drawDomainCards(int $playerId, int $count, bool $hold): array {
+    /**
+     * Draws cards from a player's domain card deck, and returns them as rich DomainCard
+     * objects with all their hard-coded constants. Includes auto-reshuffling and notifications.
+     * @param int $playerId The player ID to draw from.
+     * @param int $count The number of cards to draw (we always want 2 or more).
+     * @param bool $hold If true, moves the cards to the player's hand; if false, immediately discards.
+     * @return PlayerDomainCard[] The cards drawn.
+     */
+    public function drawDomainCards(int $playerId, int $count, bool $hold): array {
         $playerDeck = "{$playerId}_deck";
         $playerDiscard = "{$playerId}_discard";
         $target = $hold ? "{$playerId}_hand" : $playerDiscard;
@@ -342,7 +342,19 @@ class Game extends \Bga\GameFramework\Table {
             $cards,
         );
         return $richCards;
-     }
+    }
+
+    /**
+     * Returns the cards in the player's "hand".
+     * @param int $playerId
+     * @return PlayerDomainCard[]
+     */
+    function playerHandCards(int $playerId): array {
+        return array_map(
+            PlayerDomainCard::fromCardArray(...),
+            $this->domainCards->getCardsInLocation("{$playerId}_hand"),
+        );
+    }
 
      public static function checkBox(int $playerId, string $section, int $boxId, ?string $writtenValue = null) {
         if ($writtenValue) {

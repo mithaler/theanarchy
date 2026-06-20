@@ -33,6 +33,7 @@ class CheckBoxes extends GameState {
             transitions: [
                 'knightstraining' => StateConstants::KNIGHTS_TRAINING,
                 'stvalentinesfestival' => StateConstants::ST_VALENTINES_FESTIVAL,
+                'brewhouse' => StateConstants::BREWHOUSE,
             ]
         );
     }

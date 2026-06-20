@@ -13,7 +13,7 @@ use BGA\Games\theanarchy\StateConstants;
 class InitialSetup extends GameState {
     function __construct(protected Game $game) {
         parent::__construct($game,
-            id: 10,
+            id: StateConstants::INITIAL_SETUP,
             type: StateType::GAME,
             transitions: [
                 "checkBoxes" => StateConstants::CHECK_BOXES_LOOP,

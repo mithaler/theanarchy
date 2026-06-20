@@ -76,7 +76,6 @@ class Reward {
                 $this->resources[$value->value] = 1;
             }
         }
-        
 
         /*
             this can be either:
@@ -190,7 +189,7 @@ abstract class BoxType {
         ?int $boxId = null,
         bool $pay = true,
         ?string $choice = null,
-    ): Reward;
+    ): ?Reward;
 
     /**
      * Returns whether the player can pay the specified resources. Can take a resources
