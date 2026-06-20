@@ -1,6 +1,7 @@
 import {
   ctx,
   type AnarchyBga,
+  type BoxSet,
   type PlayerBoxSet,
   type PlayerKey,
 } from "./context.svelte";
@@ -84,5 +85,16 @@ export class KnightsTraining extends State<never> {
         this.bga.actions.performAction("actMakeChoice", { choice }),
       );
     });
+  }
+}
+
+interface BrewhouseArgs {
+  availableBoxes: BoxSet;
+}
+export class Brewhouse extends State<BrewhouseArgs> {
+  onEnteringState(args: BrewhouseArgs, isCurrentPlayerActive: boolean) {
+    if (!ctx.data?.availableBoxes) {
+      ctx.data!.availableBoxes = args.availableBoxes;
+    }
   }
 }

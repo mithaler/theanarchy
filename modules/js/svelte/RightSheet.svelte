@@ -7,6 +7,7 @@
   import { sectionProps } from "./sections/utils.svelte";
   import Chapel from "./sections/Chapel.svelte";
   import KnightsTraining from "./sections/KnightsTraining.svelte";
+  import Brewhouse from "./sections/Brewhouse.svelte";
 
   interface Props {
     playerId: number;
@@ -40,7 +41,7 @@
   <Tactics {...sectionProps(isMe, playerId, "TACTICS")} />
   <Ramparts {...sectionProps(isMe, playerId, "RAMPARTS")} />
 
-  <!-- TODO spies, ramparts -->
+  <!-- TODO spies -->
 
   <SimpleBuilding
     {...sectionProps(isMe, playerId, "STABLES")}
@@ -52,6 +53,7 @@
   <StValentinesFestival
     {...sectionProps(isMe, playerId, "ST VALENTINES FESTIVAL")}
   />
+  <Brewhouse {...sectionProps(isMe, playerId, "BREWHOUSE")} />
 </div>
 
 <style lang="scss">

@@ -21,6 +21,7 @@ import type {
 } from "./context.svelte";
 import { ctx, getPlayer } from "./context.svelte";
 import {
+  Brewhouse,
   CheckBoxes,
   StValentinesFestival,
   KnightsTraining,
@@ -40,6 +41,7 @@ export class Game {
       "StValentinesFestival",
       new StValentinesFestival(this, bga),
     );
+    this.bga.states.register("Brewhouse", new Brewhouse(this, bga));
 
     // Uncomment the next line to show debug informations about state changes in the console. Remove before going to production!
     this.bga.states.logger = console.log;
@@ -101,7 +103,11 @@ export class Game {
   async notif_newAvailable(args: BoxSet) {
     // this notification is for the main CheckBoxes state only
     // sometimes we get this notification late after a state change; if that happens ignore it
-    if (ctx.bga?.states.getCurrentPlayerStateName() === "CheckBoxes") {
+    if (
+      ["CheckBoxes", "Brewhouse"].includes(
+        ctx.bga!.states.getCurrentPlayerStateName(),
+      )
+    ) {
       ctx.data!.availableBoxes = args;
     }
   }
