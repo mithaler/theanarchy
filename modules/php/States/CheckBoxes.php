@@ -67,8 +67,7 @@ class CheckBoxes extends GameState {
         }
 
         // notify rewards
-        $reward = SECTIONS[$section]->check($this->game, $currentPlayerId, $boxId, true, $choice);
-        $reward->notify($this->game, $currentPlayerId);
+        SECTIONS[$section]->check($this->game, $currentPlayerId, $boxId, true, $choice);
 
         // notify new available boxes
         $newAllCheckedBoxes = $this->game->allCheckedBoxes($currentPlayerId);

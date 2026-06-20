@@ -67,7 +67,7 @@ class StValentinesFestival extends GameState {
         $avail = $this->getAvailableBoxesByGender($currentPlayerId);
         foreach ($avail as $gender => $choices) {
             if (\in_array($boxId, $choices)) {
-                $reward = SECTIONS[NAME]->check($this->game, $currentPlayerId, $boxId, false);
+                SECTIONS[NAME]->check($this->game, $currentPlayerId, $boxId, false);
 
                 // discard the card for that gender
                 $this->game->domainCards->moveAllCardsInLocation(
@@ -75,8 +75,6 @@ class StValentinesFestival extends GameState {
                     "{$currentPlayerId}_discard",
                     $gender == "female" ? 0 : 1,
                 );
-
-                $reward->notify($this->game, $currentPlayerId);
 
                 // if that's the last card, return to main checkboxing
                 if ($this->game->domainCards->countCardInLocation("{$currentPlayerId}_hand") == 0) {

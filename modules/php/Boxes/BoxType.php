@@ -113,9 +113,12 @@ class Reward {
                 $this->boxes[$box] = $subrewards;
             }
         }
+
+        // notify this happened
+        $this->notify($game, $playerId);
     }
 
-    public function notify(Game $game, int $playerId) {
+    private function notify(Game $game, int $playerId) {
         if (\count($this->resources) == 0 && \count($this->boxes) == 0) {
             $game->notify->all("boxReward", \clienttranslate('${player_name} checks ${boxSection}'), [
                 "player_id" => $playerId,
@@ -139,15 +142,6 @@ class Reward {
                 "rewards" => implode(" ", [...$resourceRewards, ...array_keys($this->boxes)]),
                 // we don't include resources here, the framework auto-notifies setPlayerCounter for that
             ]);
-        }
-
-        // DFS into the boxes and notify those too
-        if ($this->boxes) {
-            foreach ($this->boxes as $boxRewards) {
-                foreach ($boxRewards as $boxReward) {
-                    $boxReward->notify($game, $playerId);
-                }
-            }
         }
     }
 }
