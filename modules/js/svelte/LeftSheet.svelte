@@ -12,6 +12,7 @@
   import TowerWallRow from "./sections/TowerWallRow.svelte";
   import TacticsUse, { TACTICS } from "./sections/TacticsUse.svelte";
   import { sectionProps } from "./sections/utils.svelte";
+  import Mercenaries from "./sections/Mercenaries.svelte";
 
   interface Props {
     playerId: number;
@@ -73,6 +74,7 @@
     {/each}
   </div>
 
+  <Mercenaries {...sectionProps(isMe, playerId, "MERCENARIES")} />
   {#each ["GUILDSMEN", "ALLIES"] as side (side)}
     <WealthWheelSide
       section={side as WealthWheelSideSection}
