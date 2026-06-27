@@ -7,6 +7,7 @@
   import { sectionProps } from "./sections/utils.svelte";
   import Chapel from "./sections/Chapel.svelte";
   import KnightsTraining from "./sections/KnightsTraining.svelte";
+  import Tournaments from "./sections/Tournaments.svelte";
   import Brewhouse from "./sections/Brewhouse.svelte";
 
   interface Props {
@@ -53,6 +54,7 @@
   <StValentinesFestival
     {...sectionProps(isMe, playerId, "ST VALENTINES FESTIVAL")}
   />
+  <Tournaments {...sectionProps(isMe, playerId, "TOURNAMENTS")} />
   <Brewhouse {...sectionProps(isMe, playerId, "BREWHOUSE")} />
 </div>
 
