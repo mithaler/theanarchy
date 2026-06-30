@@ -10,6 +10,7 @@ use HotOil;
 use Keep;
 use KnightsTraining;
 use Logs;
+use Michaelmas;
 use Mint;
 use Moat;
 use Rocks;
@@ -19,7 +20,6 @@ use Tactics;
 use Tournaments;
 use Tower;
 use Wall;
-
 
 require_once(__DIR__ . "/BasicRow.php");
 require_once(__DIR__ . "/FortificationRow.php");
@@ -31,6 +31,7 @@ require_once(__DIR__ . "/Tactics.php");
 require_once(__DIR__ . "/Chapel.php");
 require_once(__DIR__ . "/Tournaments.php");
 require_once(__DIR__ . "/Brewhouse.php");
+require_once(__DIR__ . "/Michaelmas.php");
 
 /**
  * @param array<string, BoxType>
@@ -93,4 +94,5 @@ const SECTIONS = [
     "ST VALENTINES FESTIVAL" => new StValentinesFestival(),
     "TOURNAMENTS" => new Tournaments(),
     "BREWHOUSE" => new Brewhouse(),
+    "MICHAELMAS" => new Michaelmas(),
 ];

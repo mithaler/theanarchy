@@ -7,7 +7,7 @@ use BGA\Games\theanarchy\Resource;
 
 class Box {
 
-    private function __construct(
+    public function __construct(
         /** Must be "ALL UPPERCASE", as it appears on the sheet. */
         public string $section,
 
@@ -16,6 +16,9 @@ class Box {
 
         /** The player who checked this box. */
         public int $playerId,
+
+        /** The written value, if there is one. */
+        public ?string $writtenValue = null,
     ) {}
 
     function toDbFields(): array {
@@ -23,6 +26,7 @@ class Box {
             "player_id" => $this->playerId,
             "section" => $this->section,
             "box_id" => $this->boxId,
+            "written_value" => $this->boxId,
         ];
     }
 
@@ -31,6 +35,7 @@ class Box {
             (string) $fields["section"],
             (int) $fields["box_id"],
             (int) $fields["player_id"],
+            $fields["written_value"] ? (string) $fields["written_value"] : null,
         );
     }
 }
@@ -272,8 +277,16 @@ abstract class BoxType {
         return $this->idFilled($playerId, "SIEGECRAFT_construction", 6, $currBoxes);
     }
 
-    protected function basicCheckBox(Game &$game, int $playerId, int $boxId, bool $pay = true, array $cost, Reward &$reward): Reward {
-        Game::checkBox($playerId, $this->name, $boxId);
+    protected function basicCheckBox(
+        Game $game,
+        int $playerId,
+        int $boxId,
+        bool $pay = true,
+        array $cost,
+        Reward &$reward,
+        ?string $writtenValue = null
+    ): Reward {
+        Game::checkBox($playerId, $this->name, $boxId, $writtenValue);
         if ($pay) {
             foreach ($cost as $resourceCost) {
                 $game->resources($resourceCost)->inc($playerId, -1);

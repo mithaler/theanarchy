@@ -14,6 +14,7 @@ class StateConstants {
     const int ST_VALENTINES_FESTIVAL = 8;
     const int KNIGHTS_TRAINING = 9;
     const int BREWHOUSE = 10;
+    const int MICHAELMAS = 11;
 
     const int GAME_END = 99;
 }

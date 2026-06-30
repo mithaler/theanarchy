@@ -247,10 +247,17 @@ class Game extends \Bga\GameFramework\Table {
      * @param ?int $playerId An optional player ID to filter on.
      * @return Box[] A list of boxes.
      */
-    public function allCheckedBoxes(int | null $playerId = null): array {
+    public function allCheckedBoxes(?int $playerId = null, ?string $section = null): array {
          $query = "SELECT * FROM checked_box";
+         $conditions = [];
          if ($playerId) {
-             $query .= " WHERE player_id = $playerId";
+             $conditions[] = "player_id = $playerId";
+         }
+         if ($section) {
+            $conditions[] = "section = '$section'";
+         }
+         if ($conditions) {
+            $query .= " WHERE " . implode(" AND ", $conditions);
          }
          $query .= " ORDER BY player_id, section, box_id ASC";
          $boxes = $this->getObjectListFromDB($query);

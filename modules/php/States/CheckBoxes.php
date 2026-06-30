@@ -34,6 +34,7 @@ class CheckBoxes extends GameState {
                 'knightstraining' => StateConstants::KNIGHTS_TRAINING,
                 'stvalentinesfestival' => StateConstants::ST_VALENTINES_FESTIVAL,
                 'brewhouse' => StateConstants::BREWHOUSE,
+                'michaelmas' => StateConstants::MICHAELMAS,
             ]
         );
     }
@@ -56,7 +57,6 @@ class CheckBoxes extends GameState {
         #[StringParam(name: "section")] string $section,
         #[IntParam(name: "boxId")] int $boxId,
         #[StringParam(name: "choice", alphanum_dash: true)] string | null $choice,
-        #[IntParam(name: "writtenValue")] int | null $writtenValue = null
     ) {
         if (!\array_key_exists($section, SECTIONS)) {
             throw new UserException("Section $section does not exist");
