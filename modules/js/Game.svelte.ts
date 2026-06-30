@@ -21,9 +21,13 @@ import type {
 } from "./context.svelte";
 import { ctx, getPlayer } from "./context.svelte";
 import {
+  Brewhouse,
   CheckBoxes,
   StValentinesFestival,
+  KnightsTraining,
   type StValentinesFestivalArgs,
+  Michaelmas,
+  type MichaelmasArgs,
 } from "./states.svelte";
 
 export class Game {
@@ -34,10 +38,13 @@ export class Game {
     this.bga = bga;
 
     this.bga.states.register("CheckBoxes", new CheckBoxes(this, bga));
+    this.bga.states.register("KnightsTraining", new KnightsTraining(this, bga));
     this.bga.states.register(
       "StValentinesFestival",
       new StValentinesFestival(this, bga),
     );
+    this.bga.states.register("Brewhouse", new Brewhouse(this, bga));
+    this.bga.states.register("Michaelmas", new Michaelmas(this, bga));
 
     // Uncomment the next line to show debug informations about state changes in the console. Remove before going to production!
     this.bga.states.logger = console.log;
@@ -99,13 +106,17 @@ export class Game {
   async notif_newAvailable(args: BoxSet) {
     // this notification is for the main CheckBoxes state only
     // sometimes we get this notification late after a state change; if that happens ignore it
-    if (ctx.bga?.states.getCurrentPlayerStateName() === "CheckBoxes") {
-      ctx.data!.availableBoxes = args;
+    if (
+      ["CheckBoxes", "Brewhouse"].includes(
+        ctx.bga!.states.getCurrentPlayerStateName(),
+      )
+    ) {
+      ctx.state.availableBoxes = args;
     }
   }
 
   async notif_newValentinesAvailable(args: StValentinesFestivalArgs) {
-    ctx.data!.availableBoxes = {
+    ctx.state.availableBoxes = {
       "ST VALENTINES FESTIVAL": [
         ...(args.availableBoxes.female ?? []),
         ...(args.availableBoxes.male ?? []),
@@ -114,10 +125,14 @@ export class Game {
   }
 
   async notif_newAvailableWalls(args: PlayerKey[]) {
-    ctx.data!.availableWalls = args;
+    ctx.state.availableWalls = args;
   }
 
   async notif_setPlayerCounter(args: PlayerCounterArgs) {
     (getPlayer(args.playerId)[args.name] as number) = args.value;
+  }
+
+  async notif_michaelmasUpdate(args: MichaelmasArgs) {
+    Michaelmas.setStateCtx(args);
   }
 }

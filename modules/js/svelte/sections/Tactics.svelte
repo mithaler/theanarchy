@@ -24,7 +24,7 @@
       tacticChoice.func = doCheck;
 
       // which tactics are available?
-      const oldAvailBoxes = ctx.data!.availableBoxes;
+      const oldAvailBoxes = ctx.state.availableBoxes;
       const newAvailBoxes: BoxSet = {};
       const checkedBoxes = player.checkedBoxes;
       TACTICS.forEach((tactic) => {
@@ -32,13 +32,13 @@
           newAvailBoxes[tactic] = [1];
         }
       });
-      ctx.data!.availableBoxes = newAvailBoxes;
+      ctx.state.availableBoxes = newAvailBoxes;
 
       bga.states.setClientState("chooseTactics", {
         descriptionmyturn: _("${you} must choose a tactic to unlock"),
       });
       addCancelButton(bga, () => {
-        ctx.data!.availableBoxes = oldAvailBoxes;
+        ctx.state.availableBoxes = oldAvailBoxes;
         tacticChoice.payment = undefined;
         tacticChoice.func = undefined;
       });
@@ -55,7 +55,7 @@
 
 <div class="tactics">
   {#each ids(5) as id (id)}
-    <div class="box-wrapper box-wrapper-${id}">
+    <div class="box-wrapper box-wrapper-{id}">
       <Checkbox
         section="TACTICS"
         boxId={id}

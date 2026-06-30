@@ -42,17 +42,24 @@ export type PlayerKey = keyof AnarchyPlayer;
 
 export interface AnarchyData extends Gamedatas<AnarchyPlayer> {
   round: number;
+}
+
+export interface AnarchyState {
   availableBoxes?: BoxSet;
   availableWalls?: PlayerKey[];
+
+  // for Michaelmas only!
+  availableBoxesByNum?: { [key: number]: number[] };
 }
 
 export interface AnarchyContext {
   data?: AnarchyData;
   bga?: AnarchyBga;
+  state: AnarchyState;
   locked: boolean;
 }
 
-export const ctx: AnarchyContext = $state({ locked: false });
+export const ctx: AnarchyContext = $state({ locked: false, state: {} });
 
 /**
  * Wraps bga.actions.performAction, but sets the lock in the context around it,
@@ -71,23 +78,17 @@ export async function checkBox(
   section: string,
   boxId: number,
   choice?: string,
-  writtenValue?: number,
 ) {
   // zero out the player's available boxes while performing the action so it doesn't stutter
   // the notification coming back will update it with the new options, see notif_newAvailable
-  const oldAvailBoxes = ctx.data!.availableBoxes;
-  ctx.data!.availableBoxes = undefined;
+  const oldAvailBoxes = ctx.state.availableBoxes;
+  ctx.state.availableBoxes = undefined;
 
   try {
-    return await performAction("actCheckBox", {
-      section,
-      boxId,
-      choice,
-      writtenValue,
-    });
+    return await performAction("actCheckBox", { section, boxId, choice });
   } catch (e) {
     // on error, set them back so we don't leave the UI unusable
-    ctx.data!.availableBoxes = oldAvailBoxes;
+    ctx.state.availableBoxes = oldAvailBoxes;
     console.error("Error checking box", e);
   }
 }
@@ -128,8 +129,8 @@ export function getCheckedBoxes(
 }
 
 export function getAvailableBoxes(section: string): number[] | null {
-  if (ctx.data?.availableBoxes) {
-    return ctx.data.availableBoxes[section];
+  if (ctx.state.availableBoxes) {
+    return ctx.state.availableBoxes[section];
   }
   return null;
 }

@@ -1,10 +1,15 @@
 <script lang="ts">
   import BasicRow from "./sections/BasicRow.svelte";
-  import { getCheckedBoxes, getAvailableBoxes } from "../context.svelte";
   import SimpleBuilding from "./sections/SimpleBuilding.svelte";
   import StValentinesFestival from "./sections/StValentinesFestival.svelte";
   import Tactics from "./sections/Tactics.svelte";
   import Ramparts from "./sections/Ramparts.svelte";
+  import { sectionProps } from "./sections/utils.svelte";
+  import Chapel from "./sections/Chapel.svelte";
+  import KnightsTraining from "./sections/KnightsTraining.svelte";
+  import Tournaments from "./sections/Tournaments.svelte";
+  import Brewhouse from "./sections/Brewhouse.svelte";
+  import Michaelmas from "./sections/Michaelmas.svelte";
 
   interface Props {
     playerId: number;
@@ -15,12 +20,10 @@
 
 {#snippet leadershipRow(section: string)}
   <BasicRow
-    {isMe}
+    {...sectionProps(isMe, playerId, section)}
     {section}
     length={9}
     type="leadership"
-    checkedBoxes={getCheckedBoxes(playerId, section)}
-    availableBoxes={isMe ? getAvailableBoxes(section) : null}
   />
 {/snippet}
 
@@ -32,38 +35,29 @@
 
   {#each ["KEEP", "MINT"] as section (section)}
     <SimpleBuilding
-      {isMe}
+      {...sectionProps(isMe, playerId, section)}
       section={section as "KEEP" | "MINT"}
-      checkedBoxes={getCheckedBoxes(playerId, section)}
-      availableBoxes={isMe ? getAvailableBoxes(section) : null}
     />
   {/each}
 
-  <Tactics
-    {isMe}
-    checkedBoxes={getCheckedBoxes(playerId, "TACTICS")}
-    availableBoxes={isMe ? getAvailableBoxes("TACTICS") : null}
-  />
-  <Ramparts
-    {isMe}
-    checkedBoxes={getCheckedBoxes(playerId, "RAMPARTS")}
-    availableBoxes={isMe ? getAvailableBoxes("RAMPARTS") : null}
-  />
+  <Tactics {...sectionProps(isMe, playerId, "TACTICS")} />
+  <Ramparts {...sectionProps(isMe, playerId, "RAMPARTS")} />
 
-  <!-- TODO spies, ramparts -->
+  <!-- TODO spies -->
 
   <SimpleBuilding
-    {isMe}
+    {...sectionProps(isMe, playerId, "STABLES")}
     section="STABLES"
-    checkedBoxes={getCheckedBoxes(playerId, "STABLES")}
-    availableBoxes={isMe ? getAvailableBoxes("STABLES") : null}
   />
 
+  <Chapel {...sectionProps(isMe, playerId, "CHAPEL")} />
+  <KnightsTraining {...sectionProps(isMe, playerId, "KNIGHTS TRAINING")} />
   <StValentinesFestival
-    {isMe}
-    checkedBoxes={getCheckedBoxes(playerId, "ST VALENTINES FESTIVAL")}
-    availableBoxes={isMe ? getAvailableBoxes("ST VALENTINES FESTIVAL") : null}
+    {...sectionProps(isMe, playerId, "ST VALENTINES FESTIVAL")}
   />
+  <Tournaments {...sectionProps(isMe, playerId, "TOURNAMENTS")} />
+  <Brewhouse {...sectionProps(isMe, playerId, "BREWHOUSE")} />
+  <Michaelmas {...sectionProps(isMe, playerId, "MICHAELMAS")} />
 </div>
 
 <style lang="scss">

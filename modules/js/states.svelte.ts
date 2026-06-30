@@ -1,6 +1,8 @@
+/* eslint-disable svelte/prefer-svelte-reactivity */
 import {
   ctx,
   type AnarchyBga,
+  type BoxSet,
   type PlayerBoxSet,
   type PlayerKey,
 } from "./context.svelte";
@@ -31,12 +33,12 @@ export interface CheckBoxesArgs {
 
 export class CheckBoxes extends State<CheckBoxesArgs> {
   onEnteringState(args: CheckBoxesArgs, isCurrentPlayerActive: boolean) {
-    if (!ctx.data?.availableBoxes) {
-      ctx.data!.availableBoxes =
+    if (!ctx.state.availableBoxes) {
+      ctx.state.availableBoxes =
         args.availableBoxes[this.bga.players.getCurrentPlayerId()];
     }
-    if (!ctx.data?.availableWalls) {
-      ctx.data!.availableWalls =
+    if (!ctx.state.availableWalls) {
+      ctx.state.availableWalls =
         args.availableWalls[this.bga.players.getCurrentPlayerId()];
     }
     if (isCurrentPlayerActive) {
@@ -53,8 +55,8 @@ export class CheckBoxes extends State<CheckBoxesArgs> {
     isCurrentPlayerActive: boolean,
   ): void {
     if (!isCurrentPlayerActive) {
-      ctx.data!.availableBoxes = undefined;
-      ctx.data!.availableWalls = undefined;
+      ctx.state.availableBoxes = undefined;
+      ctx.state.availableWalls = undefined;
     }
   }
 }
@@ -64,17 +66,60 @@ export interface StValentinesFestivalArgs {
 }
 
 export class StValentinesFestival extends State<StValentinesFestivalArgs> {
-  onEnteringState(
-    args: StValentinesFestivalArgs,
-    isCurrentPlayerActive: boolean,
-  ) {
-    if (!ctx.data?.availableBoxes) {
-      ctx.data!.availableBoxes = {
+  onEnteringState(args: StValentinesFestivalArgs) {
+    if (!ctx.state.availableBoxes) {
+      ctx.state.availableBoxes = {
         "ST VALENTINES FESTIVAL": [
           ...(args.availableBoxes.female ?? []),
           ...(args.availableBoxes.male ?? []),
         ],
       };
     }
+  }
+}
+
+export class KnightsTraining extends State<never> {
+  onEnteringState(): void {
+    // TODO make these look nice
+    ["soldiers", "KNIGHTS"].forEach((choice) => {
+      this.bga.statusBar.addActionButton(choice, () =>
+        this.bga.actions.performAction("actMakeChoice", { choice }),
+      );
+    });
+  }
+}
+
+interface BrewhouseArgs {
+  availableBoxes: BoxSet;
+}
+export class Brewhouse extends State<BrewhouseArgs> {
+  onEnteringState(args: BrewhouseArgs) {
+    if (!ctx.state.availableBoxes) {
+      ctx.state.availableBoxes = args.availableBoxes;
+    }
+  }
+}
+
+export interface MichaelmasArgs {
+  // not actually by player; available number -> boxes
+  availableBoxesByNum: { [key: number]: number[] };
+}
+
+export class Michaelmas extends State<MichaelmasArgs> {
+  static setStateCtx(args: MichaelmasArgs) {
+    const boxes = Object.entries(args.availableBoxesByNum).reduce(
+      (boxes, [_, numBoxes]) => boxes.union(new Set(numBoxes)),
+      new Set<number>(),
+    );
+    ctx.state.availableBoxes = { MICHAELMAS: [...boxes] };
+    ctx.state.availableBoxesByNum = args.availableBoxesByNum;
+  }
+
+  onEnteringState(args: MichaelmasArgs): void {
+    Michaelmas.setStateCtx(args);
+  }
+
+  onLeavingState(): void {
+    ctx.state.availableBoxesByNum = undefined;
   }
 }

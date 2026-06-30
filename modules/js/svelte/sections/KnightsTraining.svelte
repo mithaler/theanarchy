@@ -1,33 +1,32 @@
 <script lang="ts">
   import Checkbox, { getState } from "../Checkbox.svelte";
   import { ids, type SectionProps } from "./utils.svelte";
-
-  const { isMe, availableBoxes, checkedBoxes }: SectionProps = $props();
+  const { isMe, checkedBoxes, availableBoxes }: SectionProps = $props();
 </script>
 
-<div class="ramparts">
+<div class="knights-training">
   {#each ids(6) as id (id)}
     <div class="box-wrapper box-wrapper-{id}">
       <Checkbox
-        section="RAMPARTS"
+        section="KNIGHTS TRAINING"
         boxId={id}
         state={getState(id, isMe, checkedBoxes, availableBoxes)}
-        width={[3, 6].includes(id) ? "39px" : undefined}
+        width="29px"
       />
     </div>
   {/each}
 </div>
 
 <style lang="scss">
-  .ramparts {
+  .knights-training {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     position: absolute;
-    top: 205px;
-    left: 348px;
+    top: 329px;
+    left: 475px;
+  }
 
-    .box-wrapper {
-      margin-right: 56px;
-    }
+  .box-wrapper {
+    margin-bottom: 5.8px;
   }
 </style>
