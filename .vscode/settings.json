@@ -5,6 +5,7 @@
     "editor.defaultFormatter": "svelte.svelte-vscode",
     "editor.tabSize": 2
   },
+  "svelte.enable-ts-plugin": true,
   "[javascript]": {
     "editor.tabSize": 2,
     "editor.defaultFormatter": "esbenp.prettier-vscode"
