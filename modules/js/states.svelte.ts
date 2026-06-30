@@ -1,3 +1,4 @@
+/* eslint-disable svelte/prefer-svelte-reactivity */
 import {
   ctx,
   type AnarchyBga,
@@ -96,5 +97,29 @@ export class Brewhouse extends State<BrewhouseArgs> {
     if (!ctx.state.availableBoxes) {
       ctx.state.availableBoxes = args.availableBoxes;
     }
+  }
+}
+
+export interface MichaelmasArgs {
+  // not actually by player; available number -> boxes
+  availableBoxesByNum: { [key: number]: number[] };
+}
+
+export class Michaelmas extends State<MichaelmasArgs> {
+  static setStateCtx(args: MichaelmasArgs) {
+    const boxes = Object.entries(args.availableBoxesByNum).reduce(
+      (boxes, [_, numBoxes]) => boxes.union(new Set(numBoxes)),
+      new Set<number>(),
+    );
+    ctx.state.availableBoxes = { MICHAELMAS: [...boxes] };
+    ctx.state.availableBoxesByNum = args.availableBoxesByNum;
+  }
+
+  onEnteringState(args: MichaelmasArgs): void {
+    Michaelmas.setStateCtx(args);
+  }
+
+  onLeavingState(): void {
+    ctx.state.availableBoxesByNum = undefined;
   }
 }

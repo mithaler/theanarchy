@@ -26,6 +26,8 @@ import {
   StValentinesFestival,
   KnightsTraining,
   type StValentinesFestivalArgs,
+  Michaelmas,
+  type MichaelmasArgs,
 } from "./states.svelte";
 
 export class Game {
@@ -42,6 +44,7 @@ export class Game {
       new StValentinesFestival(this, bga),
     );
     this.bga.states.register("Brewhouse", new Brewhouse(this, bga));
+    this.bga.states.register("Michaelmas", new Michaelmas(this, bga));
 
     // Uncomment the next line to show debug informations about state changes in the console. Remove before going to production!
     this.bga.states.logger = console.log;
@@ -127,5 +130,9 @@ export class Game {
 
   async notif_setPlayerCounter(args: PlayerCounterArgs) {
     (getPlayer(args.playerId)[args.name] as number) = args.value;
+  }
+
+  async notif_michaelmasUpdate(args: MichaelmasArgs) {
+    Michaelmas.setStateCtx(args);
   }
 }

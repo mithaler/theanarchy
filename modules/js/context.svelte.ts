@@ -47,6 +47,9 @@ export interface AnarchyData extends Gamedatas<AnarchyPlayer> {
 export interface AnarchyState {
   availableBoxes?: BoxSet;
   availableWalls?: PlayerKey[];
+
+  // for Michaelmas only!
+  availableBoxesByNum?: { [key: number]: number[] };
 }
 
 export interface AnarchyContext {
@@ -75,7 +78,6 @@ export async function checkBox(
   section: string,
   boxId: number,
   choice?: string,
-  writtenValue?: number,
 ) {
   // zero out the player's available boxes while performing the action so it doesn't stutter
   // the notification coming back will update it with the new options, see notif_newAvailable
@@ -83,12 +85,7 @@ export async function checkBox(
   ctx.state.availableBoxes = undefined;
 
   try {
-    return await performAction("actCheckBox", {
-      section,
-      boxId,
-      choice,
-      writtenValue,
-    });
+    return await performAction("actCheckBox", { section, boxId, choice });
   } catch (e) {
     // on error, set them back so we don't leave the UI unusable
     ctx.state.availableBoxes = oldAvailBoxes;

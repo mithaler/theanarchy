@@ -20,10 +20,7 @@
    * A function, bound to a specific checkbox, which checks that box with the
    * given player choices set.
    */
-  export type ChoiceFunc = (
-    choice?: string,
-    writtenValue?: number,
-  ) => Promise<void>;
+  export type ChoiceFunc = (choice?: string) => Promise<void>;
 </script>
 
 <script lang="ts">
@@ -43,8 +40,8 @@
       if (click) {
         return (evt: Event) => {
           evt.preventDefault();
-          click(async (costChoice, writtenValue) => {
-            await checkBox(section, boxId, costChoice, writtenValue);
+          click(async (costChoice) => {
+            await checkBox(section, boxId, costChoice);
           });
         };
       }
