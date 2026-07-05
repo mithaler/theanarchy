@@ -23,7 +23,7 @@
   function available(choice: PlayerKey): boolean {
     return (
       (choice.startsWith("wall") &&
-        (ctx.data?.availableWalls ?? []).includes(choice)) ||
+        (ctx.state.availableWalls ?? []).includes(choice)) ||
       (choice.startsWith("tower") && player[choice] < 2)
     );
   }

@@ -32,12 +32,12 @@ export interface CheckBoxesArgs {
 
 export class CheckBoxes extends State<CheckBoxesArgs> {
   onEnteringState(args: CheckBoxesArgs, isCurrentPlayerActive: boolean) {
-    if (!ctx.data?.availableBoxes) {
-      ctx.data!.availableBoxes =
+    if (!ctx.state.availableBoxes) {
+      ctx.state.availableBoxes =
         args.availableBoxes[this.bga.players.getCurrentPlayerId()];
     }
-    if (!ctx.data?.availableWalls) {
-      ctx.data!.availableWalls =
+    if (!ctx.state.availableWalls) {
+      ctx.state.availableWalls =
         args.availableWalls[this.bga.players.getCurrentPlayerId()];
     }
     if (isCurrentPlayerActive) {
@@ -54,8 +54,8 @@ export class CheckBoxes extends State<CheckBoxesArgs> {
     isCurrentPlayerActive: boolean,
   ): void {
     if (!isCurrentPlayerActive) {
-      ctx.data!.availableBoxes = undefined;
-      ctx.data!.availableWalls = undefined;
+      ctx.state.availableBoxes = undefined;
+      ctx.state.availableWalls = undefined;
     }
   }
 }
@@ -66,8 +66,8 @@ export interface StValentinesFestivalArgs {
 
 export class StValentinesFestival extends State<StValentinesFestivalArgs> {
   onEnteringState(args: StValentinesFestivalArgs) {
-    if (!ctx.data?.availableBoxes) {
-      ctx.data!.availableBoxes = {
+    if (!ctx.state.availableBoxes) {
+      ctx.state.availableBoxes = {
         "ST VALENTINES FESTIVAL": [
           ...(args.availableBoxes.female ?? []),
           ...(args.availableBoxes.male ?? []),
@@ -92,9 +92,9 @@ interface BrewhouseArgs {
   availableBoxes: BoxSet;
 }
 export class Brewhouse extends State<BrewhouseArgs> {
-  onEnteringState(args: BrewhouseArgs, isCurrentPlayerActive: boolean) {
-    if (!ctx.data?.availableBoxes) {
-      ctx.data!.availableBoxes = args.availableBoxes;
+  onEnteringState(args: BrewhouseArgs) {
+    if (!ctx.state.availableBoxes) {
+      ctx.state.availableBoxes = args.availableBoxes;
     }
   }
 }

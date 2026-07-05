@@ -108,12 +108,12 @@ export class Game {
         ctx.bga!.states.getCurrentPlayerStateName(),
       )
     ) {
-      ctx.data!.availableBoxes = args;
+      ctx.state.availableBoxes = args;
     }
   }
 
   async notif_newValentinesAvailable(args: StValentinesFestivalArgs) {
-    ctx.data!.availableBoxes = {
+    ctx.state.availableBoxes = {
       "ST VALENTINES FESTIVAL": [
         ...(args.availableBoxes.female ?? []),
         ...(args.availableBoxes.male ?? []),
@@ -122,7 +122,7 @@ export class Game {
   }
 
   async notif_newAvailableWalls(args: PlayerKey[]) {
-    ctx.data!.availableWalls = args;
+    ctx.state.availableWalls = args;
   }
 
   async notif_setPlayerCounter(args: PlayerCounterArgs) {
