@@ -122,22 +122,32 @@ class Reward {
                 $game->resources(Resource::from($resource))->inc($playerId, $count);
             }
         }
+
+        // notify this happened
+        $this->notify($game, $playerId);
+
         if ($this->boxes) {
             foreach ($this->boxes as $box => $ids) {
                 $subrewards = [];
                 if (\is_array($ids)) {
                     foreach ($ids as $id) {
-                        $subrewards[] = SECTIONS[$box]->check($game, $playerId, $id, false);
+                        $subr = SECTIONS[$box]->check($game, $playerId, $id, false);
+                        if ($subr !== null) {
+                            $subrewards[] = $subr;
+                        }
                     }
                 } else {
-                    $subrewards[] = SECTIONS[$box]->check($game, $playerId, null, false);
+                    $subr = SECTIONS[$box]->check($game, $playerId, null, false);
+                    if ($subr !== null) {
+                        $subrewards[] = $subr;
+                    }
                 }
                 $this->boxes[$box] = $subrewards;
+                foreach ($subrewards as $subreward) {
+                    $subreward->grant($game, $playerId);
+                }
             }
         }
-
-        // notify this happened
-        $this->notify($game, $playerId);
     }
 
     private function notify(Game $game, int $playerId) {
