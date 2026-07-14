@@ -35,6 +35,7 @@ class CheckBoxes extends GameState {
                 'stvalentinesfestival' => StateConstants::ST_VALENTINES_FESTIVAL,
                 'brewhouse' => StateConstants::BREWHOUSE,
                 'michaelmas' => StateConstants::MICHAELMAS,
+                'lammas' => StateConstants::LAMMAS,
             ]
         );
     }

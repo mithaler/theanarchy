@@ -122,7 +122,7 @@ class Michaelmas extends BoxType {
             foreach ($cards as $idx => $card) {
                 if (!\array_key_exists($card->card->michaelmas, $validBoxes)) {
                     // card can't be played! discard it
-                    $game->domainCards->moveCard($card->id, "{$playerId}_discard");
+                    $game->discardCard($playerId, $card->id);
                     unset($cards[$idx]);
                 }
             }
@@ -160,7 +160,10 @@ class Michaelmas extends BoxType {
                 // sanity check -- if this happened our validation is bugged!?
                 throw new UserException("Can't discard!?");
             }
-            $game->domainCards->moveCard($toDiscard->id, "{$playerId}_discard");
+            $game->discardCard($toDiscard->id, $playerId);
+
+            // TODO: handle case where discarding that card made the _other_ card unplayable
+            // isn't this box great :'(
 
             // was that the last card? if so, return to normal checkboxing
             if (\count($cards) === 0) {

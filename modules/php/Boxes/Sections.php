@@ -9,6 +9,7 @@ use Gate;
 use HotOil;
 use Keep;
 use KnightsTraining;
+use Lammas;
 use Logs;
 use Michaelmas;
 use Mint;
@@ -32,6 +33,7 @@ require_once(__DIR__ . "/Chapel.php");
 require_once(__DIR__ . "/Tournaments.php");
 require_once(__DIR__ . "/Brewhouse.php");
 require_once(__DIR__ . "/Michaelmas.php");
+require_once(__DIR__ . "/Lammas.php");
 
 /**
  * @param array<string, BoxType>
@@ -95,4 +97,5 @@ const SECTIONS = [
     "TOURNAMENTS" => new Tournaments(),
     "BREWHOUSE" => new Brewhouse(),
     "MICHAELMAS" => new Michaelmas(),
+    "LAMMAS" => new Lammas(),
 ];

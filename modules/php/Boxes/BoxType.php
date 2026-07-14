@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace BGA\Games\theanarchy\Boxes;
 
@@ -87,7 +88,7 @@ class Reward {
                 ["SOMETHING", "ANOTHER"]
             in which case it becomes ["SOMETHING" => null, "ANOTHER" => null], or:
                 ["SOMETHING" => [10]]
-            in which case it will treat the numbers as multiple rewards to grant
+            in which case it will treat the numbers as IDs of boxes to grant
         */
         if (\count($boxesToCheck) > 0) {
             $boxes = [];
