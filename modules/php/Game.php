@@ -363,7 +363,11 @@ class Game extends \Bga\GameFramework\Table {
         );
     }
 
-     public static function checkBox(int $playerId, string $section, int $boxId, ?string $writtenValue = null) {
+    function discardCard(int $playerId, int $cardId) {
+        $this->domainCards->moveCard($cardId, "{$playerId}_discard");
+    }
+
+    public static function checkBox(int $playerId, string $section, int $boxId, ?string $writtenValue = null) {
         if ($writtenValue) {
             Game::DbQuery("INSERT INTO checked_box (player_id, section, box_id, written_value) VALUES ($playerId, '$section', $boxId, '$writtenValue')");
         } else {
