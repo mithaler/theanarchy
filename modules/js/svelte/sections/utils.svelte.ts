@@ -58,6 +58,7 @@ export function basicChoice(
   };
 }
 
+// TODO: Refactor this as a component on the page
 export async function multiResourceChoice(
   count: number,
   callback: (choices: string[]) => Promise<void>,
@@ -87,6 +88,7 @@ export async function multiResourceChoice(
   );
   const chooser = mount(ResourceChooser, {
     target: document.getElementById("resource-chooser")!,
+    // svelte-ignore state_referenced_locally
     props: { values, count, confirm },
   });
 

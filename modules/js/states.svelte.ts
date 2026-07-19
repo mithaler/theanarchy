@@ -89,16 +89,19 @@ export class KnightsTraining extends State<never> {
   }
 }
 
-interface BrewhouseArgs {
+interface SingleBoxStateArgs {
   availableBoxes: BoxSet;
 }
-export class Brewhouse extends State<BrewhouseArgs> {
-  onEnteringState(args: BrewhouseArgs) {
+class SingleBoxState extends State<SingleBoxStateArgs> {
+  onEnteringState(args: SingleBoxStateArgs) {
     if (!ctx.state.availableBoxes) {
       ctx.state.availableBoxes = args.availableBoxes;
     }
   }
 }
+
+export class Brewhouse extends SingleBoxState {}
+export class Lammas extends SingleBoxState {}
 
 export interface MichaelmasArgs {
   // not actually by player; available number -> boxes

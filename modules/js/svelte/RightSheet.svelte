@@ -10,6 +10,7 @@
   import Tournaments from "./sections/Tournaments.svelte";
   import Brewhouse from "./sections/Brewhouse.svelte";
   import Michaelmas from "./sections/Michaelmas.svelte";
+  import Lammas from "./sections/Lammas.svelte";
 
   interface Props {
     playerId: number;
@@ -58,6 +59,7 @@
   <Tournaments {...sectionProps(isMe, playerId, "TOURNAMENTS")} />
   <Brewhouse {...sectionProps(isMe, playerId, "BREWHOUSE")} />
   <Michaelmas {...sectionProps(isMe, playerId, "MICHAELMAS")} />
+  <Lammas {...sectionProps(isMe, playerId, "LAMMAS")} />
 </div>
 
 <style lang="scss">
