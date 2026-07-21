@@ -34,7 +34,7 @@ abstract class BasicRow extends BoxType {
             $boxId = $currValue + 1;
         }
         $reward = $this->reward($boxId);
-        return $this->basicCheckBox($game, $playerId, $boxId, $pay, $this->cost, $reward);
+        return $this->checkAndPay($game, $playerId, $boxId, $pay, $this->cost, $reward);
     }
 }
 

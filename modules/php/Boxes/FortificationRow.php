@@ -98,7 +98,7 @@ class Tower extends FortificationRow {
 
         $reward = $this->reward($boxId);
         $reward->resources[$tower->value] = 1;
-        return $this->basicCheckBox($game, $playerId, $boxId, $pay, $this->cost, $reward);
+        return $this->checkAndPay($game, $playerId, $boxId, $pay, $this->cost, $reward);
     }
 }
 
@@ -129,7 +129,7 @@ class Wall extends FortificationRow {
 
         $reward = $this->reward($boxId);
         $reward->resources[$wall->value] = 1;
-        $this->basicCheckBox($game, $playerId, $boxId, $pay, $this->cost, $reward);
+        $this->checkAndPay($game, $playerId, $boxId, $pay, $this->cost, $reward);
 
         // special notification: new available walls
         $newAvailWalls = availableWalls($game, $playerId);
@@ -174,6 +174,6 @@ class Moat extends FortificationRow {
             throw new UserException("Cost choice for Moat must be either serfs or soldiers, got $choice");
         }
         $reward = $this->reward($boxId);
-        return $this->basicCheckBox($game, $playerId, $boxId, $pay, [Resource::from($choice)], $reward);
+        return $this->checkAndPay($game, $playerId, $boxId, $pay, [Resource::from($choice)], $reward);
     }
 }

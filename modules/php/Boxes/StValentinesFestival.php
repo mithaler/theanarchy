@@ -112,7 +112,7 @@ class StValentinesFestival extends BoxType {
             );
         }
 
-        $this->basicCheckBox($game, $playerId, $boxId, $pay, [Resource::PATRONS], $reward);
+        $this->checkAndPay($game, $playerId, $boxId, $pay, [Resource::PATRONS], $reward);
         return $reward;
     }
 }

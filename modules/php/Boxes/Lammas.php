@@ -118,7 +118,7 @@ class Lammas extends BoxType {
                 $game->gamestate->nextPrivateState($playerId, "lammas");
             }
             $reward = Reward::none(NAME, $boxId);
-            return $this->basicCheckBox($game, $playerId, $boxId, true, [Resource::SERFS], $reward);
+            return $this->checkAndPay($game, $playerId, $boxId, true, [Resource::SERFS], $reward);
 
         // filling in a flag
         } else if (array_key_exists($boxId, self::COLORS)) {
@@ -158,7 +158,7 @@ class Lammas extends BoxType {
             $reward = count($rewardBoxIds) > 0 ?
                 Reward::boxes(LAMMAS_NAME, $boxId, [LAMMAS_NAME => $rewardBoxIds]) :
                 Reward::none(LAMMAS_NAME, $boxId);
-            $out = $this->basicCheckBox($game, $playerId, $boxId, false, [], $reward);
+            $out = $this->checkAndPay($game, $playerId, $boxId, false, [], $reward);
 
             if ($game->gamestate->getCurrentStateId($playerId) === StateConstants::LAMMAS) {
                 // we haven't switched states, so notify new available
@@ -172,7 +172,7 @@ class Lammas extends BoxType {
         // reward for filling in a box between flags
         } else if (array_key_exists($boxId, self::REWARDS) && !$pay) {
             return Reward::boxes(LAMMAS_NAME, $boxId, [self::REWARDS[$boxId]]);
-            //return $this->basicCheckBox($game, $playerId, $boxId, false, [], $reward);
+            //return $this->checkAndPay($game, $playerId, $boxId, false, [], $reward);
         }
     }
 };

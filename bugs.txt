@@ -1,0 +1,2 @@
+* Michaelmas needs fixing (easy to confuse it)
+* Walls don't update available choices correctly

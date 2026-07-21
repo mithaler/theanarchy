@@ -46,7 +46,7 @@ class Tactics extends BoxType {
         }
 
         $reward = Reward::boxes($this->name, $boxId, [$choices[1]]);
-        return $this->basicCheckBox($game, $playerId, $boxId, true, $cost, $reward);
+        return $this->checkAndPay($game, $playerId, $boxId, true, $cost, $reward);
     }
 }
 
@@ -68,7 +68,7 @@ abstract class TacticsUse extends BoxType {
         } else {
             throw new UserException("Invalid tactics request");
         }
-        return $this->basicCheckBox($game, $playerId, $boxId, $pay, [Resource::MATERIALS], $reward);
+        return $this->checkAndPay($game, $playerId, $boxId, $pay, [Resource::MATERIALS], $reward);
     }
 }
 

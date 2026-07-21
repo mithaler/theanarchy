@@ -38,7 +38,8 @@ class Lammas extends GameState {
     #[PossibleAction]
     function actCheckBox(int $currentPlayerId, #[IntParam(name: "boxId")] int $boxId) {
         // does its own validation! (to avoid multiple DB lookups)
-        SECTIONS["LAMMAS"]->check($this->game, $currentPlayerId, $boxId, false);
+        $reward = SECTIONS["LAMMAS"]->check($this->game, $currentPlayerId, $boxId, false);
+        $reward->grant($this->game, $currentPlayerId);
     }
 
     function zombie() {

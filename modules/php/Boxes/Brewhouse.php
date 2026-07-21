@@ -169,7 +169,7 @@ class Brewhouse extends BoxType {
             $game->notifyNewAvailable($playerId, ["BREWHOUSE" => $newAvail]);
         }
 
-        return $this->basicCheckBox($game, $playerId, $boxId, false, [], $reward);
+        return $this->checkAndPay($game, $playerId, $boxId, false, [], $reward);
     }
 
 }

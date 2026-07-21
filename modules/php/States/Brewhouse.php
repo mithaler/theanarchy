@@ -37,7 +37,8 @@ class Brewhouse extends GameState {
     #[PossibleAction]
     function actCheckBox(int $currentPlayerId, #[IntParam(name: "boxId")] int $boxId) {
         // uniquely, does its own validation! (to avoid multiple DB lookups)
-        SECTIONS["BREWHOUSE"]->check($this->game, $currentPlayerId, $boxId, false);
+        $reward = SECTIONS["BREWHOUSE"]->check($this->game, $currentPlayerId, $boxId, false);
+        $reward->grant($this->game, $currentPlayerId);
     }
 
     function zombie() {

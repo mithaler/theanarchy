@@ -11,7 +11,7 @@ abstract class WealthWheel extends BoxType {
 
     public function check(Game $game, int $playerId, ?int $boxId = null, bool $pay = true, ?string $choice = null): Reward {
         $reward = $this->reward($boxId);
-        return $this->basicCheckBox($game, $playerId, $boxId, $pay, [Resource::SILVER], $reward);
+        return $this->checkAndPay($game, $playerId, $boxId, $pay, [Resource::SILVER], $reward);
     }
 
     protected function sectionBoxIds(int $playerId, array &$currBoxes): array {
@@ -198,6 +198,6 @@ class SiegecraftConstruction extends BoxType {
         foreach (self::COSTS[$boxId] as $res => $count) {
             $game->resources($res)->inc($playerId, -$count);
         }
-        return $this->basicCheckBox($game, $playerId, $boxId, false, [], $reward);
+        return $this->checkAndPay($game, $playerId, $boxId, false, [], $reward);
     }
 }

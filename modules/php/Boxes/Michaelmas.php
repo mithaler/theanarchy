@@ -136,7 +136,7 @@ class Michaelmas extends BoxType {
             }
 
             $reward = Reward::none("MICHAELMAS", $boxId);
-            return $this->basicCheckBox($game, $playerId, $boxId, $pay, [Resource::SERFS], $reward);
+            return $this->checkAndPay($game, $playerId, $boxId, $pay, [Resource::SERFS], $reward);
         } else if ($boxId > 6 && $choice !== null) {
             $choices = \explode(",", $choice);
             $cards = $game->playerHandCards($playerId);
@@ -211,7 +211,7 @@ class Michaelmas extends BoxType {
                 }
             }
 
-            return $this->basicCheckBox($game, $playerId, $boxId, false, [], $reward, $writtenValue);
+            return $this->checkAndPay($game, $playerId, $boxId, false, [], $reward, $writtenValue);
         }
         throw new UserException("Cannot check Michaelmas");
     }

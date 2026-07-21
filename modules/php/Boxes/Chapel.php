@@ -87,7 +87,7 @@ class Chapel extends BoxType {
             2, 3, 4, 7, 8, 9, 12, 13, 14 => $this->checkChapelComplete($playerId, $boxId, $game->allCheckedBoxes($playerId)),
             5, 10, 15 => new Reward($this->name, $boxId, [Resource::PATRONS->value => 1], ["SILVER", "INFLUENCE"]),
         };
-        return $this->basicCheckBox($game, $playerId, $boxId, $pay, $this->cost($boxId), $reward);
+        return $this->checkAndPay($game, $playerId, $boxId, $pay, $this->cost($boxId), $reward);
     }
 }
 
@@ -144,6 +144,6 @@ class KnightsTraining extends BoxType {
         } else if ($symbolCount == 4) {
             $reward = new Reward($this->name, $boxId, [Resource::SOLDIERS->value => 1], ["KNIGHTS", "MIGHT"]);
         }
-        return $this->basicCheckBox($game, $playerId, $boxId, $pay, [Resource::PATRONS], $reward);
+        return $this->checkAndPay($game, $playerId, $boxId, $pay, [Resource::PATRONS], $reward);
     }
 }
