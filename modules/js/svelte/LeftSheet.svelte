@@ -13,6 +13,7 @@
   import TacticsUse, { TACTICS } from "./sections/TacticsUse.svelte";
   import { sectionProps } from "./sections/utils.svelte";
   import Mercenaries from "./sections/Mercenaries.svelte";
+  import Discontent from "./sections/Discontent.svelte";
 
   interface Props {
     playerId: number;
@@ -67,6 +68,11 @@
       {@render unclickableRow(productionRow as UnclickableType, "production")}
     {/each}
   </div>
+
+  <Discontent
+    discontent={getCheckedBoxes(playerId, "DISCONTENT")}
+    joy={getCheckedBoxes(playerId, "JOY")}
+  />
 
   <div class="point-rows">
     {#each ["BRAVERY", "LOYALTY", "INFLUENCE", "MIGHT"] as pointRow (pointRow)}
