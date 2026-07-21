@@ -25,6 +25,7 @@ use Wall;
 require_once(__DIR__ . "/BasicRow.php");
 require_once(__DIR__ . "/FortificationRow.php");
 require_once(__DIR__ . "/UnclickableRow.php");
+require_once(__DIR__ . "/Discontent.php");
 require_once(__DIR__ . "/WealthWheel.php");
 require_once(__DIR__ . "/SimpleBuildings.php");
 require_once(__DIR__ . "/StValentinesFestival.php");
@@ -50,6 +51,7 @@ const SECTIONS = [
     "FARMS" => new Farms(),
     "TRAINING GROUNDS" => new TrainingGrounds(),
 
+    // Tactics
     "COVERS" => new Covers(),
     "ROCKS" => new Rocks(),
     "HOT OIL" => new HotOil(),
@@ -71,6 +73,9 @@ const SECTIONS = [
     "LOYALTY" => new Loyalty(),
     "INFLUENCE" => new Influence(),
     "MIGHT" => new Might(),
+
+    "DISCONTENT" => new Discontent(),
+    "JOY" => new Joy(),
 
     // Wealth wheel
     "GUILDSMEN" => new Guildsmen(),
