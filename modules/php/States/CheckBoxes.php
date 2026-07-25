@@ -36,6 +36,7 @@ class CheckBoxes extends GameState {
                 'brewhouse' => StateConstants::BREWHOUSE,
                 'michaelmas' => StateConstants::MICHAELMAS,
                 'lammas' => StateConstants::LAMMAS,
+                'done' => StateConstants::CHECK_BOXES_DONE,
             ]
         );
     }
@@ -82,12 +83,12 @@ class CheckBoxes extends GameState {
     }
 
     #[PossibleAction]
-    function actPass() {
-
+    function actPass(int $currentPlayerId) {
+        $this->game->gamestate->nextPrivateState($currentPlayerId, "done");
     }
 
     function zombie() {
-        $this->actPass();
+        $this->actPass($this->game->getCurrentPlayerId());
     }
 
 }

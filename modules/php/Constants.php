@@ -16,6 +16,7 @@ class StateConstants {
     const int BREWHOUSE = 10;
     const int MICHAELMAS = 11;
     const int LAMMAS = 12;
+    const int CHECK_BOXES_DONE = 13;
 
     const int GAME_END = 99;
 }
