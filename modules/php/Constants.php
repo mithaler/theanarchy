@@ -223,10 +223,79 @@ class PlayerAttackCard {
 
     public static function fromCardArray(array $from): PlayerAttackCard {
         $id = $from["id"];
-        $card = DOMAIN_CARDS[$from["type"]];
+        $card = ((int) $id <= 36) ? ATTACK_CARDS[$id] : FINAL_ESCALADE_CARDS[$id];
         $locArgs = \explode("_", $from["location_arg"]);
         $position = (int) $locArgs[0];
         $faceUp = \count($locArgs) > 1;
         return new PlayerAttackCard($id, $position, $faceUp, $card);
     }
 }
+
+class PathCard {
+    public function __construct(
+        public int $serfs,
+        public int $craftsmen,
+        public int $materials,
+        public int $patrons,
+        public int $silver,
+    ) {}
+
+    public static function translatedName(string $name): string {
+        // PHP is stupid and doesn't let you clienttranslate at module scope :|
+        return match ($name) {
+            "abbot" => clienttranslate("Abbot"),
+            "advocate" => clienttranslate("Advocate"),
+            "architect" => clienttranslate("Architect"),
+            "baron" => clienttranslate("Baron"),
+            "bellwether" => clienttranslate("Bellwether"),
+            "silversmith" => clienttranslate("Silversmith"),
+            "captain" => clienttranslate("Captain"),
+            "champion" => clienttranslate("Champion"),
+            "commander" => clienttranslate("Commander"),
+            "conqueror" => clienttranslate("Conqueror"),
+            "defender" => clienttranslate("Defender"),
+            "emissary" => clienttranslate("Emissary"),
+            "engineer" => clienttranslate("Engineer"),
+            "excavator" => clienttranslate("Excavator"),
+            "foreman" => clienttranslate("Foreman"),
+            "mentor" => clienttranslate("Mentor"),
+            "merrymaker" => clienttranslate("Merrymaker"),
+            "monk" => clienttranslate("Monk"),
+            "partisan" => clienttranslate("Partisan"),
+            "priest" => clienttranslate("Priest"),
+            "recruiter" => clienttranslate("Recruiter"),
+            "scout" => clienttranslate("Scout"),
+            "tactician" => clienttranslate("Tactician"),
+            "warrior" => clienttranslate("Warrior"),
+            "weaponsmith" => clienttranslate("Weaponsmith"),
+        };
+    }
+}
+
+const PATH_CARDS = [
+    "abbot" => new PathCard(3, 3, 2, 3, 2),
+    "advocate" => new PathCard(2, 4, 3, 3, 0),
+    "architect" => new PathCard(3, 2, 3, 4, 1),
+    "baron" => new PathCard(3, 3, 3, 2, 2),
+    "bellwether" => new PathCard(3, 3, 4, 3, 0),
+    "silversmith" => new PathCard(4, 2, 3, 2, 2),
+    "captain" => new PathCard(3, 4, 3, 2, 1),
+    "champion" => new PathCard(4, 3, 2, 4, 0),
+    "commander" => new PathCard(3, 3, 3, 2, 2),
+    "conqueror" => new PathCard(3, 3, 4, 3, 0),
+    "defender" => new PathCard(3, 2, 3, 4, 1),
+    "emissary" => new PathCard(2, 4, 3, 4, 0),
+    "engineer" => new PathCard(4, 3, 2, 4, 0),
+    "excavator" => new PathCard(4, 3, 3, 3, 0),
+    "foreman" => new PathCard(2, 3, 4, 3, 1),
+    "mentor" => new PathCard(2, 4, 2, 3, 2),
+    "merrymaker" => new PathCard(2, 4, 2, 3, 2),
+    "monk" => new PathCard(2, 3, 4, 3, 1),
+    "partisan" => new PathCard(3, 2, 4, 3, 1),
+    "priest" => new PathCard(4, 2, 3, 2, 2),
+    "recruiter" => new PathCard(3, 3, 2, 3, 2),
+    "scout" => new PathCard(4, 3, 3, 3, 0),
+    "tactician" => new PathCard(3, 4, 3, 2, 1),
+    "warrior" => new PathCard(4, 3, 3, 3, 0),
+    "weaponsmith" => new PathCard(3, 2, 4, 3, 1),
+];
