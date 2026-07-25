@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { AnarchyContext } from "../context.svelte";
-  import PlayerBoard from "./PlayerBoard.svelte";
+  import PlayerBoard from "./PlayerArea.svelte";
 
   const { ctx }: { ctx: AnarchyContext } = $props();
   const playerIds = $derived.by(() =>

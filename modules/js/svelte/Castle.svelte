@@ -8,7 +8,7 @@
 <script lang="ts">
   import { ctx, getBga, getPlayer, type PlayerKey } from "../context.svelte";
   import type { ChoiceFunc } from "./Checkbox.svelte";
-  import type { PlayerBoardProps } from "./PlayerBoard.svelte";
+  import type { PlayerBoardProps } from "./PlayerArea.svelte";
   const { playerId, isMe }: PlayerBoardProps = $props();
   const player = $derived(getPlayer(playerId));
 
@@ -122,6 +122,7 @@
     background-size: cover;
     width: 225px;
     height: 225px;
+    margin-right: 1ch;
   }
 
   .tower-walls-sprite {
