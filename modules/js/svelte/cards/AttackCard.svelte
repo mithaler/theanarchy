@@ -189,161 +189,36 @@
     background-position: -0px -2380px;
   }
 
+  // Backs: include only distinct ones (since that's all the backend gives us)
   .attack-back {
     background-image: url("img/attack_card_backs.webp");
   }
 
   .attack-back-1 {
-    background-position: -1224px -1904px;
-  }
-
-  .attack-back-2 {
     background-position: -0px -0px;
   }
 
-  .attack-back-3 {
+  .attack-back-7 {
     background-position: -306px -0px;
   }
 
-  .attack-back-4 {
+  .attack-back-13 {
     background-position: -612px -0px;
   }
 
-  .attack-back-5 {
-    background-position: -918px -0px;
-  }
-
-  .attack-back-6 {
-    background-position: -1224px -0px;
-  }
-
-  .attack-back-7 {
-    background-position: -1530px -0px;
-  }
-
-  .attack-back-8 {
-    background-position: -1836px -0px;
-  }
-
-  .attack-back-9 {
-    background-position: -2142px -0px;
-  }
-
-  .attack-back-10 {
+  .attack-back-19 {
     background-position: -0px -476px;
   }
 
-  .attack-back-11 {
+  .attack-back-25 {
     background-position: -306px -476px;
   }
 
-  .attack-back-12 {
+  .attack-back-31 {
     background-position: -612px -476px;
   }
 
-  .attack-back-13 {
-    background-position: -918px -476px;
-  }
-
-  .attack-back-14 {
-    background-position: -1224px -476px;
-  }
-
-  .attack-back-15 {
-    background-position: -1530px -476px;
-  }
-
-  .attack-back-16 {
-    background-position: -1836px -476px;
-  }
-
-  .attack-back-17 {
-    background-position: -2142px -476px;
-  }
-
-  .attack-back-18 {
+  .attack-back-37 {
     background-position: -0px -952px;
-  }
-
-  .attack-back-19 {
-    background-position: -306px -952px;
-  }
-
-  .attack-back-20 {
-    background-position: -612px -952px;
-  }
-
-  .attack-back-21 {
-    background-position: -918px -952px;
-  }
-
-  .attack-back-22 {
-    background-position: -1224px -952px;
-  }
-
-  .attack-back-23 {
-    background-position: -1530px -952px;
-  }
-
-  .attack-back-24 {
-    background-position: -1836px -952px;
-  }
-
-  .attack-back-25 {
-    background-position: -2142px -952px;
-  }
-
-  .attack-back-26 {
-    background-position: -0px -1428px;
-  }
-
-  .attack-back-27 {
-    background-position: -306px -1428px;
-  }
-
-  .attack-back-28 {
-    background-position: -612px -1428px;
-  }
-
-  .attack-back-29 {
-    background-position: -918px -1428px;
-  }
-
-  .attack-back-30 {
-    background-position: -1224px -1428px;
-  }
-
-  .attack-back-31 {
-    background-position: -1530px -1428px;
-  }
-
-  .attack-back-32 {
-    background-position: -1836px -1428px;
-  }
-
-  .attack-back-33 {
-    background-position: -2142px -1428px;
-  }
-
-  .attack-back-34 {
-    background-position: -0px -1904px;
-  }
-
-  .attack-back-35 {
-    background-position: -306px -1904px;
-  }
-
-  .attack-back-36 {
-    background-position: -612px -1904px;
-  }
-
-  // These are the final escalade cards
-  .attack-back-37,
-  .attack-back-38,
-  .attack-back-39,
-  .attack-back-40,
-  .attack-back-41,
-  .attack-back-42 {
-    background-position: -918px -1904px;
   }
 </style>
