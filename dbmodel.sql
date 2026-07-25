@@ -70,10 +70,43 @@ CREATE TABLE IF NOT EXISTS checked_box (
 -- Domain cards; this is actually one deck per player.
 -- Do not use the standard deck/discard locations!
 CREATE TABLE IF NOT EXISTS domain_card (
-    `card_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-    `card_type` varchar(2) NOT NULL,
-    `card_type_arg` int(11) NOT NULL,
-    `card_location` varchar(40) NOT NULL,
-    `card_location_arg` int(11) NOT NULL,
+    `card_id` TINYINT unsigned NOT NULL AUTO_INCREMENT,
+    `card_type` VARCHAR(2) NOT NULL,
+    `card_type_arg` TINYINT NOT NULL,
+    `card_location` VARCHAR(40) NOT NULL,
+    `card_location_arg` TINYINT NOT NULL,
+    PRIMARY KEY (`card_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Attack and Final Escalade cards: both use standard card location names.
+-- card_location_arg is of the form "2" or "2_hidden", meaning either
+-- "in position 2" or "in position 2 and facedown".
+-- (Attack cards are never in position 1; Final Escalade cards are.)
+CREATE TABLE IF NOT EXISTS attack_card (
+    `card_id` TINYINT unsigned NOT NULL AUTO_INCREMENT,
+    `card_type` VARCHAR(2) NOT NULL,
+    `card_type_arg` TINYINT NOT NULL,
+    `card_location` VARCHAR(40) NOT NULL,
+    `card_location_arg` TINYINT NOT NULL,
+    PRIMARY KEY (`card_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Uses standard location names. Players never have more than 1.
+CREATE TABLE IF NOT EXISTS final_escalade_card (
+    `card_id` TINYINT unsigned NOT NULL AUTO_INCREMENT,
+    `card_type` VARCHAR(2) NOT NULL,
+    `card_type_arg` TINYINT NOT NULL,
+    `card_location` VARCHAR(40) NOT NULL,
+    `card_location_arg` TINYINT NOT NULL,
+    PRIMARY KEY (`card_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Path cards use standard location names.
+CREATE TABLE IF NOT EXISTS path_card (
+    `card_id` TINYINT unsigned NOT NULL AUTO_INCREMENT,
+    `card_type` VARCHAR(2) NOT NULL,
+    `card_type_arg` TINYINT NOT NULL,
+    `card_location` VARCHAR(40) NOT NULL,
+    `card_location_arg` TINYINT NOT NULL,
     PRIMARY KEY (`card_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

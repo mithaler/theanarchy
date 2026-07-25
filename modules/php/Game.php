@@ -18,7 +18,6 @@ declare(strict_types=1);
 
 namespace Bga\Games\theanarchy;
 
-
 require_once(__DIR__ . "/Constants.php");
 require_once(__DIR__ . "/Boxes/BoxType.php");
 require_once(__DIR__ . "/Boxes/Sections.php");
@@ -28,7 +27,9 @@ use Bga\GameFramework\Components\Counters\TableCounter;
 use Bga\GameFramework\Components\Deck;
 
 use const Bga\Games\theanarchy\Boxes\SECTIONS;
+use const Bga\Games\theanarchy\PATH_CARDS;
 use const Bga\Games\theanarchy\DOMAIN_CARDS;
+use const Bga\Games\theanarchy\ATTACK_CARDS;
 use Bga\Games\theanarchy\States\InitialSetup;
 use Bga\Games\theanarchy\Resource;
 use Bga\Games\theanarchy\PlayerDomainCard;
@@ -40,7 +41,10 @@ class Game extends \Bga\GameFramework\Table {
 
     public TableCounter $round;
 
+    public Deck $pathCards;
     public Deck $domainCards;
+    public Deck $attackCards;
+    public Deck $finalEscaladeCards;
 
     /**
      * All player resource counters.
@@ -66,7 +70,10 @@ class Game extends \Bga\GameFramework\Table {
         foreach (Resource::cases() as $resource) {
             $this->playerResources[$resource->name] = $this->bga->counterFactory->createPlayerCounter($resource->value);
         }
+        $this->pathCards = $this->deckFactory->createDeck("path_card");
         $this->domainCards = $this->deckFactory->createDeck("domain_card");
+        $this->attackCards = $this->deckFactory->createDeck("attack_card");
+        $this->finalEscaladeCards = $this->deckFactory->createDeck("final_escalade_card");
     }
 
     /**
@@ -124,16 +131,33 @@ class Game extends \Bga\GameFramework\Table {
         return $result;
     }
 
-    private function initializePlayerDecks(array $playerIds) {
+    private function makeCards(int $end, int $start = 1): array {
         $cards = [];
-        for ($i = 1; $i <= 24; $i++) {
+        for ($i = $start; $i <= $end; $i++) {
             $cards[] = ["type" => (string) $i, "type_arg" => 0, "nbr" => 1];
         }
+        return $cards;
+    }
+
+    private function initializeDecks(array $playerIds) {
+        $pathCards = [];
+        foreach (array_keys(PATH_CARDS) as $pathCard) {
+            $pathCards[] = ["type" => $pathCard, "type_arg" => 0, "nbr" => 1];
+        }
+        $this->pathCards->createCards($pathCards);
+        $this->pathCards->shuffle('deck');
+
         foreach ($playerIds as $playerId) {
             $playerDeck = "{$playerId}_deck";
-            $this->domainCards->createCards($cards, $playerDeck);
+            $this->domainCards->createCards($this->makeCards(24), $playerDeck);
             $this->domainCards->shuffle($playerDeck);
         }
+
+        // attack cards are 1-36, final escalade cards are 37-42
+        $this->attackCards->createCards($this->makeCards(36));
+        $this->attackCards->shuffle("deck");
+        $this->finalEscaladeCards->createCards($this->makeCards(42, start: 37));
+        $this->finalEscaladeCards->shuffle("deck");
     }
 
     /**
@@ -179,7 +203,7 @@ class Game extends \Bga\GameFramework\Table {
         );
 
         $this->insertInitialProduction(array_keys($players));
-        $this->initializePlayerDecks(array_keys($players));
+        $this->initializeDecks(array_keys($players));
         $this->reattributeColorsBasedOnPreferences($players, $gameinfos["player_colors"]);
         $this->reloadPlayersBasicInfos();
 
@@ -193,6 +217,29 @@ class Game extends \Bga\GameFramework\Table {
         $this->activeNextPlayer();
 
         return InitialSetup::class;
+    }
+
+    /**
+     * Returns a frontend-visible representation of a player's attack cards, used
+     * in both notifications and in gamedatas.
+     * @param array $feCard The player's Final Escalade card.
+     * @param array $attackCards The player's attack cards, ordered by round.
+     * @return array The frontend JSON representation.
+     */
+    public function attackCardRepr(array $feCard, array $attackCards): array {
+        $attackCardReprs = [];
+        foreach ($attackCards as $idx => $card) {
+            // even-numbered cards are hidden, show only the back ID
+            $rnd = $idx + 1;
+            $repr = (($rnd) % 2 == 0) ?
+                ["back" => ATTACK_CARDS[(int) $card["type"]]->back] :
+                ["front" => (int) $card["type"]];
+            $attackCardReprs[$rnd] = $repr;
+        }
+        return [
+            "finalEscalade" => $feCard["type"],
+            "attacks" => $attackCardReprs,
+        ];
     }
 
     private function insertInitialProduction($playerIds) {
