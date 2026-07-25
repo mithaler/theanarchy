@@ -64,7 +64,9 @@
 
 <style lang="scss">
   .anarchy-right-sheet {
-    background: url("img/anarchy_right_sheet.jpg");
+    background: url("img/anarchy_right_sheet.webp");
     background-size: cover;
+    background-position: right;
+    width: 789px;
   }
 </style>

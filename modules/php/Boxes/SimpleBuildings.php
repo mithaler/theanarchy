@@ -65,7 +65,7 @@ class Keep extends SimpleBuilding {
             8 => Reward::boxes($this->name, $boxId, ["WORSHIP", "ENTERTAINMENT", "INFLUENCE"]),
             12 => Reward::boxes($this->name, $boxId, ["WARCRAFT", "WORSHIP", "ENTERTAINMENT", "INFLUENCE"]),
         };
-        return $this->basicCheckBox($game, $playerId, $boxId, $pay, $cost, $reward);
+        return $this->checkAndPay($game, $playerId, $boxId, $pay, $cost, $reward);
     }
 }
 
@@ -103,7 +103,7 @@ class Mint extends SimpleBuilding {
             1, 2, 4, 5, 7, 8 => Reward::none($this->name, $boxId),
             3, 6, 9 => new Reward($this->name, $boxId, [Resource::SILVER], ["SILVER", "INFLUENCE"]),
         };
-        return $this->basicCheckBox($game, $playerId, $boxId, $pay, $cost, $reward);
+        return $this->checkAndPay($game, $playerId, $boxId, $pay, $cost, $reward);
     }
 }
 
@@ -144,6 +144,6 @@ class Stables extends SimpleBuilding {
             3, 7 => Reward::resources($this->name, $boxId, [Resource::SILVER]),
             4, 8 => Reward::resources($this->name, $boxId, [Resource::KNIGHTS]),
         };
-        return $this->basicCheckBox($game, $playerId, $boxId, $pay, $cost, $reward);
+        return $this->checkAndPay($game, $playerId, $boxId, $pay, $cost, $reward);
     }
 }

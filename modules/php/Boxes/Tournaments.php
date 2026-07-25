@@ -103,13 +103,13 @@ class Tournaments extends BoxType {
             if ($victory) {
                 $reward->boxes["TOURNAMENTS"] = [$boxId + 6];
             }
-            return $this->basicCheckBox($game, $playerId, $boxId, $pay, self::COSTS[$boxId], $reward);
+            return $this->checkAndPay($game, $playerId, $boxId, $pay, self::COSTS[$boxId], $reward);
         } else if ($boxId > 6 && !$pay) {
             $reward = match ($boxId) {
                 7, 8, 9, 10 => new Reward("TOURNAMENTS", $boxId, [Resource::SOLDIERS], ["INFLUENCE"]),
                 11, 12 => new Reward("TOURNAMENTS", $boxId, [Resource::SOLDIERS], ["MIGHT", "JOY"]),
             };
-            return $this->basicCheckBox($game, $playerId, $boxId, false, [], $reward);
+            return $this->checkAndPay($game, $playerId, $boxId, false, [], $reward);
         }
     }
 }

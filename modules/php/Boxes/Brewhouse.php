@@ -144,7 +144,7 @@ class Brewhouse extends BoxType {
         foreach ($cards as $key => $card) {
             if ($card->card->brewhouse == $symbol) {
                 $game->notify->all("DISCARD", "", ["cardId" => $card->id]);
-                $game->domainCards->moveCard($card->id, "{$playerId}_discard");
+                $game->discardCard($playerId, $card->id);
                 unset($cards[$key]);
                 break;
             }
@@ -169,7 +169,7 @@ class Brewhouse extends BoxType {
             $game->notifyNewAvailable($playerId, ["BREWHOUSE" => $newAvail]);
         }
 
-        return $this->basicCheckBox($game, $playerId, $boxId, false, [], $reward);
+        return $this->checkAndPay($game, $playerId, $boxId, false, [], $reward);
     }
 
 }

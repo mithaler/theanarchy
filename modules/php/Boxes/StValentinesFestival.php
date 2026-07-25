@@ -4,7 +4,6 @@ use BGA\Games\theanarchy\Boxes\BoxType;
 use BGA\Games\theanarchy\Boxes\Reward;
 use BGA\Games\theanarchy\Game;
 use BGA\Games\theanarchy\Resource;
-use BGA\Games\theanarchy\States\CheckBoxes;
 
 /**
  * Returns the box ID of a given Valentine number as it appears on a domain card.
@@ -61,7 +60,7 @@ class StValentinesFestival extends BoxType {
                 if (!$this->idFilled($playerId, NAME, $targetId, $currBoxes)) {
                     // easy case: it isn't filled, just fill it and move on
                     $reward->boxes[NAME][] = $targetId;
-                    $game->domainCards->moveCard($card->id, "{$playerId}_discard");
+                    $game->discardCard($playerId, $card->id);
                 } else {
                     // get the left and right boxes
                     $options = [
@@ -82,10 +81,10 @@ class StValentinesFestival extends BoxType {
                     } else if ($notFilledCount == 1) {
                         // there's only one option, check it and discard the card
                         $reward->boxes[NAME][] = array_values($notFilled)[0];
-                        $game->domainCards->moveCard($card->id, "{$playerId}_discard");
+                        $game->discardCard($playerId, $card->id);
                     } else if ($notFilledCount == 0) {
                         // there are no options, discard the card with no reward
-                        $game->domainCards->moveCard($card->id, "{$playerId}_discard");
+                        $game->discardCard($playerId, $card->id);
                     }
                 }
             }
@@ -113,7 +112,7 @@ class StValentinesFestival extends BoxType {
             );
         }
 
-        $this->basicCheckBox($game, $playerId, $boxId, $pay, [Resource::PATRONS], $reward);
+        $this->checkAndPay($game, $playerId, $boxId, $pay, [Resource::PATRONS], $reward);
         return $reward;
     }
 }

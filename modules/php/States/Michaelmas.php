@@ -48,7 +48,8 @@ class Michaelmas extends GameState {
         #[StringParam(name: "choice")] string $choice,
     ) {
         // uniquely, does its own validation! (to avoid multiple DB lookups)
-        SECTIONS["MICHAELMAS"]->check($this->game, $currentPlayerId, $boxId, false, $choice);
+        $reward = SECTIONS["MICHAELMAS"]->check($this->game, $currentPlayerId, $boxId, false, $choice);
+        $reward->grant($this->game, $currentPlayerId);
     }
 
     function zombie() {

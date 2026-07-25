@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace BGA\Games\theanarchy\Boxes;
 
@@ -87,7 +88,7 @@ class Reward {
                 ["SOMETHING", "ANOTHER"]
             in which case it becomes ["SOMETHING" => null, "ANOTHER" => null], or:
                 ["SOMETHING" => [10]]
-            in which case it will treat the numbers as multiple rewards to grant
+            in which case it will treat the numbers as IDs of boxes to grant
         */
         if (\count($boxesToCheck) > 0) {
             $boxes = [];
@@ -122,22 +123,32 @@ class Reward {
                 $game->resources(Resource::from($resource))->inc($playerId, $count);
             }
         }
+
+        // notify this happened
+        $this->notify($game, $playerId);
+
         if ($this->boxes) {
             foreach ($this->boxes as $box => $ids) {
                 $subrewards = [];
                 if (\is_array($ids)) {
                     foreach ($ids as $id) {
-                        $subrewards[] = SECTIONS[$box]->check($game, $playerId, $id, false);
+                        $subr = SECTIONS[$box]->check($game, $playerId, $id, false);
+                        if ($subr !== null) {
+                            $subrewards[] = $subr;
+                        }
                     }
                 } else {
-                    $subrewards[] = SECTIONS[$box]->check($game, $playerId, null, false);
+                    $subr = SECTIONS[$box]->check($game, $playerId, null, false);
+                    if ($subr !== null) {
+                        $subrewards[] = $subr;
+                    }
                 }
                 $this->boxes[$box] = $subrewards;
+                foreach ($subrewards as $subreward) {
+                    $subreward->grant($game, $playerId);
+                }
             }
         }
-
-        // notify this happened
-        $this->notify($game, $playerId);
     }
 
     private function notify(Game $game, int $playerId) {
@@ -179,9 +190,13 @@ abstract class BoxType {
     abstract public function validBoxes(Game $game, int $playerId, array $currBoxes): array;
 
     /**
-     * Pays the cost, updates the DB. Might look up and recursively call this on downstream
-     * BoxTypes, and recursively combine rewards. Assumes that the caller has already validated
-     * that the box is checkable and the cost is payable.
+     * Pays the cost, checks the box, and returns an UNGRANTED `Reward`. Might look up and
+     * recursively call this on downstream BoxTypes, and recursively combine rewards (all
+     * of which will be returned as part of the returned Reward). Assumes that the caller
+     * has already validated that the box is checkable and the cost is payable.
+     *
+     * It is always the responsibility of the caller of this function to call `grant()` on
+     * the returned `Reward`.
      * @param Game $game
      * @param int $playerId The player to check it for.
      * @param int $boxId The box to check. If null, the implicit "next" box, which might be an error if such a thing is not defined for this section.
@@ -277,7 +292,7 @@ abstract class BoxType {
         return $this->idFilled($playerId, "SIEGECRAFT_construction", 6, $currBoxes);
     }
 
-    protected function basicCheckBox(
+    protected function checkAndPay(
         Game $game,
         int $playerId,
         int $boxId,
@@ -292,7 +307,6 @@ abstract class BoxType {
                 $game->resources($resourceCost)->inc($playerId, -1);
             }
         }
-        $reward->grant($game, $playerId);
         return $reward;
     }
 }

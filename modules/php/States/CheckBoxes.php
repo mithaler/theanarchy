@@ -35,6 +35,8 @@ class CheckBoxes extends GameState {
                 'stvalentinesfestival' => StateConstants::ST_VALENTINES_FESTIVAL,
                 'brewhouse' => StateConstants::BREWHOUSE,
                 'michaelmas' => StateConstants::MICHAELMAS,
+                'lammas' => StateConstants::LAMMAS,
+                'done' => StateConstants::CHECK_BOXES_DONE,
             ]
         );
     }
@@ -69,7 +71,8 @@ class CheckBoxes extends GameState {
         }
 
         // notify rewards
-        SECTIONS[$section]->check($this->game, $currentPlayerId, $boxId, true, $choice);
+        $reward = SECTIONS[$section]->check($this->game, $currentPlayerId, $boxId, true, $choice);
+        $reward->grant($this->game, $currentPlayerId);
 
         // notify new available boxes
         $newAllCheckedBoxes = $this->game->allCheckedBoxes($currentPlayerId);
@@ -80,12 +83,12 @@ class CheckBoxes extends GameState {
     }
 
     #[PossibleAction]
-    function actPass() {
-
+    function actPass(int $currentPlayerId) {
+        $this->game->gamestate->nextPrivateState($currentPlayerId, "done");
     }
 
     function zombie() {
-        $this->actPass();
+        $this->actPass($this->game->getCurrentPlayerId());
     }
 
 }

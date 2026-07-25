@@ -67,7 +67,8 @@ class StValentinesFestival extends GameState {
         $avail = $this->getAvailableBoxesByGender($currentPlayerId);
         foreach ($avail as $gender => $choices) {
             if (\in_array($boxId, $choices)) {
-                SECTIONS[NAME]->check($this->game, $currentPlayerId, $boxId, false);
+                $reward = SECTIONS[NAME]->check($this->game, $currentPlayerId, $boxId, false);
+                $reward->grant($this->game, $currentPlayerId);
 
                 // discard the card for that gender
                 $this->game->domainCards->moveAllCardsInLocation(

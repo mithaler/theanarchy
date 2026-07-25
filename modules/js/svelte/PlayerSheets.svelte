@@ -21,7 +21,6 @@
 
     :global(.anarchy-sheet) {
       position: relative; // needed to ensure this is a containing block for boxes
-      width: 800px;
       height: 800px;
     }
 

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace BGA\Games\theanarchy\States;
 
@@ -10,14 +11,14 @@ use BGA\Games\theanarchy\Game;
 use BGA\Games\theanarchy\StateConstants;
 use const BGA\Games\theanarchy\Boxes\SECTIONS;
 
-class Brewhouse extends GameState {
+class Lammas extends GameState {
     public function __construct(protected Game $game) {
         parent::__construct(
             $game,
-            id: StateConstants::BREWHOUSE,
+            id: StateConstants::LAMMAS,
             type: StateType::PRIVATE,
-            description: clienttranslate('${actplayer} must fill in beer ingredients'),
-            descriptionMyTurn: clienttranslate('${you} must fill in beer ingredients'),
+            description: clienttranslate('${actplayer} must fill in Lammas flags'),
+            descriptionMyTurn: clienttranslate('${you} must fill in Lammas flags'),
             transitions: [
                 'checkboxes' => StateConstants::CHECK_BOXES,
             ]
@@ -26,7 +27,7 @@ class Brewhouse extends GameState {
 
     public function getArgs(int $currentPlayerId) {
         return ["availableBoxes" => [
-            "BREWHOUSE" => SECTIONS["BREWHOUSE"]->validBoxes(
+            "LAMMAS" => SECTIONS["LAMMAS"]->validBoxes(
                 $this->game,
                 $currentPlayerId,
                 $this->game->allCheckedBoxes($currentPlayerId),
@@ -36,8 +37,8 @@ class Brewhouse extends GameState {
 
     #[PossibleAction]
     function actCheckBox(int $currentPlayerId, #[IntParam(name: "boxId")] int $boxId) {
-        // uniquely, does its own validation! (to avoid multiple DB lookups)
-        $reward = SECTIONS["BREWHOUSE"]->check($this->game, $currentPlayerId, $boxId, false);
+        // does its own validation! (to avoid multiple DB lookups)
+        $reward = SECTIONS["LAMMAS"]->check($this->game, $currentPlayerId, $boxId, false);
         $reward->grant($this->game, $currentPlayerId);
     }
 

@@ -97,9 +97,9 @@
 
 <style lang="scss">
   .anarchy-left-sheet {
-    background-image: url("img/anarchy_left_sheet.jpg");
+    background-image: url("img/anarchy_left_sheet.webp");
     background-size: cover;
-    margin-right: 1em;
+    width: 790px;
 
     div {
       position: absolute;
