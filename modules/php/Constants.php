@@ -7,7 +7,7 @@ class StateConstants {
     const int GAME_START = 2;
 
     const int INITIAL_SETUP = 3;
-    const int ROUND_SETUP = 4;
+    const int DEAL_ATTACKS = 4;
     const int CHOOSE_PATH_CARDS = 5;
     const int CHECK_BOXES_LOOP = 6;
     const int CHECK_BOXES = 7;

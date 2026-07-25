@@ -16,7 +16,7 @@ class InitialSetup extends GameState {
             id: StateConstants::INITIAL_SETUP,
             type: StateType::GAME,
             transitions: [
-                "checkBoxes" => StateConstants::CHECK_BOXES_LOOP,
+                'dealAttacks' => StateConstants::DEAL_ATTACKS,
             ]
         );
     }
@@ -26,7 +26,8 @@ class InitialSetup extends GameState {
     }
 
     public function onEnteringState() {
-        $this->gamestate->nextState("checkBoxes");
+        $this->gamestate->changeActivePlayer($this->game->getNextPlayerTable()[0]);
+        $this->gamestate->nextState("dealAttacks");
     }
 
 }

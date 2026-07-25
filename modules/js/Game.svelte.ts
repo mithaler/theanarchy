@@ -29,6 +29,7 @@ import {
   Michaelmas,
   type MichaelmasArgs,
   Lammas,
+  ChoosePathCards,
 } from "./states.svelte";
 
 export class Game {
@@ -38,6 +39,7 @@ export class Game {
     console.log("theanarchy constructor");
     this.bga = bga;
 
+    this.bga.states.register("ChoosePathCards", new ChoosePathCards(this, bga));
     this.bga.states.register("CheckBoxes", new CheckBoxes(this, bga));
     this.bga.states.register("KnightsTraining", new KnightsTraining(this, bga));
     this.bga.states.register(

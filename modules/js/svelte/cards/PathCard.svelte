@@ -1,5 +1,36 @@
-<script lang="ts">
+<script module lang="ts">
+  interface PathCardEntry {
+    name: string;
+    description?: string;
+    conditions?: number[];
+  }
+  const PATH_CARDS: Record<string, PathCardEntry> = {
+    // TODO fill
+    abbot: { name: _("Abbot") },
+    bellwether: { name: _("Bellwether") },
+    champion: { name: _("Champion") },
+    conqueror: { name: _("Conqueror") },
+    engineer: { name: _("Engineer") },
+    mentor: { name: _("Mentor") },
+    monk: { name: _("Monk") },
+    weaponsmith: { name: _("Weaponsmith") },
+  };
 </script>
+
+<script lang="ts">
+  interface Props {
+    id: string;
+    onclick?: (id: string) => void;
+  }
+  const { id, onclick }: Props = $props();
+</script>
+
+<button
+  class={["goal", `goal-${id}`, onclick && "clickable"]}
+  onclick={onclick ? () => onclick(id) : undefined}
+>
+  <div class="name fraktur">{PATH_CARDS[id]?.name ?? id}</div>
+</button>
 
 <style lang="scss">
   .goal {
@@ -8,6 +39,20 @@
     display: inline-block;
     width: 383px;
     height: 610px;
+    border-radius: 12px;
+    box-shadow: 3px 3px 3px #000000a0;
+    zoom: 0.4;
+  }
+
+  .name {
+    font-size: 3.5em;
+    text-align: center;
+    position: relative;
+    top: 168px;
+  }
+
+  .clickable {
+    cursor: pointer;
   }
 
   .goal-abbot {

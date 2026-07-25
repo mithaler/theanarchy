@@ -2,12 +2,13 @@
   interface Props {
     id: number;
     face: "front" | "back";
+    zoom?: number;
   }
-  const { id, face }: Props = $props();
+  const { id, face, zoom }: Props = $props();
   const klass = $derived(face === "front" ? "attack" : "attack-back");
 </script>
 
-<div class={["card", klass, `${klass}-${id}`]}></div>
+<div class={["card", klass, `${klass}-${id}`]} style:zoom></div>
 
 <style lang="scss">
   .card {
@@ -15,6 +16,8 @@
     display: inline-block;
     width: 305px;
     height: 475px;
+    border-radius: 12px;
+    box-shadow: 3px 3px 3px #000000a0;
   }
 
   .attack {

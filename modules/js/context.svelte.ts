@@ -10,6 +10,11 @@ export interface PlayerBoxSet {
   [key: number]: BoxSet;
 }
 
+interface AttackCard {
+  id: number;
+  face: "front" | "back";
+}
+
 export interface AnarchyPlayer extends Player {
   tent: number;
 
@@ -35,6 +40,11 @@ export interface AnarchyPlayer extends Player {
   silver: number;
   food: number;
 
+  attackCards: {
+    finalEscalade?: number;
+    attacks: Record<number, AttackCard>;
+  };
+  pathCards: string[];
   checkedBoxes: BoxSet;
 }
 
