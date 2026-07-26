@@ -10,9 +10,13 @@
     bellwether: { name: _("Bellwether") },
     champion: { name: _("Champion") },
     conqueror: { name: _("Conqueror") },
+    defender: { name: _("Defender") },
     engineer: { name: _("Engineer") },
     mentor: { name: _("Mentor") },
+    merrymaker: { name: _("Merrymaker") },
     monk: { name: _("Monk") },
+    priest: { name: _("Priest") },
+    scout: { name: _("Scout") },
     weaponsmith: { name: _("Weaponsmith") },
   };
 </script>
@@ -21,13 +25,15 @@
   interface Props {
     id: string;
     onclick?: (id: string) => void;
+    zoom?: number;
   }
-  const { id, onclick }: Props = $props();
+  const { id, onclick, zoom }: Props = $props();
 </script>
 
 <button
   class={["goal", `goal-${id}`, onclick && "clickable"]}
   onclick={onclick ? () => onclick(id) : undefined}
+  style:zoom
 >
   <div class="name fraktur">{PATH_CARDS[id]?.name ?? id}</div>
 </button>

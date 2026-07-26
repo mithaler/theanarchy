@@ -99,6 +99,10 @@ export class Game {
     });
   }
 
+  async notif_cardChosen(args: { player_id: number; cardId: string }) {
+    ctx.data!.players[args.player_id]!.pathCards.push(args.cardId);
+  }
+
   async notif_boxReward(args: BoxRewardArgs) {
     const player = ctx.data!.players[args.player_id]!;
 
