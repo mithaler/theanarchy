@@ -35,7 +35,7 @@
   onclick={onclick ? () => onclick(id) : undefined}
   style:zoom
 >
-  <div class="name fraktur">{PATH_CARDS[id]?.name ?? id}</div>
+  <div class="name blackletter">{PATH_CARDS[id]?.name ?? id}</div>
 </button>
 
 <style lang="scss">
@@ -51,10 +51,10 @@
   }
 
   .name {
-    font-size: 3.5em;
+    font-size: 4.5em;
     text-align: center;
     position: relative;
-    top: 168px;
+    top: 158px;
   }
 
   .clickable {
