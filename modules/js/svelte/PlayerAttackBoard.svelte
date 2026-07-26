@@ -1,11 +1,9 @@
 <script lang="ts">
-  import { getPlayer } from "../context.svelte";
   import AttackCard from "./cards/AttackCard.svelte";
   import PathCard from "./cards/PathCard.svelte";
   import type { PlayerBoardProps } from "./PlayerArea.svelte";
 
-  const { playerId }: PlayerBoardProps = $props();
-  const player = $derived(getPlayer(playerId));
+  const { player }: PlayerBoardProps = $props();
   const attackCards = $derived(player.attackCards);
 </script>
 

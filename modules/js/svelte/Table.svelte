@@ -4,11 +4,8 @@
   import PlayerBoard from "./PlayerArea.svelte";
 
   const { ctx }: { ctx: AnarchyContext } = $props();
-  const playerIds = $derived.by(() =>
-    Object.keys(ctx.data!.players).map((pid) => parseInt(pid, 10)),
-  );
-
   const meId = $derived(ctx.bga!.players.getCurrentPlayerId());
+  const players = $derived(ctx.data!.players);
 </script>
 
 <p>It is round {ctx.data!.round}</p>
@@ -16,11 +13,11 @@
 <PathCardSelector />
 
 <!-- Show current player first -->
-{#if playerIds.includes(meId)}
-  <PlayerBoard playerId={meId} isMe={true} />
+{#if players[meId]}
+  <PlayerBoard player={players[meId]} isMe={true} />
 {/if}
-{#each playerIds.filter((p) => p !== meId) as playerId (playerId)}
-  <PlayerBoard {playerId} isMe={false} />
+{#each Object.values(players).filter((p) => p.id != meId.toString()) as player (player.id)}
+  <PlayerBoard {player} isMe={false} />
 {/each}
 
 <style lang="scss">

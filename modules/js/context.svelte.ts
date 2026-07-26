@@ -132,10 +132,10 @@ export function getCurrentPlayer(): AnarchyPlayer {
 }
 
 export function getCheckedBoxes(
-  playerId: number | string,
+  player: AnarchyPlayer,
   section: string,
 ): number[] {
-  return getPlayer(playerId).checkedBoxes[section] ?? [];
+  return player.checkedBoxes[section] ?? [];
 }
 
 export function getAvailableBoxes(section: string): number[] | null {

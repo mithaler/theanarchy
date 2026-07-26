@@ -14,12 +14,9 @@
   import { sectionProps } from "./sections/utils.svelte";
   import Mercenaries from "./sections/Mercenaries.svelte";
   import Discontent from "./sections/Discontent.svelte";
+  import type { PlayerBoardProps } from "./PlayerArea.svelte";
 
-  interface Props {
-    playerId: number;
-    isMe: boolean;
-  }
-  const { playerId, isMe }: Props = $props();
+  const { player, isMe }: PlayerBoardProps = $props();
 </script>
 
 {#snippet basicRow(type: BasicRowType, section: string, length: number = 13)}
@@ -27,7 +24,7 @@
     {section}
     {type}
     {length}
-    {...sectionProps(isMe, playerId, section)}
+    {...sectionProps(isMe, player, section)}
   />
 {/snippet}
 
@@ -38,15 +35,15 @@
   <UnclickableRow
     {type}
     section={section as UnclickableType}
-    checkedBoxes={getCheckedBoxes(playerId, section)}
+    checkedBoxes={getCheckedBoxes(player, section)}
   />
 {/snippet}
 
 <div class="anarchy-sheet anarchy-left-sheet">
   <div class="fortification-rows">
     {@render basicRow("fortification", "GATE", 6)}
-    <TowerWallRow section="TOWER" {...sectionProps(isMe, playerId, "TOWER")} />
-    <TowerWallRow section="WALL" {...sectionProps(isMe, playerId, "WALL")} />
+    <TowerWallRow section="TOWER" {...sectionProps(isMe, player, "TOWER")} />
+    <TowerWallRow section="WALL" {...sectionProps(isMe, player, "WALL")} />
     {@render basicRow("fortification", "MOAT", 12)}
   </div>
 
@@ -59,7 +56,7 @@
 
   <div class="tactic-use-rows">
     {#each TACTICS as tactic (tactic)}
-      <TacticsUse section={tactic} {...sectionProps(isMe, playerId, tactic)} />
+      <TacticsUse section={tactic} {...sectionProps(isMe, player, tactic)} />
     {/each}
   </div>
 
@@ -70,8 +67,8 @@
   </div>
 
   <Discontent
-    discontent={getCheckedBoxes(playerId, "DISCONTENT")}
-    joy={getCheckedBoxes(playerId, "JOY")}
+    discontent={getCheckedBoxes(player, "DISCONTENT")}
+    joy={getCheckedBoxes(player, "JOY")}
   />
 
   <div class="point-rows">
@@ -80,17 +77,17 @@
     {/each}
   </div>
 
-  <Mercenaries {...sectionProps(isMe, playerId, "MERCENARIES")} />
+  <Mercenaries {...sectionProps(isMe, player, "MERCENARIES")} />
   {#each ["GUILDSMEN", "ALLIES"] as side (side)}
     <WealthWheelSide
       section={side as WealthWheelSideSection}
-      {...sectionProps(isMe, playerId, side)}
+      {...sectionProps(isMe, player, side)}
     />
   {/each}
   {#each ["SIEGECRAFT", "SIEGECRAFT_construction"] as sec (sec)}
     <Siegecraft
       section={sec as SiegecraftSection}
-      {...sectionProps(isMe, playerId, sec)}
+      {...sectionProps(isMe, player, sec)}
     />
   {/each}
 </div>

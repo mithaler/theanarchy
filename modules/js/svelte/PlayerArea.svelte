@@ -1,6 +1,6 @@
 <script module lang="ts">
   export interface PlayerBoardProps {
-    playerId: number;
+    player: AnarchyPlayer;
     isMe: boolean;
   }
 </script>
@@ -9,11 +9,12 @@
   import PlayerSheets from "./PlayerSheets.svelte";
   import Castle from "./Castle.svelte";
   import PlayerAttackBoard from "./PlayerAttackBoard.svelte";
+  import type { AnarchyPlayer } from "../context.svelte";
   const props: PlayerBoardProps = $props();
 </script>
 
 <div class="player-area">
-  <h2>Player {props.playerId}</h2>
+  <h2>Player {props.player.id}</h2>
   <div class="player-meta">
     <Castle {...props} />
     <PlayerAttackBoard {...props} />

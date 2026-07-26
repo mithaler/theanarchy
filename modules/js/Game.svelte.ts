@@ -70,15 +70,19 @@ export class Game {
     });
 
     // Set up player panels
-    Object.values(gamedatas.players).forEach((player) => {
+    Object.values(ctx.data!.players).forEach((player) => {
       const divId = `player-panel-${player.id}`;
+      const playerId = parseInt(player.id, 10);
       this.bga.playerPanels
-        .getElement(parseInt(player.id, 10))
+        .getElement(playerId)
         .insertAdjacentHTML("beforeend", `<div id="${divId}"></div>`);
 
       mount(PlayerPanel, {
         target: document.getElementById(divId)!,
-        props: { player: getPlayer(player.id) },
+        props: {
+          player,
+          isMe: playerId === this.bga.players.getCurrentPlayerId(),
+        },
       });
     });
 

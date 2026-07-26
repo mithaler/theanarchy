@@ -4,6 +4,7 @@ import {
   getBga,
   getCheckedBoxes,
   type AnarchyBga,
+  type AnarchyPlayer,
 } from "../../context.svelte";
 import type { ChoiceFunc } from "../Checkbox.svelte";
 import ResourceChooser, { type Values } from "../ResourceChooser.svelte";
@@ -16,12 +17,12 @@ export interface SectionProps {
 
 export function sectionProps(
   isMe: boolean,
-  playerId: number,
+  player: AnarchyPlayer,
   section: string,
 ): SectionProps {
   return {
     isMe,
-    checkedBoxes: getCheckedBoxes(playerId, section),
+    checkedBoxes: getCheckedBoxes(player, section),
     availableBoxes: isMe ? getAvailableBoxes(section) : null,
   };
 }

@@ -6,11 +6,10 @@
 </script>
 
 <script lang="ts">
-  import { ctx, getBga, getPlayer, type PlayerKey } from "../context.svelte";
+  import { ctx, getBga, type PlayerKey } from "../context.svelte";
   import type { ChoiceFunc } from "./Checkbox.svelte";
   import type { PlayerBoardProps } from "./PlayerArea.svelte";
-  const { playerId, isMe }: PlayerBoardProps = $props();
-  const player = $derived(getPlayer(playerId));
+  const { player, isMe }: PlayerBoardProps = $props();
 
   const WALLS: PlayerKey[] = ["wallTop", "wallRight", "wallBottom", "wallLeft"];
   const TOWERS: PlayerKey[] = [
