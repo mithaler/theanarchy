@@ -122,7 +122,6 @@
     background-size: cover;
     width: 225px;
     height: 225px;
-    margin-right: 1ch;
   }
 
   .tower-walls-sprite {
