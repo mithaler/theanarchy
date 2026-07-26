@@ -31,9 +31,10 @@
     font-weight: 400;
     font-style: normal;
   }
-  :global(.young-serif) {
+  :global(.game-text) {
     font-family: "Young Serif", serif;
     font-weight: 400;
     font-style: normal;
+    font-variant-caps: all-small-caps;
   }
 </style>
