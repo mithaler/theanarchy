@@ -301,3 +301,67 @@ const PATH_CARDS = [
     "warrior" => new PathCard(4, 3, 3, 3, 0),
     "weaponsmith" => new PathCard(3, 2, 4, 3, 1),
 ];
+
+class ScenarioCard {
+    // resource costs at the top never change, they're purely per-round
+    public function __construct(
+        public ?int $requiredStrength,
+        public int $a,
+        public int $b,
+        public int $c,
+        public int $d,
+        public int $e,
+    ) {}
+}
+
+const SCENARIO_CARDS = [
+    // classic easy
+    1 => new ScenarioCard(4, 2, 1, 1, 2, 2),
+    2 => new ScenarioCard(4, 2, 2, 1, 3, 3),
+    3 => new ScenarioCard(5, 3, 2, 2, 3, 4),
+    4 => new ScenarioCard(5, 3, 3, 2, 4, 4),
+    5 => new ScenarioCard(6, 4, 3, 3, 4, 5),
+
+    // classic medium
+    6 => new ScenarioCard(4, 2, 1, 1, 2, 3),
+    7 => new ScenarioCard(4, 3, 2, 2, 3, 3),
+    8 => new ScenarioCard(5, 3, 3, 2, 4, 4),
+    9 => new ScenarioCard(5, 4, 3, 3, 4, 4),
+    10 => new ScenarioCard(6, 4, 4, 3, 5, 5),
+
+    // classic hard
+    11 => new ScenarioCard(4, 2, 2, 1, 3, 3),
+    12 => new ScenarioCard(4, 3, 2, 2, 3, 4),
+    13 => new ScenarioCard(5, 4, 3, 3, 4, 4),
+    14 => new ScenarioCard(5, 4, 4, 3, 5, 5),
+    15 => new ScenarioCard(6, 5, 4, 4, 5, 6),
+
+    // siege easy
+    16 => new ScenarioCard(null, 2, 2, 1, 3, 3),
+    17 => new ScenarioCard(null, 3, 2, 2, 3, 4),
+    18 => new ScenarioCard(null, 3, 2, 2, 3, 4),
+    19 => new ScenarioCard(null, 4, 4, 3, 5, 5),
+    20 => new ScenarioCard(null, 5, 4, 4, 5, 6),
+];
+
+/**
+ * Returns the scenario cards for this game based on mode
+ * and difficulty.
+ * @param string $mode "siege" or "classic"
+ * @param string $difficulty "easy", "medium" or "hard"
+ * @return ScenarioCard[]
+ */
+function scenarioCards(string $mode, string $difficulty): array {
+    $start = 1;
+    if ($mode === "siege") {
+        $start += 15;
+    }
+
+    if ($difficulty === "medium") {
+        $start += 5;
+    } else if ($difficulty === "hard") {
+        $start += 10;
+    }
+
+    return \array_slice(SCENARIO_CARDS, $start, 5);
+}
