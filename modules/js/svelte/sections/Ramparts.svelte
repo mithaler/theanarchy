@@ -12,7 +12,7 @@
         section="RAMPARTS"
         boxId={id}
         state={getState(id, isMe, checkedBoxes, availableBoxes)}
-        width={[3, 6].includes(id) ? "39px" : undefined}
+        width={[3, 6].includes(id) ? "36px" : undefined}
       />
     </div>
   {/each}
@@ -23,10 +23,22 @@
     display: flex;
     flex-direction: row;
     position: absolute;
-    top: 205px;
-    left: 348px;
+    top: 210px;
+    left: 338px;
 
-    .box-wrapper {
+    .box-wrapper-1 {
+      margin-right: 58px;
+    }
+    .box-wrapper-2 {
+      margin-right: 56px;
+    }
+    .box-wrapper-3 {
+      margin-right: 55px;
+    }
+    .box-wrapper-4 {
+      margin-right: 58px;
+    }
+    .box-wrapper-5 {
       margin-right: 56px;
     }
   }

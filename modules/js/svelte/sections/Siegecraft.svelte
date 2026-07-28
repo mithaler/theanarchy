@@ -39,47 +39,47 @@
     position: absolute;
     display: flex;
     flex-direction: column;
-    gap: 10.7px;
+    gap: 9.9px;
   }
 
   .siegecraft {
-    top: 304px;
-    left: 543px;
+    top: 306px;
+    left: 539px;
 
     .siegecraft-1 {
       position: relative;
-      left: 79px;
+      left: 77px;
       margin-bottom: 24px;
     }
 
     .siegecraft-2,
     .siegecraft-3 {
       position: relative;
-      left: 78px;
+      left: 76px;
     }
 
     .siegecraft-4,
     .siegecraft-8,
     .siegecraft-9 {
       position: relative;
-      left: 26px;
+      left: 25px;
     }
 
     .siegecraft-5,
     .siegecraft-6 {
       position: relative;
-      left: 52px;
+      left: 51px;
     }
 
     .siegecraft-10 {
       position: relative;
-      bottom: 135px;
+      bottom: 132px;
     }
   }
 
   .siegecraft-construction {
-    top: 357px;
-    left: 734px;
+    top: 358px;
+    left: 724.3px;
     align-items: flex-end;
   }
 </style>

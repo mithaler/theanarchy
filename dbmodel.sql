@@ -87,7 +87,7 @@ CREATE TABLE IF NOT EXISTS attack_card (
     `card_type` VARCHAR(2) NOT NULL,
     `card_type_arg` TINYINT NOT NULL,
     `card_location` VARCHAR(40) NOT NULL,
-    `card_location_arg` TINYINT NOT NULL,
+    `card_location_arg` INT NOT NULL,
     PRIMARY KEY (`card_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -97,16 +97,16 @@ CREATE TABLE IF NOT EXISTS final_escalade_card (
     `card_type` VARCHAR(2) NOT NULL,
     `card_type_arg` TINYINT NOT NULL,
     `card_location` VARCHAR(40) NOT NULL,
-    `card_location_arg` TINYINT NOT NULL,
+    `card_location_arg` INT NOT NULL,
     PRIMARY KEY (`card_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Path cards use standard location names.
 CREATE TABLE IF NOT EXISTS path_card (
     `card_id` TINYINT unsigned NOT NULL AUTO_INCREMENT,
-    `card_type` VARCHAR(2) NOT NULL,
+    `card_type` VARCHAR(20) NOT NULL,
     `card_type_arg` TINYINT NOT NULL,
     `card_location` VARCHAR(40) NOT NULL,
-    `card_location_arg` TINYINT NOT NULL,
+    `card_location_arg` INT NOT NULL,
     PRIMARY KEY (`card_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

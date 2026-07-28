@@ -35,8 +35,8 @@
 
   function keepWidth(id: number): string | undefined {
     if (id === 4) return "94px";
-    else if (id === 8) return "70px";
-    else if (id === 12) return "80px";
+    else if (id === 8) return "60px";
+    else if (id === 12) return "76px";
   }
   function mintWidth(id: number): string | undefined {
     if ([3, 6, 9].includes(id)) {
@@ -82,55 +82,64 @@
   .simple-building {
     display: flex;
     position: relative;
-    left: 242px;
+    left: 236px;
+  }
+
+  .box-wrapper {
+    margin-right: 2px;
   }
 
   .small-build,
   .medium-build,
   .large-build {
     position: relative;
-    bottom: 25px;
+    bottom: 24px;
   }
   .small-build {
-    left: 143px;
+    left: 139px;
   }
   .medium-build {
-    left: 153px;
+    left: 149px;
   }
   .large-build {
-    left: 154px;
+    left: 149px;
   }
 
   .keep {
-    bottom: 73px;
+    bottom: 23.5px;
 
     .box-wrapper-4 {
-      margin-right: 23px;
+      margin-right: 22.5px;
     }
     .box-wrapper-8 {
-      margin-right: 55px;
+      margin-right: 66px;
     }
   }
 
   .mint {
-    bottom: 34px;
+    bottom: -14px;
 
     .box-wrapper-3 {
-      margin-right: 81px;
+      margin-right: 80px;
     }
     .box-wrapper-6 {
-      margin-right: 89px;
+      margin-right: 88px;
     }
   }
 
-  .stables {
-    top: 115px;
+  .simple-building.stables {
+    top: 158.5px;
+    left: 235.5px;
+
+    .medium-build {
+      left: 148px;
+    }
 
     .box-wrapper-2 {
       margin-left: 17px;
     }
     .box-wrapper-4 {
-      margin-right: 71px;
+      margin-right: 73px;
     }
     .box-wrapper-6 {
       margin-left: 26px;

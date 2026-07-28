@@ -27,13 +27,13 @@
     display: flex;
     flex-direction: column;
     position: absolute;
-    left: 234px;
-    top: 305px;
+    left: 223px;
+    top: 307px;
   }
 
   .chapel {
     position: relative;
-    height: 79px;
+    height: 77px;
   }
 
   .chapel-box {
@@ -51,7 +51,7 @@
   }
 
   .chapel-box-2 {
-    left: 31px;
+    left: 36px;
   }
 
   .chapel-box-3 {
@@ -63,7 +63,7 @@
   }
 
   .chapel-box-5 {
-    top: 48.4px;
-    left: 88px;
+    top: 46.5px;
+    left: 90px;
   }
 </style>

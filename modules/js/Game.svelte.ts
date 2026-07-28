@@ -29,6 +29,7 @@ import {
   Michaelmas,
   type MichaelmasArgs,
   Lammas,
+  ChoosePathCards,
 } from "./states.svelte";
 
 export class Game {
@@ -38,6 +39,7 @@ export class Game {
     console.log("theanarchy constructor");
     this.bga = bga;
 
+    this.bga.states.register("ChoosePathCards", new ChoosePathCards(this, bga));
     this.bga.states.register("CheckBoxes", new CheckBoxes(this, bga));
     this.bga.states.register("KnightsTraining", new KnightsTraining(this, bga));
     this.bga.states.register(
@@ -68,15 +70,19 @@ export class Game {
     });
 
     // Set up player panels
-    Object.values(gamedatas.players).forEach((player) => {
+    Object.values(ctx.data!.players).forEach((player) => {
       const divId = `player-panel-${player.id}`;
+      const playerId = parseInt(player.id, 10);
       this.bga.playerPanels
-        .getElement(parseInt(player.id, 10))
+        .getElement(playerId)
         .insertAdjacentHTML("beforeend", `<div id="${divId}"></div>`);
 
       mount(PlayerPanel, {
         target: document.getElementById(divId)!,
-        props: { player: getPlayer(player.id) },
+        props: {
+          player,
+          isMe: playerId === this.bga.players.getCurrentPlayerId(),
+        },
       });
     });
 
@@ -95,6 +101,10 @@ export class Game {
     this.bga.notifications.setupPromiseNotifications({
       logger: console.log,
     });
+  }
+
+  async notif_cardChosen(args: { player_id: number; cardId: string }) {
+    ctx.data!.players[args.player_id]!.pathCards.push(args.cardId);
   }
 
   async notif_boxReward(args: BoxRewardArgs) {

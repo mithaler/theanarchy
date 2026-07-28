@@ -10,6 +10,11 @@ export interface PlayerBoxSet {
   [key: number]: BoxSet;
 }
 
+interface AttackCard {
+  id: number;
+  face: "front" | "back";
+}
+
 export interface AnarchyPlayer extends Player {
   tent: number;
 
@@ -35,6 +40,11 @@ export interface AnarchyPlayer extends Player {
   silver: number;
   food: number;
 
+  attackCards: {
+    finalEscalade?: number;
+    attacks: Record<number, AttackCard>;
+  };
+  pathCards: string[];
   checkedBoxes: BoxSet;
 }
 
@@ -122,10 +132,10 @@ export function getCurrentPlayer(): AnarchyPlayer {
 }
 
 export function getCheckedBoxes(
-  playerId: number | string,
+  player: AnarchyPlayer,
   section: string,
 ): number[] {
-  return getPlayer(playerId).checkedBoxes[section] ?? [];
+  return player.checkedBoxes[section] ?? [];
 }
 
 export function getAvailableBoxes(section: string): number[] | null {

@@ -24,8 +24,8 @@
 <style lang="scss">
   .brewhouse {
     position: absolute;
-    left: 491px;
-    top: 579px;
+    left: 478px;
+    top: 574px;
     display: flex;
     flex-direction: column;
   }
@@ -33,10 +33,10 @@
   .row {
     display: flex;
     flex-direction: row;
-    margin-bottom: 4px;
+    margin-bottom: 3.3px;
   }
 
   .box-wrapper {
-    margin-right: 1px;
+    margin-right: 3.3px;
   }
 </style>

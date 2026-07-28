@@ -34,12 +34,14 @@
 
 <div class={["unclickable-row", type]}>
   {#each ids(UNCLICKABLE_ROWS[section]) as id (id)}
-    <Checkbox
-      {type}
-      {section}
-      boxId={id}
-      state={checkedBoxes.includes(id) ? "checked" : "unclickable"}
-    />
+    <div class="box-wrapper">
+      <Checkbox
+        {type}
+        {section}
+        boxId={id}
+        state={checkedBoxes.includes(id) ? "checked" : "unclickable"}
+      />
+    </div>
   {/each}
 </div>
 
@@ -48,16 +50,26 @@
     display: flex;
   }
 
+  .points {
+    .box-wrapper {
+      margin-right: 2.4px;
+    }
+  }
+
   .production {
     scale: 80%;
     transform-origin: left;
     position: relative;
     top: -4px;
-    left: -2px;
-    margin-bottom: 10.5px;
+    left: -1.5px;
+    margin-bottom: 10px;
+
+    .box-wrapper {
+      margin-right: 1px;
+    }
   }
 
   .points {
-    margin-bottom: 13px;
+    margin-bottom: 12.5px;
   }
 </style>

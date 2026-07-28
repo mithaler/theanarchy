@@ -29,8 +29,8 @@
 <style lang="scss">
   .guildsmen {
     position: absolute;
-    top: 200px;
-    left: 498px;
+    top: 203px;
+    left: 493px;
   }
 
   .guildsmen-box {
@@ -38,16 +38,16 @@
 
     &.guildsmen-1 {
       top: 78px;
-      left: 98px;
+      left: 97px;
     }
 
     &.guildsmen-2 {
       top: 52px;
-      left: 71px;
+      left: 71.4px;
     }
 
     &.guildsmen-3 {
-      top: 104px;
+      top: 103px;
       left: 71px;
     }
 
@@ -62,14 +62,14 @@
     }
 
     &.guildsmen-6 {
-      top: 130px;
+      top: 128.4px;
       left: 46px;
     }
 
-    /*
-      &.guildsmen-7 {
-        width: 37px;
-      }*/
+    &.guildsmen-7 {
+      top: 2px;
+      left: 2px;
+    }
 
     &.guildsmen-8 {
       top: 52px;
@@ -77,12 +77,13 @@
     }
 
     &.guildsmen-9 {
-      top: 104px;
+      top: 103px;
       left: 20px;
     }
 
     &.guildsmen-10 {
-      top: 130px;
+      top: 128.4px;
+      left: 2px;
     }
 
     &.guildsmen-11 {
@@ -93,8 +94,8 @@
 
   .allies {
     position: absolute;
-    top: 200px;
-    left: 648px;
+    top: 203px;
+    left: 640.5px;
   }
 
   .allies-box {
@@ -110,47 +111,48 @@
     }
 
     &.allies-3 {
-      top: 104px;
+      top: 103.5px;
       left: 26px;
     }
 
     &.allies-4 {
-      top: 26px;
-      left: 52px;
+      top: 27px;
+      left: 51.4px;
     }
 
     &.allies-5 {
       top: 78px;
-      left: 52px;
+      left: 51.4px;
     }
 
     &.allies-6 {
-      top: 130px;
-      left: 52px;
+      top: 129px;
+      left: 51.4px;
     }
 
     &.allies-7 {
-      left: 79px;
+      top: 2px;
+      left: 77px;
     }
 
     &.allies-8 {
       top: 52px;
-      left: 79px;
+      left: 77px;
     }
 
     &.allies-9 {
-      top: 104px;
-      left: 79px;
+      top: 103.5px;
+      left: 77px;
     }
 
     &.allies-10 {
-      top: 130px;
-      left: 79px;
+      top: 129px;
+      left: 77px;
     }
 
     &.allies-11 {
       top: 74px;
-      left: 105px;
+      left: 102px;
     }
   }
 </style>

@@ -61,51 +61,64 @@
 <style lang="scss">
   .basic-row {
     display: flex;
+  }
+
+  .resource {
     margin-bottom: 10px;
+
+    .box-wrapper {
+      margin-right: 2.9px;
+    }
   }
 
   .leadership {
     position: relative;
     left: 13px;
 
+    .box-wrapper {
+      margin-right: 2.4px;
+    }
+
     &.governance {
-      top: 116px;
+      top: 123px;
     }
 
     &.warcraft {
-      top: 222px;
+      top: 236px;
     }
 
     &.worship {
-      top: 441px;
+      top: 457.6px;
     }
 
     &.entertainment {
-      top: 663px;
+      top: 683px;
     }
   }
 
   .gate {
+    margin-bottom: 10px;
+
     .box-wrapper-1 {
       margin-right: 76px;
     }
     .box-wrapper-2 {
-      margin-right: 105px;
+      margin-right: 102px;
     }
     .box-wrapper-3 {
-      margin-right: 51px;
+      margin-right: 50px;
     }
     .box-wrapper-4 {
-      margin-right: 103px;
+      margin-right: 102px;
     }
     .box-wrapper-5 {
-      margin-right: 50px;
+      margin-right: 49px;
     }
   }
 
   .moat {
     .box-wrapper {
-      margin-right: 2px;
+      margin-right: 3.2px;
     }
 
     .box-wrapper-4 {

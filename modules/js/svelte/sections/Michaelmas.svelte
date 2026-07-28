@@ -137,8 +137,8 @@
 <style lang="scss">
   .michaelmas {
     position: absolute;
-    left: 617px;
-    top: 514px;
+    left: 600px;
+    top: 509px;
   }
 
   .column {
@@ -155,7 +155,7 @@
     }
 
     .column-1 {
-      margin-left: 62px;
+      margin-left: 60.5px;
     }
 
     .column-2 {
@@ -173,7 +173,8 @@
     margin-top: 5px;
 
     .box-wrapper {
-      margin-bottom: 3px;
+      margin-bottom: 2.5px;
+      margin-right: 2.5px;
     }
 
     .first-number-row {
@@ -195,7 +196,7 @@
 
   .result-column {
     position: relative;
-    left: 75.4px;
-    bottom: 147px;
+    left: 73.4px;
+    bottom: 143.5px;
   }
 </style>

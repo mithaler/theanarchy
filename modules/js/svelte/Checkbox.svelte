@@ -32,10 +32,8 @@
     click?: (doCheck: ChoiceFunc) => void;
 
     width?: string;
-    noMargin?: boolean;
   }
-  const { section, boxId, state, type, click, width, noMargin }: Props =
-    $props();
+  const { section, boxId, state, type, click, width }: Props = $props();
 
   const onclick = $derived.by(() => {
     if (state === "available") {
@@ -61,7 +59,7 @@
 <button
   type="button"
   {style}
-  class={["checkbox", state, type, !noMargin ? "margin" : undefined]}
+  class={["checkbox", state, type]}
   title={`${section} ${boxId}`}
   {onclick}
 >
@@ -76,12 +74,9 @@
     align-items: center;
     justify-content: center;
     background: transparent;
-    width: 19px;
+    width: 18px;
     height: 18px;
-  }
-
-  .margin {
-    margin-right: 2px;
+    border: 1px solid green;
   }
 
   .production {
@@ -90,10 +85,6 @@
 
   .tactics-use {
     margin-right: -2px;
-  }
-
-  .resource {
-    margin-right: 3px;
   }
 
   .available {

@@ -49,8 +49,8 @@
 <style lang="scss">
   .mercenaries {
     position: absolute;
-    top: 147px;
-    left: 543px;
+    top: 154px;
+    left: 539px;
     display: flex;
     flex-direction: column;
     width: 175px;
@@ -59,7 +59,7 @@
   .row {
     display: flex;
     flex-direction: row;
-    margin-bottom: 8.5px;
+    margin-bottom: 7.5px;
     width: 100%;
   }
 
@@ -69,30 +69,30 @@
 
   // Row 5
   .box-wrapper-11 {
-    left: 69.4px;
+    left: 67.4px;
   }
 
   // Row 4
   .row-4 .box-wrapper {
-    margin-right: 7px;
+    margin-right: 7.8px;
   }
 
   // Row 3
   .box-wrapper-4 {
-    margin-left: 26px;
+    margin-left: 25.5px;
   }
   .row-3 .box-wrapper {
-    margin-right: 31.4px;
+    margin-right: 33.1px;
   }
 
   // Row 2
   .box-wrapper-2 {
-    margin-left: 43px;
+    margin-left: 42px;
     margin-right: 14px;
   }
 
   // Row 1
   .box-wrapper-1 {
-    margin-left: 79px;
+    margin-left: 77px;
   }
 </style>

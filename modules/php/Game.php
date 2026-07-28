@@ -123,9 +123,23 @@ class Game extends \Bga\GameFramework\Table {
             $counter->fillResult($result);
         }
 
+        // add players' checked boxes
         $checkedBoxes = $this->allCheckedBoxes();
         foreach ($this->boxesByPlayer($checkedBoxes) as $playerId => $boxes) {
             $result["players"][$playerId]["checkedBoxes"] = $boxes;
+        }
+
+        // add players' attack cards
+        $attackCards = $this->attackCards->getCardsInLocation('hand');
+        $feCards = $this->finalEscaladeCards->getCardsInLocation('hand');
+        $pathCards = $this->pathCards->getCardsInLocation('hand');
+        foreach ($result["players"] as $playerId => &$player) {
+            $playerAttackCards = array_filter($attackCards, fn ($c) => (int) $c['location_arg'] === $playerId);
+            $playerFeCard = array_find($feCards, fn ($c) => (int) $c['location_arg'] === $playerId);
+            $player["attackCards"] = $this->attackCardRepr($playerFeCard, $playerAttackCards);
+
+            $playerPathCards = array_filter($pathCards, fn ($c) => (int) $c['location_arg'] === $playerId);
+            $player["pathCards"] = array_values(array_map(fn ($c) => $c["type"], $playerPathCards));
         }
 
         return $result;
@@ -228,16 +242,17 @@ class Game extends \Bga\GameFramework\Table {
      */
     public function attackCardRepr(array $feCard, array $attackCards): array {
         $attackCardReprs = [];
-        foreach ($attackCards as $idx => $card) {
+        $rnd = 0;
+        foreach ($attackCards as $card) {
             // even-numbered cards are hidden, show only the back ID
-            $rnd = $idx + 1;
+            $rnd++;
             $repr = (($rnd) % 2 == 0) ?
-                ["back" => ATTACK_CARDS[(int) $card["type"]]->back] :
-                ["front" => (int) $card["type"]];
+                ["id" => ATTACK_CARDS[(int) $card["type"]]->back, "face" => "back"] :
+                ["id" => (int) $card["type"], "face" => "front"];
             $attackCardReprs[$rnd] = $repr;
         }
         return [
-            "finalEscalade" => $feCard["type"],
+            "finalEscalade" => (int) $feCard["type"],
             "attacks" => $attackCardReprs,
         ];
     }

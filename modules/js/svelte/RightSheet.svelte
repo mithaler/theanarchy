@@ -11,17 +11,14 @@
   import Brewhouse from "./sections/Brewhouse.svelte";
   import Michaelmas from "./sections/Michaelmas.svelte";
   import Lammas from "./sections/Lammas.svelte";
+  import type { PlayerBoardProps } from "./PlayerArea.svelte";
 
-  interface Props {
-    playerId: number;
-    isMe: boolean;
-  }
-  const { playerId, isMe }: Props = $props();
+  const { player, isMe }: PlayerBoardProps = $props();
 </script>
 
 {#snippet leadershipRow(section: string)}
   <BasicRow
-    {...sectionProps(isMe, playerId, section)}
+    {...sectionProps(isMe, player, section)}
     {section}
     length={9}
     type="leadership"
@@ -36,30 +33,30 @@
 
   {#each ["KEEP", "MINT"] as section (section)}
     <SimpleBuilding
-      {...sectionProps(isMe, playerId, section)}
+      {...sectionProps(isMe, player, section)}
       section={section as "KEEP" | "MINT"}
     />
   {/each}
 
-  <Tactics {...sectionProps(isMe, playerId, "TACTICS")} />
-  <Ramparts {...sectionProps(isMe, playerId, "RAMPARTS")} />
+  <Tactics {...sectionProps(isMe, player, "TACTICS")} />
+  <Ramparts {...sectionProps(isMe, player, "RAMPARTS")} />
 
   <!-- TODO spies -->
 
   <SimpleBuilding
-    {...sectionProps(isMe, playerId, "STABLES")}
+    {...sectionProps(isMe, player, "STABLES")}
     section="STABLES"
   />
 
-  <Chapel {...sectionProps(isMe, playerId, "CHAPEL")} />
-  <KnightsTraining {...sectionProps(isMe, playerId, "KNIGHTS TRAINING")} />
+  <Chapel {...sectionProps(isMe, player, "CHAPEL")} />
+  <KnightsTraining {...sectionProps(isMe, player, "KNIGHTS TRAINING")} />
   <StValentinesFestival
-    {...sectionProps(isMe, playerId, "ST VALENTINES FESTIVAL")}
+    {...sectionProps(isMe, player, "ST VALENTINES FESTIVAL")}
   />
-  <Tournaments {...sectionProps(isMe, playerId, "TOURNAMENTS")} />
-  <Brewhouse {...sectionProps(isMe, playerId, "BREWHOUSE")} />
-  <Michaelmas {...sectionProps(isMe, playerId, "MICHAELMAS")} />
-  <Lammas {...sectionProps(isMe, playerId, "LAMMAS")} />
+  <Tournaments {...sectionProps(isMe, player, "TOURNAMENTS")} />
+  <Brewhouse {...sectionProps(isMe, player, "BREWHOUSE")} />
+  <Michaelmas {...sectionProps(isMe, player, "MICHAELMAS")} />
+  <Lammas {...sectionProps(isMe, player, "LAMMAS")} />
 </div>
 
 <style lang="scss">

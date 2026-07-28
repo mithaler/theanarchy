@@ -5,13 +5,12 @@
   const { isMe, checkedBoxes, availableBoxes }: SectionProps = $props();
 </script>
 
-{#snippet box(id: number, noMargin?: boolean)}
+{#snippet box(id: number)}
   <div class="box-wrapper box-wrapper-{id}">
     <Checkbox
       section="LAMMAS"
       boxId={id}
       state={getState(id, isMe, checkedBoxes, availableBoxes)}
-      {noMargin}
     />
   </div>
 {/snippet}
@@ -21,7 +20,7 @@
     {#each ids(3) as flagRow (flagRow)}
       <div class="flag-row flag-row-{flagRow} row">
         {#each ids(7) as key (key)}
-          {@render box(key + 6 + (flagRow - 1) * 7, true)}
+          {@render box(key + 6 + (flagRow - 1) * 7)}
         {/each}
       </div>
     {/each}
@@ -42,38 +41,43 @@
 
   .lammas {
     position: absolute;
-    left: 233px;
-    top: 718px;
+    left: 224px;
+    top: 707px;
   }
 
   .flag-row {
     position: relative;
+
+    .box-wrapper {
+      margin-right: 1px;
+    }
   }
 
   .flag-row-1 {
-    transform: rotate(11deg);
+    transform: rotate(10deg);
     top: 17px;
-    left: -4px;
+    left: -1px;
   }
 
   .flag-row-2 {
+    transform: rotate(-2deg);
     top: 5px;
-    left: -1px;
+    left: -2px;
   }
 
   .flag-row-3 {
     transform: rotate(-20deg);
-    left: -23px;
-    top: 7px;
+    left: -27px;
+    top: 8px;
   }
 
   .activation {
     position: absolute;
     left: 115px;
-    top: 50.6px;
+    top: 51px;
 
     .box-wrapper {
-      margin-right: 62.8px;
+      margin-right: 63.4px;
     }
   }
 </style>

@@ -50,8 +50,8 @@
     display: flex;
     flex-direction: row;
     position: absolute;
-    left: 324px;
-    top: 576px;
+    left: 315px;
+    top: 571px;
   }
 
   .column {
@@ -60,10 +60,10 @@
   }
 
   .activation {
-    width: 102.4px;
+    width: 100.4px;
   }
 
   .box-wrapper {
-    margin-bottom: 5.7px;
+    margin-bottom: 4.8px;
   }
 </style>

@@ -46,7 +46,7 @@
     display: flex;
     flex-direction: column;
     position: absolute;
-    left: 519px;
+    left: 505px;
     top: 330px;
   }
 
@@ -54,6 +54,10 @@
     display: flex;
     flex-direction: row;
     width: 268.5px;
+
+    .box-wrapper {
+      margin-right: 2px;
+    }
   }
 
   .festival-row.activation {
@@ -64,16 +68,16 @@
     .activation-column {
       display: flex;
       flex-direction: column;
-      margin-left: 66px;
+      margin-left: 68px;
       gap: 4px;
     }
   }
 
   .festival-row.gender {
-    margin-bottom: 17.6px;
+    margin-bottom: 17px;
 
     .box-wrapper:nth-child(even) {
-      margin-right: 3.5px;
+      margin-right: 6.5px;
     }
   }
 
@@ -82,7 +86,7 @@
       width: 33px;
     }
     .box-wrapper:nth-child(even) :global(.checkbox) {
-      width: 53px;
+      width: 51px;
     }
   }
 </style>

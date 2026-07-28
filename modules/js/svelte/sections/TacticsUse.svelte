@@ -65,10 +65,14 @@
   .tactic {
     display: flex;
     flex-direction: row;
-    margin-bottom: 11px;
+    margin-bottom: 10px;
 
-    .box-wrapper-1 {
-      margin-right: 58px;
+    .box-wrapper {
+      margin-right: 0.45px;
+
+      &.box-wrapper-1 {
+        margin-right: 61px;
+      }
     }
   }
 </style>

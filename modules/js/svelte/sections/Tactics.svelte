@@ -72,11 +72,11 @@
     display: flex;
     flex-direction: row;
     position: absolute;
-    top: 171px;
-    left: 367px;
+    top: 176px;
+    left: 357px;
 
     .box-wrapper {
-      margin-right: 74px;
+      margin-right: 74.7px;
     }
   }
 </style>

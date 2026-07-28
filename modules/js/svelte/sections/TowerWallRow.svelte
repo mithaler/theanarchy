@@ -55,14 +55,14 @@
 <style lang="scss">
   .fort-row {
     display: flex;
-    margin-bottom: 10px;
+    margin-bottom: 9px;
   }
 
   .fort-row.wall {
     padding-top: 1px;
 
     .box-wrapper {
-      margin-right: 5.4px;
+      margin-right: 6.7px;
     }
     .box-wrapper-6 {
       margin-right: 34px;
@@ -77,7 +77,7 @@
       margin-right: 32px;
     }
     .box-wrapper-2 {
-      margin-right: 23px;
+      margin-right: 25px;
     }
     .box-wrapper-3 {
       margin-right: 32px;
@@ -89,10 +89,10 @@
       margin-right: 50px;
     }
     .box-wrapper-6 {
-      margin-right: 104px;
+      margin-right: 102px;
     }
     .box-wrapper-7 {
-      margin-right: 50px;
+      margin-right: 49px;
     }
   }
 </style>

@@ -22,11 +22,11 @@
     display: flex;
     flex-direction: column;
     position: absolute;
-    top: 329px;
-    left: 475px;
+    top: 330px;
+    left: 462px;
   }
 
   .box-wrapper {
-    margin-bottom: 5.8px;
+    margin-bottom: 5px;
   }
 </style>

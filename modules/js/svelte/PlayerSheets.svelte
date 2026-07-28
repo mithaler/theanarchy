@@ -1,12 +1,8 @@
 <script lang="ts">
   import LeftSheet from "./LeftSheet.svelte";
+  import type { PlayerBoardProps } from "./PlayerArea.svelte";
   import RightSheet from "./RightSheet.svelte";
-
-  interface Props {
-    playerId: number;
-    isMe: boolean;
-  }
-  const props: Props = $props();
+  const props: PlayerBoardProps = $props();
 </script>
 
 <div class="anarchy-player-sheets">

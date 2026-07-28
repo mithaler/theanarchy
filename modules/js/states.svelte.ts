@@ -7,6 +7,7 @@ import {
   type PlayerKey,
 } from "./context.svelte";
 import type { Game } from "./Game.svelte";
+import { state as pathCardState } from "./svelte/PathCardSelector.svelte";
 
 abstract class State<ArgType> {
   game: Game;
@@ -23,6 +24,20 @@ abstract class State<ArgType> {
   constructor(game: Game, bga: AnarchyBga) {
     this.game = game;
     this.bga = bga;
+  }
+}
+
+interface ChoosePathCardArgs {
+  choices: string[];
+}
+
+export class ChoosePathCards extends State<ChoosePathCardArgs> {
+  onEnteringState(args: ChoosePathCardArgs): void {
+    pathCardState.cards = args.choices;
+  }
+
+  onLeavingState(): void {
+    pathCardState.cards = undefined;
   }
 }
 
