@@ -122,6 +122,7 @@
     background-size: cover;
     width: 225px;
     height: 225px;
+    position: relative;
   }
 
   .tower-walls-sprite {
@@ -141,22 +142,22 @@
       scale: 35%;
 
       &.wallLeft {
-        top: 138px;
-        left: 81px;
+        top: 91px;
+        left: 77px;
         rotate: 90deg;
       }
       &.wallRight {
-        top: 138px;
-        left: 168px;
+        top: 91px;
+        left: 165px;
         rotate: 90deg;
       }
       &.wallTop {
-        top: 109px;
-        left: 93.5px;
+        top: 58px;
+        left: 91.5px;
       }
       &.wallBottom {
-        top: 189px;
-        left: 93.5px;
+        top: 144px;
+        left: 89.5px;
       }
     }
     &.wall-1 {
@@ -178,20 +179,20 @@
       scale: 31%;
 
       &.towerLeftBottom {
-        top: 191px;
-        left: 58px;
+        top: 144px;
+        left: 55px;
       }
       &.towerLeftTop {
-        top: 100px;
-        left: 58px;
+        top: 55px;
+        left: 54px;
       }
       &.towerRightBottom {
-        top: 191px;
-        left: 145px;
+        top: 144px;
+        left: 144px;
       }
       &.towerRightTop {
-        top: 100px;
-        left: 145px;
+        top: 55px;
+        left: 143px;
       }
     }
     &.tower-1 {
@@ -209,15 +210,15 @@
 
     &.moat-sprite {
       position: absolute;
-      top: -50px;
-      left: 80px;
+      top: -98px;
+      left: 76px;
       background-image: url("img/moat.png");
       transform-origin: center;
     }
     &.gate-sprite {
       position: absolute;
-      top: 0px;
-      left: -8px;
+      top: -45px;
+      left: -11px;
       background-image: url("img/gate.png");
       transform-origin: bottom;
     }
