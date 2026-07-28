@@ -140,6 +140,7 @@
     zoom?: number;
   }
   const { id, onclick, zoom }: Props = $props();
+  const card = $derived(PATH_CARDS[id]);
 </script>
 
 <button
@@ -147,8 +148,13 @@
   onclick={onclick ? () => onclick(id) : undefined}
   style:zoom
 >
-  <div class="name blackletter">{PATH_CARDS[id]?.name ?? id}</div>
-  <div class="description game-text">{PATH_CARDS[id]?.description ?? ""}</div>
+  <div class="name blackletter">{card?.name ?? id}</div>
+  <div class="description game-text">{card?.description ?? ""}</div>
+  <div class="conditions">
+    <div class="condition-1 game-text">{card.conditions[0]} = 1VP</div>
+    <div class="condition-2 game-text">{card.conditions[1]} = 2VP</div>
+    <div class="condition-3 game-text">{card.conditions[2]} = 3VP</div>
+  </div>
 </button>
 
 <style lang="scss">
@@ -180,6 +186,17 @@
     width: 350px;
     line-height: 24px;
     align-content: center;
+  }
+
+  .conditions {
+    position: absolute;
+    bottom: 20px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    font-size: 2.2em;
+    width: 350px;
+    margin: 0 16px;
   }
 
   .clickable {
