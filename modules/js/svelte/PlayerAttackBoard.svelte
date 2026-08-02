@@ -43,11 +43,13 @@
   }
 
   .board {
+    position: relative;
     background-image: url("img/player_attack_board.webp");
     background-size: cover;
     width: 786px;
     height: 171px;
     align-self: center;
+    z-index: 2;
   }
 
   .path-cards {
@@ -57,7 +59,6 @@
     bottom: 146px;
     margin-bottom: -146px;
     margin-left: 18px;
-    z-index: -1;
   }
 
   .path-card-wrapper {

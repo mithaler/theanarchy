@@ -5,13 +5,20 @@
 
   interface Props {
     children: Snippet;
+    help?: string;
+    action?: string;
+    html?: string;
   }
-  const { children }: Props = $props();
+  const { children, help, action, html }: Props = $props();
   const id = $props.id();
   const bga = getBga();
 
   const tooltip: Attachment = (e) => {
-    bga.gameui.addTooltip(e.id, _("HELLO"), _("GOODBYE"));
+    if (html) {
+      bga.gameui.addTooltipHtml(e.id, html);
+    } else {
+      bga.gameui.addTooltip(e.id, help!, action!);
+    }
     return () => bga.gameui.removeTooltip(e.id);
   };
 </script>

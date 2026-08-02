@@ -134,6 +134,8 @@
 </script>
 
 <script lang="ts">
+  import Tooltip from "../Tooltip.svelte";
+
   interface Props {
     id: string;
     onclick?: (id: string) => void;
@@ -141,21 +143,27 @@
   }
   const { id, onclick, zoom }: Props = $props();
   const card = $derived(PATH_CARDS[id]);
+
+  // svelte-ignore non_reactive_update
+  let buttonElement: HTMLButtonElement;
 </script>
 
-<button
-  class={["goal", `goal-${id}`, onclick && "clickable"]}
-  onclick={onclick ? () => onclick(id) : undefined}
-  style:zoom
->
-  <div class="name blackletter">{card?.name ?? id}</div>
-  <div class="description game-text">{card?.description ?? ""}</div>
-  <div class="conditions">
-    <div class="condition-1 game-text">{card.conditions[0]} = 1VP</div>
-    <div class="condition-2 game-text">{card.conditions[1]} = 2VP</div>
-    <div class="condition-3 game-text">{card.conditions[2]} = 3VP</div>
-  </div>
-</button>
+<Tooltip html={`<div style="zoom:2">${buttonElement.outerHTML}</div>`}>
+  <button
+    class={["goal", `goal-${id}`, onclick && "clickable"]}
+    onclick={onclick ? () => onclick(id) : undefined}
+    style:zoom
+    bind:this={buttonElement}
+  >
+    <div class="name blackletter">{card?.name ?? id}</div>
+    <div class="description game-text">{card?.description ?? ""}</div>
+    <div class="conditions">
+      <div class="condition-1 game-text">{card.conditions[0]} = 1VP</div>
+      <div class="condition-2 game-text">{card.conditions[1]} = 2VP</div>
+      <div class="condition-3 game-text">{card.conditions[2]} = 3VP</div>
+    </div>
+  </button>
+</Tooltip>
 
 <style lang="scss">
   .goal {
