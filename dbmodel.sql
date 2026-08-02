@@ -15,37 +15,6 @@
 -- Note: The database schema is created from this file when the game starts. If you modify this file,
 --       you have to restart a game to see your changes in database.
 
--- Example 1: create a standard "card" table to be used with the "Deck" tools (see example game "hearts"):
-
--- CREATE TABLE IF NOT EXISTS `card` (
---   `card_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
---   `card_type` VARCHAR(16) NOT NULL,
---   `card_type_arg` INT NOT NULL,
---   `card_location` VARCHAR(16) NOT NULL,
---   `card_location_arg` INT NOT NULL,
---   PRIMARY KEY (`card_id`)
--- ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 AUTO_INCREMENT=1;
-
-
--- Additional player fields for overall state
-ALTER TABLE player ADD (
-    -- Tent: left to right
-    tent TINYINT NOT NULL DEFAULT 0,
-
-    -- Castle levels: 0 to whatever
-    gate TINYINT NOT NULL DEFAULT 0,
-    left_wall TINYINT NOT NULL DEFAULT 0,
-    right_wall TINYINT NOT NULL DEFAULT 0,
-    bottom_wall TINYINT NOT NULL DEFAULT 0,
-    top_wall TINYINT NOT NULL DEFAULT 0,
-    tower_left_top TINYINT NOT NULL DEFAULT 0,
-    tower_left_bottom TINYINT NOT NULL DEFAULT 0,
-    tower_right_top TINYINT NOT NULL DEFAULT 0,
-    tower_right_bottom TINYINT NOT NULL DEFAULT 0,
-    moat TINYINT NOT NULL DEFAULT 0
-);
-
-
 -- Boxes checked by players
 CREATE TABLE IF NOT EXISTS checked_box (
     -- The player who checked the box
@@ -67,7 +36,20 @@ CREATE TABLE IF NOT EXISTS checked_box (
     PRIMARY KEY (player_id, section, box_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- Domain cards; this is actually one deck per player.
+-- Workers assigned to castle defense.
+-- Note that there is no "strength field"; `exhausted=true` means one of:
+-- * a soldier/craftsman that was previously beered (you can't beer knights)
+-- * a knight that survived a damage (soldiers/craftsmen only have one health)
+CREATE TABLE IF NOT EXISTS castle_defender (
+    `id` INT NOT NULL AUTO_INCREMENT,
+    `player_id` INT NOT NULL,
+    `type` ENUM('soldiers', 'craftsmen', 'knights') NOT NULL,
+    `side` ENUM('top', 'bottom', 'left', 'right') NOT NULL,
+    `exhausted` TINYINT NOT NULL DEFAULT 0,
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Domain cards: this is actually one deck per player.
 -- Do not use the standard deck/discard locations!
 CREATE TABLE IF NOT EXISTS domain_card (
     `card_id` TINYINT unsigned NOT NULL AUTO_INCREMENT,
@@ -79,15 +61,17 @@ CREATE TABLE IF NOT EXISTS domain_card (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Attack and Final Escalade cards: both use standard card location names.
--- card_location_arg is of the form "2" or "2_hidden", meaning either
--- "in position 2" or "in position 2 and facedown".
--- (Attack cards are never in position 1; Final Escalade cards are.)
+-- card_location is either "deck" or "hand"
+-- card_location_arg is a player ID
+-- state is whether it's face-up, hidden, successful or failed
 CREATE TABLE IF NOT EXISTS attack_card (
     `card_id` TINYINT unsigned NOT NULL AUTO_INCREMENT,
     `card_type` VARCHAR(2) NOT NULL,
     `card_type_arg` TINYINT NOT NULL,
     `card_location` VARCHAR(40) NOT NULL,
     `card_location_arg` INT NOT NULL,
+    `position` TINYINT NOT NULL DEFAULT 0,
+    `state` ENUM('visible', 'hidden', 'success', 'failed') NOT NULL DEFAULT 'visible',
     PRIMARY KEY (`card_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
