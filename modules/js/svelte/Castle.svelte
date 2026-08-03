@@ -7,6 +7,7 @@
 
 <script lang="ts">
   import { ctx, getBga, type PlayerKey } from "../context.svelte";
+  import CastleWorkers from "./CastleWorkers.svelte";
   import type { ChoiceFunc } from "./Checkbox.svelte";
   import type { PlayerBoardProps } from "./PlayerArea.svelte";
   const { player, isMe }: PlayerBoardProps = $props();
@@ -55,59 +56,65 @@
   ></button>
 {/snippet}
 
-<div class="castle">
-  {#each WALLS as wall (wall)}
-    {#if (isMe && castleState.wallChoiceFunc) || player[wall] > 0}
-      {@render div(
-        wall,
-        [
+<div class="castle-wrapper">
+  <CastleWorkers position="top" {player} {isMe} />
+  <CastleWorkers position="left" {player} {isMe} />
+  <CastleWorkers position="right" {player} {isMe} />
+  <CastleWorkers position="bottom" {player} {isMe} />
+  <div class="castle">
+    {#each WALLS as wall (wall)}
+      {#if (isMe && castleState.wallChoiceFunc) || player[wall] > 0}
+        {@render div(
           wall,
-          "wall",
-          "tower-walls-sprite",
-          `wall-${player[wall]}`,
-          player[wall] > 0 ? "built" : null,
-          isMe && castleState.wallChoiceFunc && available(wall)
-            ? "clickable"
-            : null,
-        ],
-        castleState.wallChoiceFunc,
-      )}
-    {/if}
-  {/each}
+          [
+            wall,
+            "wall",
+            "tower-walls-sprite",
+            `wall-${player[wall]}`,
+            player[wall] > 0 ? "built" : null,
+            isMe && castleState.wallChoiceFunc && available(wall)
+              ? "clickable"
+              : null,
+          ],
+          castleState.wallChoiceFunc,
+        )}
+      {/if}
+    {/each}
 
-  {#each TOWERS as tower (tower)}
-    {#if (isMe && castleState.towerChoiceFunc) || player[tower] > 0}
-      {@render div(
-        tower,
-        [
+    {#each TOWERS as tower (tower)}
+      {#if (isMe && castleState.towerChoiceFunc) || player[tower] > 0}
+        {@render div(
           tower,
-          "tower",
-          "tower-walls-sprite",
-          `tower-${player[tower]}`,
-          player[tower] > 0 ? "built" : null,
-          isMe && castleState.towerChoiceFunc && available(tower)
-            ? "clickable"
-            : null,
-        ],
-        castleState.towerChoiceFunc,
-      )}
-    {/if}
-  {/each}
+          [
+            tower,
+            "tower",
+            "tower-walls-sprite",
+            `tower-${player[tower]}`,
+            player[tower] > 0 ? "built" : null,
+            isMe && castleState.towerChoiceFunc && available(tower)
+              ? "clickable"
+              : null,
+          ],
+          castleState.towerChoiceFunc,
+        )}
+      {/if}
+    {/each}
 
-  {#if player.moat > 0}
-    {@render div("moat", [
-      "moat-sprite",
-      "moat-gate-sprite",
-      `sprite-${player.moat}`,
-    ])}
-  {/if}
-  {#if player.gate > 0}
-    {@render div("gate", [
-      "gate-sprite",
-      "moat-gate-sprite",
-      `sprite-${player.gate}`,
-    ])}
-  {/if}
+    {#if player.moat > 0}
+      {@render div("moat", [
+        "moat-sprite",
+        "moat-gate-sprite",
+        `sprite-${player.moat}`,
+      ])}
+    {/if}
+    {#if player.gate > 0}
+      {@render div("gate", [
+        "gate-sprite",
+        "moat-gate-sprite",
+        `sprite-${player.gate}`,
+      ])}
+    {/if}
+  </div>
 </div>
 
 <style lang="scss">
@@ -116,12 +123,21 @@
     box-shadow: 0px 0px 6px 5px rgba(255, 46, 46, 0.9);
   }
 
+  .castle-wrapper {
+    width: 100%;
+    height: 234px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
   .castle {
     background-image: url("img/castle_mount.png");
     background-size: cover;
     width: 225px;
     height: 225px;
     position: relative;
+    zoom: 0.8;
   }
 
   .tower-walls-sprite {

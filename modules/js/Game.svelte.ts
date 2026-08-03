@@ -31,6 +31,7 @@ import {
   Lammas,
   ChoosePathCards,
 } from "./states.svelte";
+export const [zone] = await importDojoLibs(["ebg/zone"]);
 
 export class Game {
   bga: AnarchyBga;

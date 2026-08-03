@@ -1,6 +1,11 @@
+<script module lang="ts">
+  export const dragState: { dragging?: Fighter } = $state({});
+</script>
+
 <script lang="ts">
   import type { AnarchyPlayer, PlayerKey } from "../context.svelte";
   import Castle from "./Castle.svelte";
+  import type { Fighter } from "./CastleWorkers.svelte";
   import Icon from "./Icon.svelte";
 
   interface Props {
@@ -9,25 +14,47 @@
   }
 
   let { player, isMe }: Props = $props();
+
+  function ondragstart(field: Fighter) {
+    return () => {
+      dragState.dragging = field;
+    };
+  }
+
+  function ondragend() {
+    dragState.dragging = undefined;
+  }
 </script>
+
+{#snippet counter(field: string, draggable: boolean = false)}
+  <div class={{ counter: true, draggable }}>
+    <div>{player[field as PlayerKey]}</div>
+    <div
+      class={{ draggable }}
+      {draggable}
+      ondragstart={draggable ? ondragstart(field as Fighter) : undefined}
+      ondragend={draggable ? ondragend : undefined}
+      role="img"
+    >
+      <Icon name={field} />
+    </div>
+  </div>
+{/snippet}
 
 {#if player}
   <div class="stat-panel">
     <div class="stats">
       <div class="counters">
-        {#each ["serfs", "craftsmen", "patrons", "soldiers", "knights"] as field (field)}
-          <div class="counter">
-            <div>{player[field as PlayerKey]}</div>
-            <Icon name={field} />
-          </div>
+        {#each ["serfs", "patrons"] as field (field)}
+          {@render counter(field)}
+        {/each}
+        {#each ["craftsmen", "soldiers", "knights"] as field (field)}
+          {@render counter(field, isMe)}
         {/each}
       </div>
       <div class="counters">
         {#each ["food", "materials", "silver"] as field (field)}
-          <div class="counter">
-            <div>{player[field as PlayerKey]}</div>
-            <Icon name={field} />
-          </div>
+          {@render counter(field)}
         {/each}
       </div>
     </div>
@@ -40,6 +67,10 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+  }
+
+  .draggable {
+    cursor: grab;
   }
 
   .stats {
