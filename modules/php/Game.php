@@ -157,7 +157,13 @@ class Game extends \Bga\GameFramework\Table {
         return $result;
     }
 
-    public static function playerAttacks(int $playerId) {
+    /**
+     * Returns all the player attack cards in the player's queue, in descending order
+     * (that is, first incoming attack first).
+     * @param int $playerId
+     * @return PlayerAttackCard[]
+     */
+    public function playerAttacks(int $playerId): array {
         $attacks = Game::getObjectListFromDB(
             "SELECT
                 card_id, card_type, card_type_arg, card_location, card_location_arg,
@@ -174,7 +180,12 @@ class Game extends \Bga\GameFramework\Table {
             WHERE card_location_arg = $playerId
             ORDER BY position DESC"
         );
-        return array_map(PlayerAttackCard::fromCardArray, $attacks);
+        return array_values(array_map(fn ($atk) => PlayerAttackCard::fromCardArray($atk), $attacks));
+    }
+
+    public function nextPlayerAttack(int $playerId): ?PlayerAttackCard {
+        $attacks = $this->playerAttacks($playerId);
+        return \count($attacks) > 0 ? $attacks[0] : null;
     }
 
     private function makeCards(int $end, int $start = 1): array {
@@ -308,11 +319,17 @@ class Game extends \Bga\GameFramework\Table {
 
     /**
      * Returns all of the player's defenders, by side they're on.
-     * @param int $playerId
-     * @return array<A, CastleDefender>
+     * If tactics is true, returns only tactics instead.
+     * @param int $playerId The player ID.
+     * @param bool $tactics If true, returns tactics instead of workers.
+     * @return array<string, CastleDefender[]>
      */
-    public function getCastleDefenders(int $playerId) {
-        $rows = self::getObjectListFromDb("SELECT * FROM castle_defender WHERE player_id = $playerId");
+    public function getCastleDefenders(int $playerId, bool $tactics = false) {
+        $query = "SELECT * FROM castle_defender WHERE player_id = $playerId";
+        if ($tactics) {
+            $query .= " AND type = 'tactic'";
+        }
+        $rows = self::getObjectListFromDb($query);
         $out = [];
         foreach ($rows as $row) {
             $defender = CastleDefender::fromDbArray($row);
@@ -520,4 +537,79 @@ class Game extends \Bga\GameFramework\Table {
         }
      }
 
+    /**
+     * Returns the player's "static" defense value of the given defense on the given side.
+     * "Static" defense counts anything applied automatically, which doesn't get expended
+     * when used (which the player accordingly has no choice about), which is to say:
+     * walls, towers, moats and gates.
+     * @param int $playerId The player ID.
+     * @param mixed $defense The defense type.
+     * @param AttackSide $side The side of the attack.
+     * @return int The player's defense value on that side.
+     */
+    public function getSideDefense(int $playerId, ?Defense $defense, AttackSide $side): int {
+        $resources = match ($defense) {
+            Defense::MOAT => [Resource::MOAT],
+            Defense::GATE => [Resource::GATE],
+            Defense::WALLS => match ($side) {
+                AttackSide::TOP => [Resource::WALL_TOP],
+                AttackSide::BOTTOM => [Resource::WALL_BOTTOM],
+                AttackSide::LEFT => [Resource::WALL_LEFT],
+                AttackSide::RIGHT => [Resource::WALL_RIGHT],
+            },
+            Defense::TOWERS => match ($side) {
+                AttackSide::TOP => [Resource::TOWER_LEFT_TOP, Resource::TOWER_RIGHT_TOP],
+                AttackSide::BOTTOM => [Resource::TOWER_LEFT_BOTTOM, Resource::TOWER_RIGHT_BOTTOM],
+                AttackSide::LEFT => [Resource::TOWER_LEFT_TOP, Resource::TOWER_LEFT_BOTTOM],
+                AttackSide::RIGHT => [Resource::TOWER_RIGHT_TOP, Resource::TOWER_RIGHT_BOTTOM],
+            },
+            default => [],
+        };
+        return array_sum(
+            array_map(
+                fn ($res) => $this->resources($res)->get($playerId),
+                $resources,
+            )
+        );
+    }
+
+    /**
+     * Returns an array of attack sides -> unblocked attack strength. Takes into account:
+     * * the card's allowed Defense
+     * * the player's allocated Tactics
+     * ...but NOT any of the side's enrolled defender workers.
+     * Never returns 0 or a negative number; a totally blocked attack will not appear in the result.
+     * @param int $playerId The player ID.
+     * @param PlayerAttackCard $attack The attack.
+     * @return array<string, int>
+     */
+    public function attacksBySide(int $playerId, PlayerAttackCard $attack): array {
+        $scenario = $this->currentScenarioCard();
+        $defense = $attack->card->defense;
+        $tactics = $this->getCastleDefenders($playerId, tactics: true);
+
+        $out = [];
+        foreach ($attack->card->attacks as $letter => $sides) {
+            $strength = $scenario->strength($letter);
+            foreach ($sides as $side) {
+                $defenseValue = $this->getSideDefense($playerId, $defense, $side);
+                $tacticsUses = \count($tactics[$side->value] ?? []);
+                $unblockedAttack = $strength - $defenseValue - $tacticsUses;
+                if ($unblockedAttack > 0) {
+                    $out[$side->value] = $unblockedAttack;
+                }
+            }
+        }
+        return $out;
+    }
+
+    /**
+     * Returns whether the player is receiving any attack damage at all from the card.
+     * @param int $playerId The player ID.
+     * @param PlayerAttackCard $attack The attack.
+     * @return bool
+     */
+    public function receivingDamage(int $playerId, PlayerAttackCard $attack): bool {
+        return \count($this->attacksBySide($playerId, $attack)) > 0;
+    }
 }

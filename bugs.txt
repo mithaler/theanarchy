@@ -1,2 +1,5 @@
 * Michaelmas needs fixing (easy to confuse it)
+* Tactics selection private state doesn't correctly clear
+* Done button doesn't always appear after checking a box
 * Walls don't update available choices correctly
+

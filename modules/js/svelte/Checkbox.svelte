@@ -76,7 +76,6 @@
     background: transparent;
     width: 18px;
     height: 18px;
-    border: 1px solid green;
   }
 
   .production {

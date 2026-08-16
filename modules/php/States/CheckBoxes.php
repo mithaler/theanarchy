@@ -15,7 +15,7 @@ use Bga\GameFramework\Actions\Types\StringParam;
 use Bga\GameFramework\Actions\Types\IntParam;
 
 use Bga\Games\theanarchy\Game;
-use BGA\Games\theanarchy\StateConstants;
+use Bga\Games\theanarchy\StateConstants;
 
 /**
  * The basic "checking boxes" state (private, coming from CheckBoxesLoop).
@@ -39,10 +39,6 @@ class CheckBoxes extends GameState {
                 'done' => StateConstants::CHECK_BOXES_DONE,
             ]
         );
-    }
-
-    function onEnteringState(int $activePlayerId) {
-        $this->gamestate->setAllPlayersMultiactive();
     }
 
     function getArgs(int $playerId) {

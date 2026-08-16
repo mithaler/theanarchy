@@ -10,10 +10,10 @@ use Bga\GameFramework\StateType;
 use Bga\Games\theanarchy\Game;
 use BGA\Games\theanarchy\StateConstants;
 
-class DealAttacks extends GameState {
+class NewRound extends GameState {
     function __construct(protected Game $game) {
         parent::__construct($game,
-            id: StateConstants::DEAL_ATTACKS,
+            id: StateConstants::NEW_ROUND,
             type: StateType::GAME,
             transitions: [
                 'choosePathCards' => StateConstants::CHOOSE_PATH_CARDS,
@@ -33,10 +33,23 @@ class DealAttacks extends GameState {
         $players = $this->game->loadPlayersBasicInfos();
         foreach ($players as $player) {
             $playerId = (int) $player['player_id'];
+
+            // deal Final Escalade card; no drama here
             $feCard = $this->game->finalEscaladeCards->pickCard('deck', $playerId);
 
+            // deal Attack cards and set their positions and visibility
             $attackCardCount = $this->game->round->get();
             $attackCards = $this->game->attackCards->pickCards($attackCardCount, 'deck', $playerId);
+            foreach ($attackCards as $idx => $attack) {
+                $position = $idx + 2;
+                $state = $position === 3 || $position == 5 ? "hidden" : "visible";
+                Game::DbQuery(
+                    "UPDATE attack_card
+                    SET position = $position, state = '$state'
+                    WHERE card_id = {$attack['id']}"
+                );
+            }
+
             $this->game->notify->all(
                 'newAttackCards',
                 clienttranslate('${player_name} draws attack cards for the round'),
@@ -46,6 +59,9 @@ class DealAttacks extends GameState {
                 ],
             );
         }
+
+        // TODO: board resource income!
+        // that includes Muster tokens!
 
         // draw path cards to the table
         $pathCards = $this->game->pathCards->pickCardsForLocation(\count($players), 'deck', 'table');

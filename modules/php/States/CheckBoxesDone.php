@@ -11,8 +11,8 @@ use Bga\Games\theanarchy\Game;
 use BGA\Games\theanarchy\StateConstants;
 
 /**
- * The outer, initial check boxes state. (The real heavy lifting is in CheckBoxes,
- * the initialPrivate state this immediately transitions everyone to.)
+ * Ends a player's checkboxing.
+ * TODO: Add a way to "undo pass" and let the player do more stuff?
  */
 class CheckBoxesDone extends GameState {
     public function __construct(protected Game $game) {
@@ -27,8 +27,16 @@ class CheckBoxesDone extends GameState {
         );
     }
 
-    function onEnteringState(int $currentPlayerId) {
-        $this->gamestate->setPlayerNonMultiactive($currentPlayerId, "attacks");
+    public function getArgs() {
+        // the frontend does not need to see this state because it immediately gets unset
+        // ...and if there's an immediate transition, it would otherwise get confused by
+        // the reverse notif order
+        return ['_no_notify' => true];
+    }
+
+    public function onEnteringState(int $currentPlayerId) {
+        $this->gamestate->unsetPrivateState($currentPlayerId);
+        $this->gamestate->setPlayerNonMultiactive($currentPlayerId, 'beginDefense');
     }
 
     function zombie() {}

@@ -58,7 +58,7 @@ export class CheckBoxes extends State<CheckBoxesArgs> {
     }
     if (isCurrentPlayerActive) {
       this.bga.statusBar.addActionButton(
-        _("Pass"),
+        _("Done"),
         () => this.bga.actions.performAction("actPass"),
         { color: "secondary" },
       );

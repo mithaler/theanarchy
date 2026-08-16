@@ -30,20 +30,20 @@ CREATE TABLE IF NOT EXISTS checked_box (
     box_id TINYINT NOT NULL,
 
     -- For cases where a number is written in the box, NULL if not needed.
-    -- This is used for Michaelmas and bubbles that get circled and then filled (Tactics/Discontent).
+    -- This is used for Michaelmas, and bubbles that get circled and then filled (Tactics).
     written_value TINYINT,
 
     PRIMARY KEY (player_id, section, box_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- Workers assigned to castle defense.
+-- Workers assigned to castle defense, or tactics uses (assigned during defense).
 -- Note that there is no "strength field"; `exhausted=true` means one of:
 -- * a soldier/craftsman that was previously beered (you can't beer knights)
 -- * a knight that survived a damage (soldiers/craftsmen only have one health)
 CREATE TABLE IF NOT EXISTS castle_defender (
     `id` INT NOT NULL AUTO_INCREMENT,
     `player_id` INT NOT NULL,
-    `type` ENUM('soldiers', 'craftsmen', 'knights') NOT NULL,
+    `type` ENUM('soldiers', 'craftsmen', 'knights', 'tactic') NOT NULL,
     `side` ENUM('top', 'bottom', 'left', 'right') NOT NULL,
     `exhausted` TINYINT NOT NULL DEFAULT 0,
     PRIMARY KEY (`id`)

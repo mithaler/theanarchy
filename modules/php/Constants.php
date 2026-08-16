@@ -3,11 +3,13 @@ declare(strict_types=1);
 
 namespace BGA\Games\theanarchy;
 
+use JsonSerializable;
+
 class StateConstants {
     const int GAME_START = 2;
 
     const int INITIAL_SETUP = 3;
-    const int DEAL_ATTACKS = 4;
+    const int NEW_ROUND = 4;
     const int CHOOSE_PATH_CARDS = 5;
     const int CHECK_BOXES_LOOP = 6;
     const int CHECK_BOXES = 7;
@@ -17,6 +19,22 @@ class StateConstants {
     const int MICHAELMAS = 11;
     const int LAMMAS = 12;
     const int CHECK_BOXES_DONE = 13;
+
+    // setup for attack phase (food cost, reveal hidden, etc.)
+    const int BEGIN_DEFENSE = 14;
+
+    // the outer state for parallel private attacks
+    const int RECEIVE_ATTACKS = 15;
+    // player may use muster tokens if available
+    const int MUSTER = 16;
+    // player may use tactics
+    const int USE_TACTICS = 17;
+    // the player may allocate damage and beer if available
+    const int ALLOCATE_DEFENDERS = 18;
+    // the player is done receiving attacks
+    const int ATTACKS_DONE = 19;
+
+    const int ROUND_CLEANUP = 20;
 
     const int GAME_END = 99;
 }
@@ -127,12 +145,12 @@ class PlayerDomainCard {
     }
 }
 
-enum Tactic {
-    case COVERS;
-    case ROCKS;
-    case HOT_OIL;
-    case LOGS;
-    case BOLTS;
+enum Tactic: string {
+    case COVERS = "COVERS";
+    case ROCKS = "ROCKS";
+    case HOT_OIL = "HOT OIL";
+    case LOGS = "LOGS";
+    case BOLTS = "BOLTS";
 }
 
 enum Defense {
@@ -164,6 +182,7 @@ class AttackCard {
         public ?Defense $defense,
         public int $back,
         public bool $strong = false,
+        public bool $defenderWorkers = true,
     ) {}
 }
 
@@ -174,12 +193,12 @@ const ATTACK_CARDS = [
     4 => new AttackCard(Tactic::HOT_OIL, ["D" => [AttackSide::BOTTOM]], Defense::GATE, 1),
     5 => new AttackCard(Tactic::HOT_OIL, ["E" => [AttackSide::BOTTOM]], Defense::GATE, 1, true),
     6 => new AttackCard(Tactic::HOT_OIL, ["E" => [AttackSide::BOTTOM]], Defense::GATE, 1, true),
-    7 => new AttackCard(Tactic::COVERS, ["C" => [AttackSide::NONE]], null, 7),
-    8 => new AttackCard(Tactic::COVERS, ["C" => [AttackSide::NONE]], null, 7),
-    9 => new AttackCard(Tactic::COVERS, ["C" => [AttackSide::NONE]], null, 7),
-    10 => new AttackCard(Tactic::COVERS, ["C" => [AttackSide::NONE]], null, 7),
-    11 => new AttackCard(Tactic::COVERS, ["A" => [AttackSide::NONE]], null, 7, true),
-    12 => new AttackCard(Tactic::COVERS, ["A" => [AttackSide::NONE]], null, 7, true),
+    7 => new AttackCard(Tactic::COVERS, ["C" => [AttackSide::NONE]], null, 7, defenderWorkers: false),
+    8 => new AttackCard(Tactic::COVERS, ["C" => [AttackSide::NONE]], null, 7, defenderWorkers: false),
+    9 => new AttackCard(Tactic::COVERS, ["C" => [AttackSide::NONE]], null, 7, defenderWorkers: false),
+    10 => new AttackCard(Tactic::COVERS, ["C" => [AttackSide::NONE]], null, 7, defenderWorkers: false),
+    11 => new AttackCard(Tactic::COVERS, ["A" => [AttackSide::NONE]], null, 7, true, defenderWorkers: false),
+    12 => new AttackCard(Tactic::COVERS, ["A" => [AttackSide::NONE]], null, 7, true, defenderWorkers: false),
     13 => new AttackCard(Tactic::LOGS, ["A" => [AttackSide::BOTTOM]], Defense::MOAT, 13),
     14 => new AttackCard(Tactic::LOGS, ["A" => [AttackSide::LEFT]], Defense::MOAT, 13),
     15 => new AttackCard(Tactic::LOGS, ["A" => [AttackSide::RIGHT]], Defense::MOAT, 13),
@@ -215,16 +234,20 @@ const FINAL_ESCALADE_CARDS = [
     42 => new AttackCard(Tactic::ROCKS, ["A" => [AttackSide::RIGHT, AttackSide::LEFT]], Defense::WALLS, 37),
 ];
 
-class PlayerAttackCard {
+class PlayerAttackCard implements JsonSerializable {
     public function __construct(
         public string $id,
         public AttackCard $card,
     ) {}
 
     public static function fromCardArray(array $from): PlayerAttackCard {
-        $type = $from["type"];
+        $type = $from['card_type'];
         $card = ((int) $type <= 36) ? ATTACK_CARDS[$type] : FINAL_ESCALADE_CARDS[$type];
         return new PlayerAttackCard($type, $card);
+    }
+
+    public function jsonSerialize(): mixed {
+        return ['id' => $this->id];
     }
 }
 
@@ -366,18 +389,31 @@ function scenarioCards(string $mode, string $difficulty): array {
     return \array_slice(SCENARIO_CARDS, $start, 5);
 }
 
+/**
+ * A castle defender -- a soldier, craftsman, knight or tactics use.
+ * "Exhausted" means either a previously beered soldier/craftsman, or a knight that has taken one damage.
+ */
 class CastleDefender {
     public function __construct(
         public int $id,
         public int $playerId,
-        public string $side,
-        public Resource $type,
+        public AttackSide $side,
+        public string $type,
         public bool $exhausted,
     ) {}
 
     public static function fromDbArray(array $row): CastleDefender {
         return new CastleDefender(
-            $row["id"], $row["player_id"], $row["side"], Resource::from($row["type"]), $row["exhausted"]
+            (int) $row["id"], (int) $row["player_id"], AttackSide::from($row["side"]),
+            $row["type"], (boolean) $row["exhausted"],
         );
+    }
+
+    /** Returns the strength of this defender. */
+    public function strength(): int {
+        return match ($this->type) {
+            "soldiers" | "craftsmen" | "tactics" => 1,
+            "knights" => $this->exhausted ? 1 : 2,
+        };
     }
 }

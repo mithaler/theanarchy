@@ -25,6 +25,9 @@ class CheckBoxesLoop extends GameState {
             descriptionMyTurn: clienttranslate('${you} may check boxes'),
             updateGameProgression: true,
             initialPrivate: StateConstants::CHECK_BOXES,
+            transitions: [
+                'beginDefense' => StateConstants::BEGIN_DEFENSE,
+            ]
         );
     }
 
