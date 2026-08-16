@@ -68,8 +68,7 @@ class ChoosePathCards extends GameState {
             'cardChosen',
             clienttranslate('${player_name} chooses the ${card} Path card'),
             [
-                'player_id' => $currentPlayerId,
-                'player_name' => $this->game->getPlayerNameById($currentPlayerId),
+                ...$this->game->playerNotifArgs($currentPlayerId),
                 'card' => PathCard::translatedName($choice),
                 'cardId' => $choice,
                 ...$newArgs,

@@ -46,8 +46,7 @@ class StValentinesFestival extends BoxType {
                 "valentinesCardDraw",
                 '${player_name} draws domain cards for St. Valentine\'s Festival: female ${female}, male ${male}',
                 [
-                    'player_id' => $playerId,
-                    'player_name' => $game->getPlayerNameById($playerId),
+                    ...$game->playerNotifArgs($playerId),
                     'female' => $cards[0]->card->valentine,
                     'male' => $cards[1]->card->valentine,
                 ]

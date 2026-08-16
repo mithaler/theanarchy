@@ -390,7 +390,7 @@ class Game extends \Bga\GameFramework\Table {
             $this->notify->all(
                 "domainReshuffle",
                 \clienttranslate('${player_name} reshuffles his domain deck'),
-                ["player_id" => $playerId, "player_name" => $this->getPlayerNameById($playerId)],
+                $this->playerNotifArgs($playerId),
             );
         } else {
             $cards = $this->domainCards->pickCardsForLocation(
@@ -399,8 +399,7 @@ class Game extends \Bga\GameFramework\Table {
         }
 
         $this->notify->all("domainDraw", \clienttranslate('${player_name} draws ${cardCount} domain cards'), [
-            "player_id" => $playerId,
-            "player_name" => $this->getPlayerNameById($playerId),
+            ...$this->playerNotifArgs($playerId),
             "cardCount" => \count($cards),
             "cardIds" => array_map(fn ($card) => (int) $card["type"], $cards),
         ]);
@@ -411,6 +410,13 @@ class Game extends \Bga\GameFramework\Table {
             $cards,
         );
         return $richCards;
+    }
+
+    function playerNotifArgs(int $playerId) {
+        return [
+            'player_id' => $playerId,
+            'player_name' => $this->getPlayerNameById($playerId),
+        ];
     }
 
     /**

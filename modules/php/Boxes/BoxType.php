@@ -117,6 +117,9 @@ class Reward {
         return new Reward($fromSection, $fromId, [], []);
     }
 
+    /**
+     * Gives the player the reward (if there is one), and notifies the frontend.
+     */
     public function grant(Game $game, int $playerId) {
         if ($this->resources) {
             foreach ($this->resources as $resource => $count) {
@@ -154,8 +157,7 @@ class Reward {
     private function notify(Game $game, int $playerId) {
         if (\count($this->resources) == 0 && \count($this->boxes) == 0) {
             $game->notify->all("boxReward", \clienttranslate('${player_name} checks ${boxSection}'), [
-                "player_id" => $playerId,
-                "player_name" => $game->getPlayerNameById($playerId),
+                ...$game->playerNotifArgs($playerId),
                 "boxSection" => $this->fromSection,
                 "boxId" => $this->fromId,
             ]);
@@ -167,8 +169,7 @@ class Reward {
                 }
             }
             $game->notify->all("boxReward", \clienttranslate('${player_name} checks ${boxSection} and earns ${rewards}'), [
-                "player_id" => $playerId,
-                "player_name" => $game->getPlayerNameById($playerId),
+                ...$game->playerNotifArgs($playerId),
                 "boxSection" => $this->fromSection,
                 "boxId" => $this->fromId,
                 // TODO make this pretty!

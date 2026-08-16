@@ -41,8 +41,7 @@ class DealAttacks extends GameState {
                 'newAttackCards',
                 clienttranslate('${player_name} draws attack cards for the round'),
                 [
-                    'player_id' => $playerId,
-                    'player_name' => $player['player_name'],
+                    ...$this->game->playerNotifArgs($playerId),
                     'cards' => $this->game->attackCardRepr($feCard, $attackCards),
                 ],
             );
