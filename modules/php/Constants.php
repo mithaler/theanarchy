@@ -142,18 +142,18 @@ enum Defense {
     case GATE;
 }
 
-enum AttackSide {
-    case NONE;
-    case NORTH;
-    case WEST;
-    case EAST;
-    case SOUTH;
+enum AttackSide: string {
+    case NONE = "none";
+    case TOP = "top";
+    case LEFT = "left";
+    case RIGHT = "right";
+    case BOTTOM = "bottom";
 }
 
 class AttackCard {
     /**
      * @param ?Tactic $tactic The allowed tactic, if any.
-     * @param array<string, AttackSide[]> $attacks The attacks incoming ("A" => AttackSide::NORTH).
+     * @param array<string, AttackSide[]> $attacks The attacks incoming ("A" => AttackSide::TOP).
      * @param Defense Allowed defense. (Walls and towers are implicit from oncoming attacks.)
      * @param int $back The card ID of the back of this card, to hide which attack it is when face down.
      * @param bool $strong Whether this is a fierce attack.
@@ -168,51 +168,51 @@ class AttackCard {
 }
 
 const ATTACK_CARDS = [
-    1 => new AttackCard(Tactic::HOT_OIL, ["D" => [AttackSide::SOUTH]], Defense::GATE, 1),
-    2 => new AttackCard(Tactic::HOT_OIL, ["D" => [AttackSide::SOUTH]], Defense::GATE, 1),
-    3 => new AttackCard(Tactic::HOT_OIL, ["D" => [AttackSide::SOUTH]], Defense::GATE, 1),
-    4 => new AttackCard(Tactic::HOT_OIL, ["D" => [AttackSide::SOUTH]], Defense::GATE, 1),
-    5 => new AttackCard(Tactic::HOT_OIL, ["E" => [AttackSide::SOUTH]], Defense::GATE, 1, true),
-    6 => new AttackCard(Tactic::HOT_OIL, ["E" => [AttackSide::SOUTH]], Defense::GATE, 1, true),
+    1 => new AttackCard(Tactic::HOT_OIL, ["D" => [AttackSide::BOTTOM]], Defense::GATE, 1),
+    2 => new AttackCard(Tactic::HOT_OIL, ["D" => [AttackSide::BOTTOM]], Defense::GATE, 1),
+    3 => new AttackCard(Tactic::HOT_OIL, ["D" => [AttackSide::BOTTOM]], Defense::GATE, 1),
+    4 => new AttackCard(Tactic::HOT_OIL, ["D" => [AttackSide::BOTTOM]], Defense::GATE, 1),
+    5 => new AttackCard(Tactic::HOT_OIL, ["E" => [AttackSide::BOTTOM]], Defense::GATE, 1, true),
+    6 => new AttackCard(Tactic::HOT_OIL, ["E" => [AttackSide::BOTTOM]], Defense::GATE, 1, true),
     7 => new AttackCard(Tactic::COVERS, ["C" => [AttackSide::NONE]], null, 7),
     8 => new AttackCard(Tactic::COVERS, ["C" => [AttackSide::NONE]], null, 7),
     9 => new AttackCard(Tactic::COVERS, ["C" => [AttackSide::NONE]], null, 7),
     10 => new AttackCard(Tactic::COVERS, ["C" => [AttackSide::NONE]], null, 7),
     11 => new AttackCard(Tactic::COVERS, ["A" => [AttackSide::NONE]], null, 7, true),
     12 => new AttackCard(Tactic::COVERS, ["A" => [AttackSide::NONE]], null, 7, true),
-    13 => new AttackCard(Tactic::LOGS, ["A" => [AttackSide::SOUTH]], Defense::MOAT, 13),
-    14 => new AttackCard(Tactic::LOGS, ["A" => [AttackSide::WEST]], Defense::MOAT, 13),
-    15 => new AttackCard(Tactic::LOGS, ["A" => [AttackSide::EAST]], Defense::MOAT, 13),
-    16 => new AttackCard(Tactic::LOGS, ["A" => [AttackSide::NORTH]], Defense::MOAT, 13),
-    17 => new AttackCard(Tactic::LOGS, ["E" => [AttackSide::WEST]], Defense::MOAT, 13, true),
-    18 => new AttackCard(Tactic::LOGS, ["E" => [AttackSide::EAST]], Defense::MOAT, 13, true),
-    19 => new AttackCard(Tactic::BOLTS, ["C" => [AttackSide::NORTH], "B" => [AttackSide::SOUTH]], Defense::TOWERS, 19),
-    20 => new AttackCard(Tactic::BOLTS, ["B" => [AttackSide::NORTH], "C" => [AttackSide::SOUTH]], Defense::TOWERS, 19),
-    21 => new AttackCard(Tactic::BOLTS, ["B" => [AttackSide::WEST], "C" => [AttackSide::EAST]], Defense::TOWERS, 19),
-    22 => new AttackCard(Tactic::BOLTS, ["B" => [AttackSide::EAST], "C" => [AttackSide::WEST]], Defense::TOWERS, 19),
-    23 => new AttackCard(Tactic::BOLTS, ["B" => [AttackSide::EAST], "A" => [AttackSide::WEST]], Defense::TOWERS, 19, true),
-    24 => new AttackCard(Tactic::BOLTS, ["B" => [AttackSide::NORTH], "A" => [AttackSide::SOUTH]], Defense::TOWERS, 19, true),
-    25 => new AttackCard(Tactic::ROCKS, ["A" => [AttackSide::SOUTH]], Defense::WALLS, 25),
-    26 => new AttackCard(Tactic::ROCKS, ["A" => [AttackSide::WEST]], Defense::WALLS, 25),
-    27 => new AttackCard(Tactic::ROCKS, ["A" => [AttackSide::EAST]], Defense::WALLS, 25),
-    28 => new AttackCard(Tactic::ROCKS, ["A" => [AttackSide::NORTH]], Defense::WALLS, 25),
-    29 => new AttackCard(Tactic::ROCKS, ["E" => [AttackSide::SOUTH]], Defense::WALLS, 25, true),
-    30 => new AttackCard(Tactic::ROCKS, ["E" => [AttackSide::NORTH]], Defense::WALLS, 25, true),
-    31 => new AttackCard(null, ["C" => [AttackSide::WEST, AttackSide::EAST], "B" => [AttackSide::SOUTH]], Defense::WALLS, 31),
-    32 => new AttackCard(null, ["C" => [AttackSide::NORTH, AttackSide::SOUTH], "B" => [AttackSide::WEST]], Defense::WALLS, 31),
-    33 => new AttackCard(null, ["C" => [AttackSide::NORTH, AttackSide::SOUTH], "B" => [AttackSide::EAST]], Defense::WALLS, 31),
-    34 => new AttackCard(null, ["C" => [AttackSide::EAST, AttackSide::WEST], "B" => [AttackSide::NORTH]], Defense::WALLS, 31),
-    35 => new AttackCard(null, ["B" => [AttackSide::NORTH, AttackSide::SOUTH], "D" => [AttackSide::WEST]], Defense::WALLS, 31, true),
-    36 => new AttackCard(null, ["B" => [AttackSide::NORTH, AttackSide::SOUTH], "D" => [AttackSide::EAST]], Defense::WALLS, 31, true),
+    13 => new AttackCard(Tactic::LOGS, ["A" => [AttackSide::BOTTOM]], Defense::MOAT, 13),
+    14 => new AttackCard(Tactic::LOGS, ["A" => [AttackSide::LEFT]], Defense::MOAT, 13),
+    15 => new AttackCard(Tactic::LOGS, ["A" => [AttackSide::RIGHT]], Defense::MOAT, 13),
+    16 => new AttackCard(Tactic::LOGS, ["A" => [AttackSide::TOP]], Defense::MOAT, 13),
+    17 => new AttackCard(Tactic::LOGS, ["E" => [AttackSide::LEFT]], Defense::MOAT, 13, true),
+    18 => new AttackCard(Tactic::LOGS, ["E" => [AttackSide::RIGHT]], Defense::MOAT, 13, true),
+    19 => new AttackCard(Tactic::BOLTS, ["C" => [AttackSide::TOP], "B" => [AttackSide::BOTTOM]], Defense::TOWERS, 19),
+    20 => new AttackCard(Tactic::BOLTS, ["B" => [AttackSide::TOP], "C" => [AttackSide::BOTTOM]], Defense::TOWERS, 19),
+    21 => new AttackCard(Tactic::BOLTS, ["B" => [AttackSide::LEFT], "C" => [AttackSide::RIGHT]], Defense::TOWERS, 19),
+    22 => new AttackCard(Tactic::BOLTS, ["B" => [AttackSide::RIGHT], "C" => [AttackSide::LEFT]], Defense::TOWERS, 19),
+    23 => new AttackCard(Tactic::BOLTS, ["B" => [AttackSide::RIGHT], "A" => [AttackSide::LEFT]], Defense::TOWERS, 19, true),
+    24 => new AttackCard(Tactic::BOLTS, ["B" => [AttackSide::TOP], "A" => [AttackSide::BOTTOM]], Defense::TOWERS, 19, true),
+    25 => new AttackCard(Tactic::ROCKS, ["A" => [AttackSide::BOTTOM]], Defense::WALLS, 25),
+    26 => new AttackCard(Tactic::ROCKS, ["A" => [AttackSide::LEFT]], Defense::WALLS, 25),
+    27 => new AttackCard(Tactic::ROCKS, ["A" => [AttackSide::RIGHT]], Defense::WALLS, 25),
+    28 => new AttackCard(Tactic::ROCKS, ["A" => [AttackSide::TOP]], Defense::WALLS, 25),
+    29 => new AttackCard(Tactic::ROCKS, ["E" => [AttackSide::BOTTOM]], Defense::WALLS, 25, true),
+    30 => new AttackCard(Tactic::ROCKS, ["E" => [AttackSide::TOP]], Defense::WALLS, 25, true),
+    31 => new AttackCard(null, ["C" => [AttackSide::LEFT, AttackSide::RIGHT], "B" => [AttackSide::BOTTOM]], Defense::WALLS, 31),
+    32 => new AttackCard(null, ["C" => [AttackSide::TOP, AttackSide::BOTTOM], "B" => [AttackSide::LEFT]], Defense::WALLS, 31),
+    33 => new AttackCard(null, ["C" => [AttackSide::TOP, AttackSide::BOTTOM], "B" => [AttackSide::RIGHT]], Defense::WALLS, 31),
+    34 => new AttackCard(null, ["C" => [AttackSide::RIGHT, AttackSide::LEFT], "B" => [AttackSide::TOP]], Defense::WALLS, 31),
+    35 => new AttackCard(null, ["B" => [AttackSide::TOP, AttackSide::BOTTOM], "D" => [AttackSide::LEFT]], Defense::WALLS, 31, true),
+    36 => new AttackCard(null, ["B" => [AttackSide::TOP, AttackSide::BOTTOM], "D" => [AttackSide::RIGHT]], Defense::WALLS, 31, true),
 ];
 
 const FINAL_ESCALADE_CARDS = [
-    37 => new AttackCard(Tactic::ROCKS, ["A" => [AttackSide::WEST, AttackSide::SOUTH]], Defense::WALLS, 37),
-    38 => new AttackCard(Tactic::ROCKS, ["A" => [AttackSide::EAST, AttackSide::SOUTH]], Defense::WALLS, 37),
-    39 => new AttackCard(Tactic::ROCKS, ["A" => [AttackSide::NORTH, AttackSide::SOUTH]], Defense::WALLS, 37),
-    40 => new AttackCard(Tactic::ROCKS, ["A" => [AttackSide::NORTH, AttackSide::EAST]], Defense::WALLS, 37),
-    41 => new AttackCard(Tactic::ROCKS, ["A" => [AttackSide::NORTH, AttackSide::WEST]], Defense::WALLS, 37),
-    42 => new AttackCard(Tactic::ROCKS, ["A" => [AttackSide::EAST, AttackSide::WEST]], Defense::WALLS, 37),
+    37 => new AttackCard(Tactic::ROCKS, ["A" => [AttackSide::LEFT, AttackSide::BOTTOM]], Defense::WALLS, 37),
+    38 => new AttackCard(Tactic::ROCKS, ["A" => [AttackSide::RIGHT, AttackSide::BOTTOM]], Defense::WALLS, 37),
+    39 => new AttackCard(Tactic::ROCKS, ["A" => [AttackSide::TOP, AttackSide::BOTTOM]], Defense::WALLS, 37),
+    40 => new AttackCard(Tactic::ROCKS, ["A" => [AttackSide::TOP, AttackSide::RIGHT]], Defense::WALLS, 37),
+    41 => new AttackCard(Tactic::ROCKS, ["A" => [AttackSide::TOP, AttackSide::LEFT]], Defense::WALLS, 37),
+    42 => new AttackCard(Tactic::ROCKS, ["A" => [AttackSide::RIGHT, AttackSide::LEFT]], Defense::WALLS, 37),
 ];
 
 class PlayerAttackCard {
