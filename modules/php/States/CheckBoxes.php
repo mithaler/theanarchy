@@ -58,7 +58,7 @@ class CheckBoxes extends GameState {
         // spaces prevent alphanum validation; don't ever put this directly in SQL!
         #[StringParam(name: "section")] string $section,
         #[IntParam(name: "boxId")] int $boxId,
-        #[StringParam(name: "choice", alphanum_dash: true)] string | null $choice,
+        #[StringParam(name: "choice", alphanum_dash: true)] ?string $choice,
     ) {
         if (!\array_key_exists($section, SECTIONS)) {
             throw new UserException("Section $section does not exist");
@@ -85,6 +85,15 @@ class CheckBoxes extends GameState {
     #[PossibleAction]
     function actPass(int $currentPlayerId) {
         $this->game->gamestate->nextPrivateState($currentPlayerId, "done");
+    }
+
+    #[PossibleAction]
+    function actCreateDefender(
+        int $currentPlayerId,
+        #[StringParam(name: 'type', enum: ['soldiers', 'craftsmen', 'knights'])] string $type,
+        #[StringParam(name: 'side', enum: ['top', 'left', 'right', 'bottom'])] string $side,
+    ) {
+        $this->game->createDefender($currentPlayerId, $type, $side);
     }
 
     function zombie() {

@@ -25,6 +25,7 @@ require_once(__DIR__ . "/Boxes/Sections.php");
 use Bga\GameFramework\Components\Counters\PlayerCounter;
 use Bga\GameFramework\Components\Counters\TableCounter;
 use Bga\GameFramework\Components\Deck;
+use Bga\GameFramework\UserException;
 
 use const Bga\Games\theanarchy\Boxes\SECTIONS;
 use const Bga\Games\theanarchy\PATH_CARDS;
@@ -141,6 +142,16 @@ class Game extends \Bga\GameFramework\Table {
 
             $playerPathCards = array_filter($pathCards, fn ($c) => (int) $c['location_arg'] === $playerId);
             $player["pathCards"] = array_values(array_map(fn ($c) => $c["type"], $playerPathCards));
+            $player['defenders'] = [];
+        }
+
+        $defenders = self::getObjectListFromDB('SELECT * FROM castle_defender ORDER BY player_id, type');
+        foreach ($defenders as $defender) {
+            $playerId = (int) $defender['player_id'];
+            unset($defender['player_id']);
+            $defender['id'] = (int) $defender['id'];
+            $defender['exhausted'] = $defender['exhausted'] === '1' ? true : false;
+            $result['players'][$playerId]['defenders'][] = $defender;
         }
 
         return $result;
@@ -172,6 +183,23 @@ class Game extends \Bga\GameFramework\Table {
             $cards[] = ["type" => (string) $i, "type_arg" => 0, "nbr" => 1];
         }
         return $cards;
+    }
+
+    public function createDefender(int $currentPlayerId, string $type, string $side) {
+        $counter = $this->resources($type);
+        if ($counter->get($currentPlayerId) < 1) {
+            throw new UserException("You don't have a worker of that type");
+        }
+
+        $counter->inc($currentPlayerId, -1);
+        Game::DbQuery("INSERT INTO castle_defender (player_id, type, side) VALUES ($currentPlayerId, '$type', '$side')");
+        $this->notify->all('createDefender', '', [
+            ...$this->playerNotifArgs($currentPlayerId),
+            'id' => self::DbGetLastId(),
+            'type' => $type,
+            'side' => $side,
+            'exhausted' => false,
+        ]);
     }
 
     private function initializeDecks(array $playerIds) {
@@ -279,13 +307,18 @@ class Game extends \Bga\GameFramework\Table {
     }
 
     /**
-     * Returns all of the player's defenders.
+     * Returns all of the player's defenders, by side they're on.
      * @param int $playerId
-     * @return CastleDefender[]
+     * @return array<A, CastleDefender>
      */
     public function getCastleDefenders(int $playerId) {
         $rows = self::getObjectListFromDb("SELECT * FROM castle_defender WHERE player_id = $playerId");
-        return array_map(CastleDefender::fromDbArray, $rows);
+        $out = [];
+        foreach ($rows as $row) {
+            $defender = CastleDefender::fromDbArray($row);
+            $out[$defender->side->value][] = $defender;
+        }
+        return $out;
     }
 
     public function currentScenarioCard(): ScenarioCard {

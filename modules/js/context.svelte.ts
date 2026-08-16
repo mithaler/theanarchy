@@ -1,3 +1,5 @@
+import type { Fighter } from "./svelte/CastleWorkers.svelte";
+
 export type AnarchyBga = Bga<AnarchyPlayer, AnarchyData>;
 
 export interface BoxSet {
@@ -13,6 +15,13 @@ export interface PlayerBoxSet {
 interface AttackCard {
   id: number;
   face: "front" | "back";
+}
+
+export interface CastleDefender {
+  id: number;
+  type: Fighter;
+  side: "top" | "left" | "right" | "bottom";
+  exhausted: boolean;
 }
 
 export interface AnarchyPlayer extends Player {
@@ -44,6 +53,7 @@ export interface AnarchyPlayer extends Player {
     finalEscalade?: number;
     attacks: Record<number, AttackCard>;
   };
+  defenders: CastleDefender[];
   pathCards: string[];
   checkedBoxes: BoxSet;
 }

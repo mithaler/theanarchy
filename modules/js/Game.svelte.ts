@@ -18,6 +18,7 @@ import type {
   BoxRewardArgs,
   BoxSet,
   PlayerKey,
+  CastleDefender,
 } from "./context.svelte";
 import { ctx, getPlayer } from "./context.svelte";
 import {
@@ -31,7 +32,10 @@ import {
   Lammas,
   ChoosePathCards,
 } from "./states.svelte";
-export const [zone] = await importDojoLibs(["ebg/zone"]);
+
+interface CreateDefenderArgs extends CastleDefender {
+  player_id: number;
+}
 
 export class Game {
   bga: AnarchyBga;
@@ -147,5 +151,9 @@ export class Game {
 
   async notif_michaelmasUpdate(args: MichaelmasArgs) {
     Michaelmas.setStateCtx(args);
+  }
+
+  async notif_createDefender(args: CreateDefenderArgs) {
+    getPlayer(args.player_id).defenders.push(args);
   }
 }

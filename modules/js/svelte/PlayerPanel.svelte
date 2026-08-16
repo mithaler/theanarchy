@@ -49,7 +49,7 @@
           {@render counter(field)}
         {/each}
         {#each ["craftsmen", "soldiers", "knights"] as field (field)}
-          {@render counter(field, isMe)}
+          {@render counter(field, isMe && player[field as PlayerKey] > 0)}
         {/each}
       </div>
       <div class="counters">
