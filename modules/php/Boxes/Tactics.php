@@ -50,7 +50,11 @@ class Tactics extends BoxType {
     }
 }
 
-abstract class TacticsUse extends BoxType {
+/**
+ * A tactic use that is paid for, and may or may not have been used.
+ * (SpentTactic below counts actual uses.)
+ */
+abstract class AvailableTactic extends BoxType {
     public function validBoxes(Game $game, int $playerId, array $currBoxes): array {
         $highest = $this->highestCheckedBox($playerId, $currBoxes);
         if ($highest >= 1 && $highest < 16 && $this->canPay($game, $playerId, [Resource::MATERIALS])) {
@@ -72,22 +76,68 @@ abstract class TacticsUse extends BoxType {
     }
 }
 
-class Covers extends TacticsUse {
+class Covers extends AvailableTactic {
     public string $name = "COVERS";
 }
 
-class Rocks extends TacticsUse {
+class Rocks extends AvailableTactic {
     public string $name = "ROCKS";
 }
 
-class HotOil extends TacticsUse {
+class HotOil extends AvailableTactic {
     public string $name = "HOT OIL";
 }
 
-class Logs extends TacticsUse {
+class Logs extends AvailableTactic {
     public string $name = "LOGS";
 }
 
-class Bolts extends TacticsUse {
+class Bolts extends AvailableTactic {
     public string $name = "BOLTS";
+}
+
+
+/** A tactic use that has already been spent. */
+abstract class SpentTactic extends BoxType {
+    abstract public string $availableTacticName { get; }
+
+    public function validBoxes(Game $game, int $playerId, array $currBoxes): array {
+        // never bought directly, only checked during the attack phase when spent
+        return [];
+    }
+
+    public function check(Game $game, int $playerId, ?int $boxId = null, bool $pay = true, ?string $choice = null): Reward {
+        $currBoxes = $game->allCheckedBoxes($playerId);
+        $boxId = $this->highestCheckedBox($playerId, $currBoxes) + 1;
+        if ($this->highestCheckedBox($playerId, $currBoxes, section: $this->availableTacticName) < $boxId) {
+            throw new UserException("Tactic not available");
+        }
+        $reward = Reward::none($this->name, $boxId);
+        return $this->checkAndPay($game, $playerId, $boxId, false, [], $reward);
+    }
+}
+
+class SpentCovers extends SpentTactic {
+    public string $name = "SPENT COVERS";
+    public string $availableTacticName = "COVERS";
+}
+
+class SpentRocks extends SpentTactic {
+    public string $name = "SPENT ROCKS";
+    public string $availableTacticName = "ROCKS";
+}
+
+class SpentHotOil extends SpentTactic {
+    public string $name = "SPENT HOT OIL";
+    public string $availableTacticName = "HOT OIL";
+}
+
+class SpentLogs extends SpentTactic {
+    public string $name = "SPENT LOGS";
+    public string $availableTacticName = "LOGS";
+}
+
+class SpentBolts extends SpentTactic {
+    public string $name = "SPENT BOLTS";
+    public string $availableTacticName = "BOLTS";
 }

@@ -15,6 +15,11 @@ use Michaelmas;
 use Mint;
 use Moat;
 use Rocks;
+use SpentCovers;
+use SpentRocks;
+use SpentHotOil;
+use SpentLogs;
+use SpentBolts;
 use Stables;
 use StValentinesFestival;
 use Tactics;
@@ -57,6 +62,11 @@ const SECTIONS = [
     "HOT OIL" => new HotOil(),
     "LOGS" => new Logs(),
     "BOLTS" => new Bolts(),
+    "SPENT COVERS" => new SpentCovers(),
+    "SPENT ROCKS" => new SpentRocks(),
+    "SPENT HOT OIL" => new SpentHotOil(),
+    "SPENT LOGS" => new SpentLogs(),
+    "SPENT BOLTS" => new SpentBolts(),
 
     // Production rows
     "SERFS" => new Serfs(),
