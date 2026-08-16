@@ -33,6 +33,7 @@ use const Bga\Games\theanarchy\ATTACK_CARDS;
 use Bga\Games\theanarchy\States\InitialSetup;
 use Bga\Games\theanarchy\Resource;
 use Bga\Games\theanarchy\PlayerDomainCard;
+use Bga\Games\theanarchy\PlayerAttackCard;
 use Bga\Games\theanarchy\Boxes\Box;
 use Bga\Games\theanarchy\Boxes\Reward;
 
@@ -130,7 +131,7 @@ class Game extends \Bga\GameFramework\Table {
         }
 
         // add players' attack cards
-        $attackCards = $this->attackCards->getCardsInLocation('hand');
+        $attackCards = $this->attackCards->getCardsInLocation('hand', order_by: "position ASC");
         $feCards = $this->finalEscaladeCards->getCardsInLocation('hand');
         $pathCards = $this->pathCards->getCardsInLocation('hand');
         foreach ($result["players"] as $playerId => &$player) {
@@ -143,6 +144,26 @@ class Game extends \Bga\GameFramework\Table {
         }
 
         return $result;
+    }
+
+    public static function playerAttacks(int $playerId) {
+        $attacks = Game::getObjectListFromDB(
+            "SELECT
+                card_id, card_type, card_type_arg, card_location, card_location_arg,
+                'attack' AS type, state, position
+            FROM `attack_card`
+            WHERE card_location_arg = $playerId AND state = 'visible'
+
+            UNION ALL
+
+            SELECT
+                card_id, card_type, card_type_arg, card_location, card_location_arg,
+                'finalEscalade' AS type, 'visible' AS state, 1 AS position
+            FROM `final_escalade_card`
+            WHERE card_location_arg = $playerId
+            ORDER BY position DESC"
+        );
+        return array_map(PlayerAttackCard::fromCardArray, $attacks);
     }
 
     private function makeCards(int $end, int $start = 1): array {
@@ -257,6 +278,22 @@ class Game extends \Bga\GameFramework\Table {
         ];
     }
 
+    /**
+     * Returns all of the player's defenders.
+     * @param int $playerId
+     * @return CastleDefender[]
+     */
+    public function getCastleDefenders(int $playerId) {
+        $rows = self::getObjectListFromDb("SELECT * FROM castle_defender WHERE player_id = $playerId");
+        return array_map(CastleDefender::fromDbArray, $rows);
+    }
+
+    public function currentScenarioCard(): ScenarioCard {
+        $round = $this->round->get();
+        // TODO: make this read settings!
+        return scenarioCards("classic", "easy")[$round];
+    }
+
     private function insertInitialProduction($playerIds) {
         $query = "INSERT INTO checked_box (player_id, section, box_id) VALUES ";
         $values = [];
@@ -299,8 +336,15 @@ class Game extends \Bga\GameFramework\Table {
         $this->notifyNewAvailable($currPlayerId, $this->getAvailableBoxes($currPlayerId, $newAllCheckedBoxes));
     }
 
+    /**
+     * Returns all player IDs in the game, in "player order" as assigned by BGA.
+     * @return int[]
+     */
     public function allPlayerIds(): array {
-        return $this->getObjectListFromDB("SELECT player_id FROM player", true);
+        return array_map(
+            fn ($id) => (int) $id,
+            $this->getObjectListFromDB("SELECT player_id FROM player ORDER BY player_no ASC", true),
+        );
     }
 
     /**
