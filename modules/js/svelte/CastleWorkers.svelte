@@ -10,7 +10,7 @@
 
 <script lang="ts">
   import type { PlayerBoardProps } from "./PlayerArea.svelte";
-  import { dragState } from "./PlayerPanel.svelte";
+  import { dragState } from "./DraggableIcon.svelte";
   import { getBga } from "../context.svelte";
   import Icon from "./Icon.svelte";
 

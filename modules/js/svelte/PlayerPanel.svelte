@@ -1,11 +1,8 @@
-<script module lang="ts">
-  export const dragState: { dragging?: Fighter } = $state({});
-</script>
-
 <script lang="ts">
   import type { AnarchyPlayer, PlayerKey } from "../context.svelte";
   import Castle from "./Castle.svelte";
   import type { Fighter } from "./CastleWorkers.svelte";
+  import DraggableIcon from "./DraggableIcon.svelte";
   import Icon from "./Icon.svelte";
 
   interface Props {
@@ -14,30 +11,16 @@
   }
 
   let { player, isMe }: Props = $props();
-
-  function ondragstart(field: Fighter) {
-    return () => {
-      dragState.dragging = field;
-    };
-  }
-
-  function ondragend() {
-    dragState.dragging = undefined;
-  }
 </script>
 
 {#snippet counter(field: string, draggable: boolean = false)}
-  <div class={{ counter: true, draggable }}>
+  <div class={{ counter: true }}>
     <div>{player[field as PlayerKey]}</div>
-    <div
-      class={{ draggable }}
-      {draggable}
-      ondragstart={draggable ? ondragstart(field as Fighter) : undefined}
-      ondragend={draggable ? ondragend : undefined}
-      role="img"
-    >
+    {#if draggable}
+      <DraggableIcon name={field as Fighter} />
+    {:else}
       <Icon name={field} />
-    </div>
+    {/if}
   </div>
 {/snippet}
 
@@ -67,10 +50,6 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-  }
-
-  .draggable {
-    cursor: grab;
   }
 
   .stats {
