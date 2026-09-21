@@ -237,17 +237,26 @@ const FINAL_ESCALADE_CARDS = [
 class PlayerAttackCard implements JsonSerializable {
     public function __construct(
         public string $id,
+        public string $state,
+        public int $position,
+        public int $playerId,
         public AttackCard $card,
     ) {}
 
     public static function fromCardArray(array $from): PlayerAttackCard {
         $type = $from['card_type'];
         $card = ((int) $type <= 36) ? ATTACK_CARDS[$type] : FINAL_ESCALADE_CARDS[$type];
-        return new PlayerAttackCard($type, $card);
+        return new PlayerAttackCard(
+            $type,
+            $from["state"],
+            (int) $from["position"],
+            (int) $from["card_location_arg"],
+            $card
+        );
     }
 
     public function jsonSerialize(): mixed {
-        return ['id' => $this->id];
+        return ['id' => (int) $this->id];
     }
 }
 

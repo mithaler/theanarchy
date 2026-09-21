@@ -34,8 +34,7 @@ class AllocateDefenders extends GameState {
 
         // what's the next attack?
         $attack = $this->game->nextPlayerAttack($currentPlayerId);
-        $this->game->dump("ATK", $attack);
-        return ['attack' => $attack];
+        return ['attack' => $this->game->attackRepr($attack, $currentPlayerId)];
     }
 
     /**

@@ -12,15 +12,17 @@ export interface PlayerBoxSet {
   [key: number]: BoxSet;
 }
 
+export type Side = "top" | "left" | "right" | "bottom";
 interface AttackCard {
   id: number;
   face: "front" | "back";
+  attacks?: Record<Side, number>;
 }
 
 export interface CastleDefender {
   id: number;
   type: Fighter;
-  side: "top" | "left" | "right" | "bottom";
+  side: Side;
   exhausted: boolean;
 }
 
@@ -49,10 +51,7 @@ export interface AnarchyPlayer extends Player {
   silver: number;
   food: number;
 
-  attackCards: {
-    finalEscalade?: number;
-    attacks: Record<number, AttackCard>;
-  };
+  attackCards: Record<number, AttackCard>;
   defenders: CastleDefender[];
   pathCards: string[];
   checkedBoxes: BoxSet;

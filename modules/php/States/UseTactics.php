@@ -40,7 +40,7 @@ class UseTactics extends GameState {
         if ($nextState) {
             return ['nextState' => $nextState, '_no_notify' => true];
         }
-        return ['attack' => $attack];
+        return ['attack' => $this->game->attackRepr($attack, $currentPlayerId)];
     }
 
     private static function availableUses(int $playerId, Tactic $tactic): int {

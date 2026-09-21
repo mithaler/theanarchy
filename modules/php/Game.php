@@ -132,16 +132,14 @@ class Game extends \Bga\GameFramework\Table {
         }
 
         // add players' attack cards
-        $attackCards = $this->attackCards->getCardsInLocation('hand', order_by: "position ASC");
-        $feCards = $this->finalEscaladeCards->getCardsInLocation('hand');
         $pathCards = $this->pathCards->getCardsInLocation('hand');
-        foreach ($result["players"] as $playerId => &$player) {
-            $playerAttackCards = array_filter($attackCards, fn ($c) => (int) $c['location_arg'] === $playerId);
-            $playerFeCard = array_find($feCards, fn ($c) => (int) $c['location_arg'] === $playerId);
-            $player["attackCards"] = $this->attackCardRepr($playerFeCard, $playerAttackCards);
-
+        $attackCards = $this->playerAttacks();
+        foreach ($result['players'] as $playerId => &$player) {
+            foreach (array_filter($attackCards, fn ($c) => $c->playerId === $playerId) as $pac) {
+                $player['attackCards'][$pac->position] = $this->attackRepr($pac, $playerId, $pac->state === 'visible');
+            }
             $playerPathCards = array_filter($pathCards, fn ($c) => (int) $c['location_arg'] === $playerId);
-            $player["pathCards"] = array_values(array_map(fn ($c) => $c["type"], $playerPathCards));
+            $player['pathCards'] = array_values(array_map(fn ($c) => $c['type'], $playerPathCards));
             $player['defenders'] = [];
         }
 
@@ -163,13 +161,15 @@ class Game extends \Bga\GameFramework\Table {
      * @param int $playerId
      * @return PlayerAttackCard[]
      */
-    public function playerAttacks(int $playerId): array {
+    public function playerAttacks(?int $playerId = null): array {
+        $playerArg = $playerId != null ? "AND card_location_arg = $playerId" : "";
+
         $attacks = Game::getObjectListFromDB(
             "SELECT
                 card_id, card_type, card_type_arg, card_location, card_location_arg,
                 'attack' AS type, state, position
             FROM `attack_card`
-            WHERE card_location_arg = $playerId AND state = 'visible'
+            WHERE card_location = 'hand' $playerArg
 
             UNION ALL
 
@@ -177,7 +177,7 @@ class Game extends \Bga\GameFramework\Table {
                 card_id, card_type, card_type_arg, card_location, card_location_arg,
                 'finalEscalade' AS type, 'visible' AS state, 1 AS position
             FROM `final_escalade_card`
-            WHERE card_location_arg = $playerId
+            WHERE card_location = 'hand' $playerArg
             ORDER BY position DESC"
         );
         return array_values(array_map(fn ($atk) => PlayerAttackCard::fromCardArray($atk), $attacks));
@@ -293,28 +293,10 @@ class Game extends \Bga\GameFramework\Table {
         return InitialSetup::class;
     }
 
-    /**
-     * Returns a frontend-visible representation of a player's attack cards, used
-     * in both notifications and in gamedatas.
-     * @param array $feCard The player's Final Escalade card.
-     * @param array $attackCards The player's attack cards, ordered by round.
-     * @return array The frontend JSON representation.
-     */
-    public function attackCardRepr(array $feCard, array $attackCards): array {
-        $attackCardReprs = [];
-        $rnd = 0;
-        foreach ($attackCards as $card) {
-            // even-numbered cards are hidden, show only the back ID
-            $rnd++;
-            $repr = (($rnd) % 2 == 0) ?
-                ["id" => ATTACK_CARDS[(int) $card["type"]]->back, "face" => "back"] :
-                ["id" => (int) $card["type"], "face" => "front"];
-            $attackCardReprs[$rnd] = $repr;
-        }
-        return [
-            "finalEscalade" => (int) $feCard["type"],
-            "attacks" => $attackCardReprs,
-        ];
+    public function attackRepr(PlayerAttackCard $card, int $playerId, bool $visible = true) {
+        return $visible ?
+            ["id" => $card->id, "face" => "front", "attacks" => $this->attacksBySide($playerId, $card)] :
+            ["id" => $card->card->back, "face" => "back"];
     }
 
     /**

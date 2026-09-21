@@ -36,7 +36,7 @@ class Muster extends GameState {
         if ($nextState) {
             return ['nextState' => $nextState, '_no_notify' => true];
         }
-        return ['attack' => $attack];
+        return ['attack' => $this->game->attackRepr($attack, $currentPlayerId)];
     }
 
     public function nextState(int $playerId, ?PlayerAttackCard $attack): ?string {

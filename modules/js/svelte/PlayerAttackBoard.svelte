@@ -9,12 +9,7 @@
 
 <div class="player-attack-board">
   <div class="attack-cards">
-    {#if attackCards.finalEscalade}
-      <div class="card-wrapper">
-        <AttackCard id={attackCards.finalEscalade} face="front" zoom={0.35} />
-      </div>
-    {/if}
-    {#each Object.values(attackCards.attacks) as card (card.id)}
+    {#each Object.values(attackCards) as card (card.id)}
       <div class="card-wrapper">
         <AttackCard id={card.id} face={card.face} zoom={0.35} />
       </div>
