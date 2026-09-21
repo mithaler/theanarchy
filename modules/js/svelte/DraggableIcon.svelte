@@ -1,21 +1,23 @@
 <script module lang="ts">
   import type { Fighter } from "./CastleWorkers.svelte";
   import Icon from "./Icon.svelte";
-  export const dragState: { dragging?: Fighter } = $state({});
+  export const dragState: { dragging?: Fighter; id?: number } = $state({});
 </script>
 
 <script lang="ts">
+  const { name, id }: { name: Fighter; id?: number } = $props();
+
   function ondragstart(field: Fighter) {
     return () => {
       dragState.dragging = field;
+      dragState.id = id;
     };
   }
 
   function ondragend() {
     dragState.dragging = undefined;
+    dragState.id = undefined;
   }
-
-  const { name }: { name: Fighter } = $props();
 </script>
 
 <div

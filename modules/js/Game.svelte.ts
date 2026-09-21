@@ -19,6 +19,7 @@ import type {
   BoxSet,
   PlayerKey,
   CastleDefender,
+  Side,
 } from "./context.svelte";
 import { ctx, getPlayer } from "./context.svelte";
 import {
@@ -37,6 +38,13 @@ import {
 
 interface CreateDefenderArgs extends CastleDefender {
   player_id: number;
+}
+
+interface UseMusterArgs {
+  player_id: number;
+  id: number;
+  fromSide: Side;
+  toSide: Side;
 }
 
 export class Game {
@@ -159,5 +167,14 @@ export class Game {
 
   async notif_createDefender(args: CreateDefenderArgs) {
     getPlayer(args.player_id).defenders.push(args);
+  }
+
+  async notif_useMuster(args: UseMusterArgs) {
+    const defender = getPlayer(args.player_id).defenders.find(
+      (d) => d.id === args.id,
+    );
+    if (defender) {
+      defender.side = args.toSide;
+    }
   }
 }

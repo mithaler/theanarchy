@@ -52,4 +52,9 @@
     height: 71px;
     background-position: -1333px -96px;
   }
+  .musterTokens {
+    width: 71px;
+    height: 71px;
+    background-position: -686px -173px;
+  }
 </style>

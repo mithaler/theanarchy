@@ -7,6 +7,7 @@ use Bga\GameFramework\Actions\Types\StringParam;
 use Bga\GameFramework\States\PossibleAction;
 use Bga\GameFramework\StateType;
 use Bga\GameFramework\States\GameState;
+use Bga\GameFramework\UserException;
 use BGA\Games\theanarchy\Game;
 use BGA\Games\theanarchy\PlayerAttackCard;
 use BGA\Games\theanarchy\StateConstants;
@@ -52,7 +53,7 @@ class Muster extends GameState {
         // * the player isn't actually taking any damage
         if (
             !$attack->card->defenderWorkers ||
-            $this->game->resources(Resource::MUSTER_TOKENS) === 0 ||
+            $this->game->resources(Resource::MUSTER_TOKENS)->get($playerId) === 0 ||
             \count($this->game->getCastleDefenders($playerId)) === 0 ||
             !$this->game->receivingDamage($playerId, $attack)
         ) {
@@ -71,9 +72,41 @@ class Muster extends GameState {
     public function actMuster(
         int $currentPlayerId,
         #[IntParam(name: 'id')] int $id,
-        #[StringParam(enum: ['top', 'bottom', 'left', 'right'])] string $target,
+        #[StringParam(name: 'toSide', enum: ['top', 'bottom', 'left', 'right'])] string $toSide,
     ) {
-        // TODO: check validity, move defender, notify
+        $defenders = $this->game->getCastleDefenders($currentPlayerId);
+        $targetDefender = null;
+        foreach ($defenders as $defenderGroup) {
+            foreach ($defenderGroup as $def) {
+                if ($def->id === $id) {
+                    $targetDefender = $def;
+                    break 2;
+                }
+            }
+        }
+        if (!$targetDefender) {
+            throw new UserException("Invalid defender ID");
+        }
+        if ($targetDefender->side->value === $toSide) {
+            throw new UserException("Defender is already on that side");
+        }
+        if ($this->game->resources(Resource::MUSTER_TOKENS)->get($currentPlayerId) < 1) {
+            throw new UserException("You don't have any Muster tokens");
+        }
+
+        $this->game->resources(Resource::MUSTER_TOKENS)->inc($currentPlayerId, -1);
+        Game::DbQuery("UPDATE castle_defender SET side = '$toSide' WHERE id = $id");
+        $this->game->notify->all(
+            'useMuster',
+            '${player_name} uses a Muster token to move a ${workerType} from ${fromSide} to ${toSide}',
+            [
+                ...$this->game->playerNotifArgs($currentPlayerId),
+                'workerType' => $targetDefender->type,
+                'fromSide' => $targetDefender->side->value,
+                'toSide' => $toSide,
+                'id' => $id,
+            ],
+        );
     }
 
     #[PossibleAction]

@@ -10,14 +10,16 @@
 
 <script lang="ts">
   import type { PlayerBoardProps } from "./PlayerArea.svelte";
-  import { dragState } from "./DraggableIcon.svelte";
+  import DraggableIcon, { dragState } from "./DraggableIcon.svelte";
   import { getBga } from "../context.svelte";
   import Icon from "./Icon.svelte";
+  import type { CastleMode } from "./Castle.svelte";
 
   interface Props extends PlayerBoardProps {
+    mode: CastleMode;
     position: "top" | "left" | "right" | "bottom";
   }
-  const { player, isMe, position }: Props = $props();
+  const { player, isMe, position, mode }: Props = $props();
 
   function vertical(): boolean {
     return position === "left" || position === "right";
@@ -29,11 +31,25 @@
       .sort((a, b) => weights[a.type] - weights[b.type]),
   );
 
+  const bga = getBga();
+
+  const mustering = $derived(
+    bga.states.getCurrentPlayerStateName() === "Muster" &&
+      player.musterTokens > 0,
+  );
+
   async function ondrop() {
-    await getBga().actions.performAction("actCreateDefender", {
-      side: position,
-      type: dragState.dragging,
-    });
+    if (mustering) {
+      await bga.actions.performAction("actMuster", {
+        id: dragState.id,
+        toSide: position,
+      });
+    } else {
+      await bga.actions.performAction("actCreateDefender", {
+        side: position,
+        type: dragState.dragging,
+      });
+    }
   }
 </script>
 
@@ -42,13 +58,18 @@
     "castle-workers",
     position,
     { vertical: vertical(), dragging: isMe && !!dragState.dragging },
+    `mode-${mode}`,
   ]}
   ondrop={isMe ? ondrop : undefined}
   ondragover={isMe ? (e) => e.preventDefault() : undefined}
   role="list"
 >
   {#each defenders as defender (defender.id)}
-    <Icon name={defender.type} />
+    {#if mustering}
+      <DraggableIcon name={defender.type} id={defender.id} />
+    {:else}
+      <Icon name={defender.type} />
+    {/if}
   {/each}
 </div>
 
@@ -61,11 +82,17 @@
     display: flex;
     justify-content: center;
 
-    &.top {
+    &.top.mode-panel {
       top: 109px;
     }
-    &.bottom {
+    &.top.mode-attack-handler {
+      top: 50px;
+    }
+    &.bottom.mode-panel {
       top: 315px;
+    }
+    &.bottom.mode-attack-handler {
+      top: 424px;
     }
     &.left {
       left: -75px;

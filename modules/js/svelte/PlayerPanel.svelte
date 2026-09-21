@@ -36,12 +36,12 @@
         {/each}
       </div>
       <div class="counters">
-        {#each ["food", "materials", "silver"] as field (field)}
+        {#each ["food", "materials", "silver", "musterTokens"] as field (field)}
           {@render counter(field)}
         {/each}
       </div>
     </div>
-    <Castle {player} {isMe} />
+    <Castle {player} {isMe} mode="panel" />
   </div>
 {/if}
 

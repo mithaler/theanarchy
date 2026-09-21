@@ -2,6 +2,7 @@
   const ZOOM_KEY = "theanarchy_zoom";
 
   import type { AnarchyContext } from "../context.svelte";
+  import AttackHandler from "./AttackHandler.svelte";
   import PathCardSelector from "./PathCardSelector.svelte";
   import PlayerBoard from "./PlayerArea.svelte";
   import Zoomer from "./Zoomer.svelte";
@@ -9,6 +10,7 @@
   const { ctx }: { ctx: AnarchyContext } = $props();
   const meId = $derived(ctx.bga!.players.getCurrentPlayerId());
   const players = $derived(ctx.data!.players);
+  const me = $derived(players[meId]);
 
   let zoom: number = $state(parseFloat(localStorage.getItem(ZOOM_KEY) || "1"));
   $effect(() => {
@@ -23,8 +25,9 @@
   <PathCardSelector />
 
   <!-- Show current player first -->
-  {#if players[meId]}
-    <PlayerBoard player={players[meId]} isMe={true} />
+  {#if me}
+    <AttackHandler {me} />
+    <PlayerBoard player={me} isMe={true} />
   {/if}
   {#each Object.values(players).filter((p) => p.id != meId.toString()) as player (player.id)}
     <PlayerBoard {player} isMe={false} />

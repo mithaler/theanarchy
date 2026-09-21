@@ -3,6 +3,7 @@
     towerChoiceFunc?: ChoiceFunc;
     wallChoiceFunc?: ChoiceFunc;
   } = $state({});
+  export type CastleMode = "panel" | "attack-handler";
 </script>
 
 <script lang="ts">
@@ -10,7 +11,10 @@
   import CastleWorkers from "./CastleWorkers.svelte";
   import type { ChoiceFunc } from "./Checkbox.svelte";
   import type { PlayerBoardProps } from "./PlayerArea.svelte";
-  const { player, isMe }: PlayerBoardProps = $props();
+  interface Props extends PlayerBoardProps {
+    mode: CastleMode;
+  }
+  const { player, isMe, mode }: Props = $props();
 
   const WALLS: PlayerKey[] = ["wallTop", "wallRight", "wallBottom", "wallLeft"];
   const TOWERS: PlayerKey[] = [
@@ -56,12 +60,12 @@
   ></button>
 {/snippet}
 
-<div class="castle-wrapper">
-  <CastleWorkers position="top" {player} {isMe} />
-  <CastleWorkers position="left" {player} {isMe} />
-  <CastleWorkers position="right" {player} {isMe} />
-  <CastleWorkers position="bottom" {player} {isMe} />
-  <div class="castle">
+<div class="castle-wrapper mode-{mode}">
+  <CastleWorkers position="top" {player} {isMe} {mode} />
+  <CastleWorkers position="left" {player} {isMe} {mode} />
+  <CastleWorkers position="right" {player} {isMe} {mode} />
+  <CastleWorkers position="bottom" {player} {isMe} {mode} />
+  <div class="castle mode-{mode}">
     {#each WALLS as wall (wall)}
       {#if (isMe && castleState.wallChoiceFunc) || player[wall] > 0}
         {@render div(
@@ -124,11 +128,20 @@
   }
 
   .castle-wrapper {
-    width: 100%;
-    height: 234px;
     display: flex;
     justify-content: center;
     align-items: center;
+
+    &.mode-panel {
+      width: 100%;
+      height: 234px;
+    }
+
+    &.mode-attack-handler {
+      width: 400px;
+      height: 500px;
+      position: relative;
+    }
   }
 
   .castle {
@@ -137,7 +150,14 @@
     width: 225px;
     height: 225px;
     position: relative;
-    zoom: 0.8;
+
+    &.mode-panel {
+      zoom: 0.8;
+    }
+
+    &.mode-attack-handler {
+      zoom: 1.5;
+    }
   }
 
   .tower-walls-sprite {

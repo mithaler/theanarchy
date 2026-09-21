@@ -13,6 +13,7 @@ export interface PlayerBoxSet {
 }
 
 export type Side = "top" | "left" | "right" | "bottom";
+
 interface AttackCard {
   id: number;
   face: "front" | "back";
@@ -50,6 +51,7 @@ export interface AnarchyPlayer extends Player {
   materials: number;
   silver: number;
   food: number;
+  musterTokens: number;
 
   attackCards: Record<number, AttackCard>;
   defenders: CastleDefender[];
@@ -134,10 +136,6 @@ export function getPlayer(playerId: number | string): AnarchyPlayer {
   return ctx.data!.players[
     typeof playerId === "string" ? parseInt(playerId, 10) : playerId
   ];
-}
-
-export function getCurrentPlayer(): AnarchyPlayer {
-  return ctx.data!.players[ctx.bga!.players.getCurrentPlayerId()];
 }
 
 export function getCheckedBoxes(
