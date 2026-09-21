@@ -56,12 +56,13 @@
   .castle-workers {
     position: absolute;
     width: 176px;
-    height: 30px;
+    height: 23px;
     border: 1px solid yellow;
     display: flex;
+    justify-content: center;
 
     &.top {
-      top: 102px;
+      top: 109px;
     }
     &.bottom {
       top: 315px;
