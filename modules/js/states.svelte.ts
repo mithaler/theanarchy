@@ -25,6 +25,16 @@ abstract class State<ArgType> {
     this.game = game;
     this.bga = bga;
   }
+
+  addDoneButton(isCurrentPlayerActive: boolean) {
+    if (isCurrentPlayerActive) {
+      this.bga.statusBar.addActionButton(
+        _("Done"),
+        () => this.bga.actions.performAction("actPass"),
+        { color: "secondary" },
+      );
+    }
+  }
 }
 
 interface ChoosePathCardArgs {
@@ -56,13 +66,7 @@ export class CheckBoxes extends State<CheckBoxesArgs> {
       ctx.state.availableWalls =
         args.availableWalls[this.bga.players.getCurrentPlayerId()];
     }
-    if (isCurrentPlayerActive) {
-      this.bga.statusBar.addActionButton(
-        _("Done"),
-        () => this.bga.actions.performAction("actPass"),
-        { color: "secondary" },
-      );
-    }
+    this.addDoneButton(isCurrentPlayerActive);
   }
 
   onPlayerActivationChange(
@@ -139,5 +143,17 @@ export class Michaelmas extends State<MichaelmasArgs> {
 
   onLeavingState(): void {
     ctx.state.availableBoxesByNum = undefined;
+  }
+}
+
+export class Muster extends State<null> {
+  onEnteringState(args: null, isCurrentPlayerActive: boolean): void {
+    this.addDoneButton(isCurrentPlayerActive);
+  }
+}
+
+export class UseTactics extends State<null> {
+  onEnteringState(args: null, isCurrentPlayerActive: boolean): void {
+    this.addDoneButton(isCurrentPlayerActive);
   }
 }

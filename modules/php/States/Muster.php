@@ -77,7 +77,7 @@ class Muster extends GameState {
     }
 
     #[PossibleAction]
-    public function actDone(int $currentPlayerId) {
+    public function actPass(int $currentPlayerId) {
         $this->game->gamestate->nextPrivateState($currentPlayerId, 'useTactics');
     }
 

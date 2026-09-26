@@ -31,6 +31,8 @@ import {
   type MichaelmasArgs,
   Lammas,
   ChoosePathCards,
+  Muster,
+  UseTactics,
 } from "./states.svelte";
 
 interface CreateDefenderArgs extends CastleDefender {
@@ -54,6 +56,8 @@ export class Game {
     this.bga.states.register("Brewhouse", new Brewhouse(this, bga));
     this.bga.states.register("Michaelmas", new Michaelmas(this, bga));
     this.bga.states.register("Lammas", new Lammas(this, bga));
+    this.bga.states.register("Muster", new Muster(this, bga));
+    this.bga.states.register("UseTactics", new UseTactics(this, bga));
 
     // Uncomment the next line to show debug informations about state changes in the console. Remove before going to production!
     this.bga.states.logger = console.log;

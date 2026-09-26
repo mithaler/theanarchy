@@ -80,8 +80,8 @@ class UseTactics extends GameState {
     }
 
     #[PossibleAction]
-    public function actDone(int $currentPlayerId) {
-        $this->game->gamestate->nextPrivateState($currentPlayerId, 'allocateDefenders');
+    public function actPass(int $currentPlayerId) {
+        $this->game->gamestate->nextPrivateState($currentPlayerId, 'useTactics');
     }
 
     public function zombie() {
