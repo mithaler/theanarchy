@@ -1,15 +1,17 @@
-/* eslint-disable svelte/prefer-svelte-reactivity */
 import {
   ctx,
   type AnarchyBga,
+  type Attack,
   type BoxSet,
   type PlayerBoxSet,
   type PlayerKey,
+  type Side,
 } from "./context.svelte";
 import type { Game } from "./Game.svelte";
+import { attackChoice, selectedDefenders } from "./svelte/CastleWorkers.svelte";
 import { state as pathCardState } from "./svelte/PathCardSelector.svelte";
 
-abstract class State<ArgType> {
+export abstract class State<ArgType> {
   game: Game;
   bga: AnarchyBga;
 
@@ -129,6 +131,7 @@ export interface MichaelmasArgs {
 
 export class Michaelmas extends State<MichaelmasArgs> {
   static setStateCtx(args: MichaelmasArgs) {
+    /* eslint-disable svelte/prefer-svelte-reactivity */
     const boxes = Object.entries(args.availableBoxesByNum).reduce(
       (boxes, [_, numBoxes]) => boxes.union(new Set(numBoxes)),
       new Set<number>(),
@@ -155,5 +158,88 @@ export class Muster extends State<null> {
 export class UseTactics extends State<null> {
   onEnteringState(args: null, isCurrentPlayerActive: boolean): void {
     this.addDoneButton(isCurrentPlayerActive);
+  }
+}
+
+interface AllocateDefendersState {
+  attack: Attack;
+  needsChoice: Side[];
+}
+
+export class AllocateDefenders extends State<AllocateDefendersState> {
+  doneUpdater?: () => void;
+
+  onEnteringState(
+    args: AllocateDefendersState,
+    isCurrentPlayerActive: boolean,
+  ): void {
+    if (isCurrentPlayerActive) {
+      if (args.needsChoice.length > 0) {
+        attackChoice.needsChoice = args.needsChoice.reduce(
+          (glom, choice) => ({
+            ...glom,
+            [choice]: args.attack.attacks![choice],
+          }),
+          {},
+        ) as Record<Side, number>;
+
+        this.bga.statusBar.addActionButton(
+          "Done",
+          () => {
+            const choices = args.needsChoice.reduce(
+              (glom, side) => ({
+                ...glom,
+                [side]: [...selectedDefenders[side]].map((def) => def.id),
+              }),
+              {} as Record<Side, number[]>,
+            );
+            console.log(choices);
+            this.bga.actions.performAction("actChooseDefenders", {
+              choices: JSON.stringify(choices),
+            });
+          },
+          {
+            color: "primary",
+            id: "action-bar-done-button",
+          },
+        );
+
+        // this is needed to update the action button defined above (outside the Svelte app)
+        this.doneUpdater = $effect.root(() => {
+          $effect(() => {
+            const btn: HTMLButtonElement = document.getElementById(
+              "action-bar-done-button",
+            ) as HTMLButtonElement;
+
+            if (btn) {
+              const notDone = Object.entries(attackChoice.needsChoice!).some(
+                ([side, needed]) =>
+                  selectedDefenders[side as Side].size < needed,
+              );
+
+              if (notDone) {
+                btn.classList.add("disabled");
+                btn.disabled = true;
+              } else {
+                btn.classList.remove("disabled");
+                btn.disabled = false;
+              }
+            }
+          });
+        });
+      }
+    }
+  }
+
+  onLeavingState(): void {
+    // cancel the reactive Done button
+    if (this.doneUpdater) {
+      this.doneUpdater();
+    }
+    attackChoice.needsChoice = undefined;
+    selectedDefenders.top.clear();
+    selectedDefenders.left.clear();
+    selectedDefenders.right.clear();
+    selectedDefenders.bottom.clear();
   }
 }

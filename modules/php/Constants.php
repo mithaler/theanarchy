@@ -413,15 +413,18 @@ class CastleDefender {
 
     public static function fromDbArray(array $row): CastleDefender {
         return new CastleDefender(
-            (int) $row["id"], (int) $row["player_id"], AttackSide::from($row["side"]),
-            $row["type"], (boolean) $row["exhausted"],
+            (int) $row["id"],
+            (int) $row["player_id"],
+            AttackSide::from($row["side"]),
+            $row["type"],
+            (boolean) $row["exhausted"],
         );
     }
 
     /** Returns the strength of this defender. */
     public function strength(): int {
         return match ($this->type) {
-            "soldiers" | "craftsmen" | "tactics" => 1,
+            "soldiers", "craftsmen", "tactics" => 1,
             "knights" => $this->exhausted ? 1 : 2,
         };
     }

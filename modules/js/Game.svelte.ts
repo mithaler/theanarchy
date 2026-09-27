@@ -34,6 +34,8 @@ import {
   ChoosePathCards,
   Muster,
   UseTactics,
+  AllocateDefenders,
+  State,
 } from "./states.svelte";
 
 interface CreateDefenderArgs extends CastleDefender {
@@ -54,18 +56,19 @@ export class Game {
     console.log("theanarchy constructor");
     this.bga = bga;
 
-    this.bga.states.register("ChoosePathCards", new ChoosePathCards(this, bga));
-    this.bga.states.register("CheckBoxes", new CheckBoxes(this, bga));
-    this.bga.states.register("KnightsTraining", new KnightsTraining(this, bga));
-    this.bga.states.register(
-      "StValentinesFestival",
-      new StValentinesFestival(this, bga),
-    );
-    this.bga.states.register("Brewhouse", new Brewhouse(this, bga));
-    this.bga.states.register("Michaelmas", new Michaelmas(this, bga));
-    this.bga.states.register("Lammas", new Lammas(this, bga));
-    this.bga.states.register("Muster", new Muster(this, bga));
-    this.bga.states.register("UseTactics", new UseTactics(this, bga));
+    const states: [string, State<unknown>][] = [
+      ["ChoosePathCards", new ChoosePathCards(this, bga)],
+      ["CheckBoxes", new CheckBoxes(this, bga)],
+      ["KnightsTraining", new KnightsTraining(this, bga)],
+      ["StValentinesFestival", new StValentinesFestival(this, bga)],
+      ["Brewhouse", new Brewhouse(this, bga)],
+      ["Michaelmas", new Michaelmas(this, bga)],
+      ["Lammas", new Lammas(this, bga)],
+      ["Muster", new Muster(this, bga)],
+      ["UseTactics", new UseTactics(this, bga)],
+      ["AllocateDefenders", new AllocateDefenders(this, bga)],
+    ];
+    states.forEach(([name, state]) => this.bga.states.register(name, state));
 
     // Uncomment the next line to show debug informations about state changes in the console. Remove before going to production!
     this.bga.states.logger = console.log;

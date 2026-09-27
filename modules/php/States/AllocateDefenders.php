@@ -3,6 +3,7 @@
 namespace BGA\Games\theanarchy\States;
 
 use Bga\GameFramework\Actions\Types\IntParam;
+use Bga\GameFramework\Actions\Types\JsonParam;
 use Bga\GameFramework\Actions\Types\StringParam;
 use Bga\GameFramework\States\PossibleAction;
 use Bga\GameFramework\StateType;
@@ -21,8 +22,8 @@ class AllocateDefenders extends GameState {
             $game,
             id: StateConstants::ALLOCATE_DEFENDERS,
             type: StateType::PRIVATE,
-            description: clienttranslate('${actplayer} may allocate defenders'),
-            descriptionMyTurn: clienttranslate('${you} may allocate defenders'),
+            description: clienttranslate('${actplayer} must choose which defenders will take damage'),
+            descriptionMyTurn: clienttranslate('${you} must choose which defenders will take damage'),
             transitions: [
                 'attacksDone' => StateConstants::ATTACKS_DONE,
             ],
@@ -34,17 +35,24 @@ class AllocateDefenders extends GameState {
 
         // what's the next attack?
         $attack = $this->game->nextPlayerAttack($currentPlayerId);
-        return ['attack' => $this->game->attackRepr($attack, $currentPlayerId)];
+
+        $attackSides = $this->game->attacksBySide($currentPlayerId, $attack);
+        $defenders = $this->game->getCastleDefenders($currentPlayerId);
+        $needsChoice = $this->needsChoice($attackSides, $defenders);
+        return [
+            'attack' => $this->game->attackRepr($attack, $currentPlayerId),
+            'needsChoice' => $needsChoice,
+        ];
     }
 
     /**
      * Executes the attack:
      * * Checks how much damage gets through, and incurs damage.
      * * Exhausts/kills defending workers/tactics.
-     * @param int $currentPlayerId
+     * @param int $playerId
      * @return void
      */
-    private function executeAttack(int $currentPlayerId) {
+    private function executeAttack(int $playerId) {
     }
 
     /**
@@ -58,23 +66,27 @@ class AllocateDefenders extends GameState {
 
     /**
      * Returns the set of sides the player has a choice of defenders on.
+     * @param array<string, int> $attackSides
+     * @param array<string, CastleDefender[]> $defenders
      * @return AttackSide[]
      */
     private function needsChoice(array $attackSides, array $defenders): array {
-        // classify defenders by side
-        $defendersBySide = [];
-        foreach ($defenders as $defender) {
-            $defendersBySide[$defender->side] = $defender;
-        }
-
         $out = [];
         foreach ($attackSides as $side => $attackStrength) {
-            $defenseStrength = $this->totalStrength($defendersBySide[$side]);
+            $defenseStrength = $this->totalStrength($defenders[$side]);
             if ($defenseStrength > $attackStrength) {
                 $out[] = $side;
             }
         }
         return $out;
+    }
+
+    #[PossibleAction]
+    public function actChooseDefenders(
+        int $currentPlayerId,
+        #[JsonParam(name: "choices")] array $choices,
+    ) {
+        // TODO: actually do the thing!
     }
 
     public function zombie() {

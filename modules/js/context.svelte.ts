@@ -14,7 +14,7 @@ export interface PlayerBoxSet {
 
 export type Side = "top" | "left" | "right" | "bottom";
 
-interface AttackCard {
+export interface Attack {
   id: number;
   face: "front" | "back";
   attacks?: Record<Side, number>;
@@ -53,7 +53,7 @@ export interface AnarchyPlayer extends Player {
   food: number;
   musterTokens: number;
 
-  attackCards: Record<number, AttackCard>;
+  attackCards: Record<number, Attack>;
   defenders: CastleDefender[];
   pathCards: string[];
   checkedBoxes: BoxSet;
