@@ -5,18 +5,43 @@
     needsChoice?: Record<Side, number>;
   }
   export const attackChoice: AttackChoiceState = $state({});
-  export const selectedDefenders: Record<Side, SvelteSet<CastleDefender>> = {
-    top: new SvelteSet<CastleDefender>(),
-    left: new SvelteSet<CastleDefender>(),
-    right: new SvelteSet<CastleDefender>(),
-    bottom: new SvelteSet<CastleDefender>(),
-  };
 
+  export enum Hit {
+    Beer = 0,
+    One = 1,
+    Two = 2,
+  }
+
+  export const selectedDefenders: Record<
+    Side,
+    SvelteMap<CastleDefender, Hit>
+  > = {
+    top: new SvelteMap<CastleDefender, Hit>(),
+    left: new SvelteMap<CastleDefender, Hit>(),
+    right: new SvelteMap<CastleDefender, Hit>(),
+    bottom: new SvelteMap<CastleDefender, Hit>(),
+  };
   const weights: Record<Fighter, number> = {
     craftsmen: 2,
     soldiers: 1,
     knights: 0,
   };
+
+  export function totalSelectedStr(
+    defenders: SvelteMap<CastleDefender, Hit>,
+  ): number {
+    return defenders
+      .values()
+      .reduce(
+        (total, hit) =>
+          hit === Hit.Beer || hit === Hit.One
+            ? total + 1
+            : hit === Hit.Two
+              ? total + 2
+              : total,
+        0,
+      );
+  }
 </script>
 
 <script lang="ts">
@@ -25,7 +50,7 @@
   import { getBga, type CastleDefender, type Side } from "../context.svelte";
   import Icon from "./Icon.svelte";
   import type { CastleMode } from "./Castle.svelte";
-  import { SvelteSet } from "svelte/reactivity";
+  import { SvelteMap } from "svelte/reactivity";
 
   interface Props extends PlayerBoardProps {
     mode: CastleMode;
@@ -34,18 +59,7 @@
   const { player, isMe, position, mode }: Props = $props();
 
   const myDefenders = $derived(selectedDefenders[position]);
-
-  const selectedStrength = $derived.by(() => {
-    let out = 0;
-    myDefenders?.forEach((def) => {
-      if (["soldiers", "craftsmen", "tactics"].includes(def.type)) {
-        out += 1;
-      } else if (def.type === "knights") {
-        out += def.exhausted ? 1 : 2;
-      }
-    });
-    return out;
-  });
+  const selectedStrength = $derived(totalSelectedStr(myDefenders));
 
   const neededValue = $derived(
     attackChoice.needsChoice ? attackChoice.needsChoice[position] : undefined,
@@ -82,11 +96,45 @@
     return "none";
   });
 
+  function defenderNextState(
+    def: CastleDefender,
+    currState?: Hit,
+  ): Hit | undefined {
+    if (def.type === "knights") {
+      if (currState === undefined) {
+        return Hit.One;
+      } else if (currState === Hit.One) {
+        return Hit.Two;
+      } else {
+        return undefined;
+      }
+    } else {
+      if (currState === undefined) {
+        return Hit.One;
+      } else if (currState === Hit.One) {
+        // TODO: Check if the player actually has beer!
+        return Hit.Beer;
+      } else if (currState === Hit.Beer) {
+        return undefined;
+      }
+    }
+  }
+
   function clickDefender(def: CastleDefender) {
     if (myDefenders.has(def)) {
-      myDefenders.delete(def);
+      const curr = myDefenders.get(def);
+      const next = defenderNextState(def, curr);
+      if (next && curr && next > curr && selectedStrength === neededValue) {
+        // special case: would this make us over-damage a knight?
+        // disable it so the player can choose something else
+        myDefenders.delete(def);
+      } else if (next !== undefined) {
+        myDefenders.set(def, next);
+      } else {
+        myDefenders.delete(def);
+      }
     } else if (neededValue && selectedStrength < neededValue) {
-      myDefenders.add(def);
+      myDefenders.set(def, defenderNextState(def)!);
     }
   }
 
@@ -133,6 +181,10 @@
         onclick={() => clickDefender(defender)}
       >
         <Icon name={defender.type} />
+        <!-- TODO: make this look nice -->
+        {#if myDefenders.has(defender)}
+          {myDefenders.get(defender)}
+        {/if}
       </button>
     {:else}
       <Icon name={defender.type} />

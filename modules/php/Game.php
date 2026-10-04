@@ -301,7 +301,7 @@ class Game extends \Bga\GameFramework\Table {
 
     /**
      * Returns all of the player's defenders, by side they're on.
-     * If tactics is true, returns only tactics instead.
+     * If tactics is true, returns only tactics; otherwise, excludes them.
      * @param int $playerId The player ID.
      * @param bool $tactics If true, returns tactics instead of workers.
      * @return array<string, CastleDefender[]>
@@ -310,6 +310,8 @@ class Game extends \Bga\GameFramework\Table {
         $query = "SELECT * FROM castle_defender WHERE player_id = $playerId";
         if ($tactics) {
             $query .= " AND type = 'tactic'";
+        } else {
+            $query .= " AND type != 'tactic'";
         }
         $rows = self::getObjectListFromDb($query);
         $out = [];

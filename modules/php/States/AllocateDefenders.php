@@ -50,9 +50,75 @@ class AllocateDefenders extends GameState {
      * * Checks how much damage gets through, and incurs damage.
      * * Exhausts/kills defending workers/tactics.
      * @param int $playerId
+     * @param array<string, array<int, int>> $choices
      * @return void
      */
-    private function executeAttack(int $playerId) {
+    private function executeAttack(int $playerId, array $choices = []) {
+        $attack = $this->game->nextPlayerAttack($playerId);
+        $attackSides = $this->game->attacksBySide($playerId, $attack);
+        $defenders = $this->game->getCastleDefenders($playerId);
+        $beerCounter = $this->game->resources(Resource::BEER);
+
+        // for each attack side:
+        //   is there more strenghth getting through than defenders?
+        //   if so, inflict damage
+        //   and hurt workers
+        $deadDefenders = [];
+        $exhaustedDefenders = [];
+        $succeeded = true;
+        foreach ($attackSides as $side => $attackStrength) {
+            $sideDefenders = $defenders[$side] ?? [];
+            $defenderStrength = $this->totalStrength($sideDefenders);
+            $gotThrough = $attackStrength - $defenderStrength;
+            if ($gotThrough > 0) {
+                $succeeded = false;
+                // all of the defenders die
+                $deadDefenders = [...$deadDefenders, ...$sideDefenders];
+            } else if ($gotThrough === 0) {
+                // attack exactly matched defender strength, defenders die but defense was successful
+                $deadDefenders = [...$deadDefenders, ...$sideDefenders];
+            } else {
+                // the player must have selected which ones get hit
+                $hitChoices = $choices[$side];
+                if (!$hitChoices) {
+                    throw new UserException("Need a defender choice for side $side");
+                }
+                // find the actual defender objects for those choices
+                foreach ($hitChoices as $defId => $hitStr) {
+                    $defender = array_find($sideDefenders, fn ($def) => $def->id === $defId);
+                    if ($defender === null) {
+                        throw new UserException("Invalid defender id on $side: $defId");
+                    }
+
+                    // hitStr is 0 (beered), 1, or 2
+                    if ($defender->type === "knights") {
+                        if ($hitStr === 0) {
+                            throw new UserException("Knights cannot drink beer!");
+                        } else if ($defender->exhausted && $hitStr === 2) {
+                            throw new UserException("That knight is already wounded and cannot take 2 damage");
+                        } else if ($hitStr === 1) {
+                            $exhaustedDefenders[] = $defender;
+                        } else if ($hitStr === 2) {
+                            $deadDefenders[] = $defender;
+                        }
+                    } else {
+                        if ($hitStr === 2) {
+                            throw new UserException("That kind of defender cannot take 2 damage");
+                        } else if ($hitStr === 0) {
+                            if ($beerCounter->get($playerId) < 1) {
+                                throw new UserException("You don't have enough beer!");
+                            }
+                            $beerCounter->inc($playerId, -1);
+                            $exhaustedDefenders[] = $defender;
+                        } else if ($hitStr === 1) {
+                            $deadDefenders[] = $defender;
+                        }
+                    }
+                }
+            }
+        }
+
+        // TODO: exhaust/kill workers, mark success!
     }
 
     /**
@@ -86,7 +152,19 @@ class AllocateDefenders extends GameState {
         int $currentPlayerId,
         #[JsonParam(name: "choices")] array $choices,
     ) {
-        // TODO: actually do the thing!
+        // got to be really careful about validation here
+        foreach ($choices as $side => $ids) {
+            // keys are sides
+            if (!\in_array($side, ["top", "left", "right", "bottom"])) {
+                throw new UserException("Invalid side");
+            }
+            // values are defender ID => strength of hit (0 (beer), 1, or 2)
+            foreach ($ids as $defId => $hit) {
+                if (!\is_int($defId) || !\is_int($hit) || $hit > 2 || $hit < 0) {
+                    throw new UserException("Invalid defender ID");
+                }
+            }
+        }
     }
 
     public function zombie() {

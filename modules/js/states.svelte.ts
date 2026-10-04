@@ -8,7 +8,12 @@ import {
   type Side,
 } from "./context.svelte";
 import type { Game } from "./Game.svelte";
-import { attackChoice, selectedDefenders } from "./svelte/CastleWorkers.svelte";
+import {
+  attackChoice,
+  Hit,
+  selectedDefenders,
+  totalSelectedStr,
+} from "./svelte/CastleWorkers.svelte";
 import { state as pathCardState } from "./svelte/PathCardSelector.svelte";
 
 export abstract class State<ArgType> {
@@ -189,11 +194,15 @@ export class AllocateDefenders extends State<AllocateDefendersState> {
             const choices = args.needsChoice.reduce(
               (glom, side) => ({
                 ...glom,
-                [side]: [...selectedDefenders[side]].map((def) => def.id),
+                [side]: selectedDefenders[side]
+                  .entries()
+                  .reduce(
+                    (defGlom, [def, hit]) => ({ ...defGlom, [def.id]: hit }),
+                    {},
+                  ),
               }),
-              {} as Record<Side, number[]>,
+              {} as Record<Side, Record<number, Hit>>,
             );
-            console.log(choices);
             this.bga.actions.performAction("actChooseDefenders", {
               choices: JSON.stringify(choices),
             });
@@ -214,7 +223,7 @@ export class AllocateDefenders extends State<AllocateDefendersState> {
             if (btn) {
               const notDone = Object.entries(attackChoice.needsChoice!).some(
                 ([side, needed]) =>
-                  selectedDefenders[side as Side].size < needed,
+                  totalSelectedStr(selectedDefenders[side as Side]) < needed,
               );
 
               if (notDone) {
