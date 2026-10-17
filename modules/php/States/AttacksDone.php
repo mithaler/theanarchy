@@ -12,7 +12,7 @@ class AttacksDone extends GameState {
         parent::__construct(
             $game,
             id: StateConstants::ATTACKS_DONE,
-            type: StateType::PRIVATE,
+            type: StateType::GAME,
         );
     }
 
@@ -24,9 +24,5 @@ class AttacksDone extends GameState {
     public function onEnteringState(int $currentPlayerId) {
         $this->game->gamestate->unsetPrivateState($currentPlayerId);
         $this->game->gamestate->setPlayerNonMultiactive($currentPlayerId, 'newRound');
-    }
-
-    public function zombie() {
-        // TODO: just take them
     }
 }

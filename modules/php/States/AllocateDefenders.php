@@ -2,9 +2,7 @@
 
 namespace BGA\Games\theanarchy\States;
 
-use Bga\GameFramework\Actions\Types\IntParam;
 use Bga\GameFramework\Actions\Types\JsonParam;
-use Bga\GameFramework\Actions\Types\StringParam;
 use Bga\GameFramework\States\PossibleAction;
 use Bga\GameFramework\StateType;
 use Bga\GameFramework\States\GameState;
@@ -12,7 +10,6 @@ use Bga\GameFramework\UserException;
 use BGA\Games\theanarchy\AttackSide;
 use BGA\Games\theanarchy\CastleDefender;
 use BGA\Games\theanarchy\Game;
-use BGA\Games\theanarchy\PlayerAttackCard;
 use BGA\Games\theanarchy\StateConstants;
 use BGA\Games\theanarchy\Resource;
 
@@ -45,6 +42,22 @@ class AllocateDefenders extends GameState {
         ];
     }
 
+    private function notifyAttack(int $playerId, bool $success, array $exhaustedDefenderIds, array $deadDefenderIds) {
+        $playerNotifArgs = $this->game->playerNotifArgs($playerId);
+        if ($success) {
+            $this->game->notify->all(
+                'attackSuccess', clienttranslate('${player_name} successfully repels an attack'),
+                [...$playerNotifArgs, 'exhausted' => $exhaustedDefenderIds, 'dead' => $deadDefenderIds],
+            );
+        } else {
+            $this->game->notify->all(
+                'attackFailed', clienttranslate('${player_name} fails to repel an attack'),
+                [...$playerNotifArgs, 'exhausted' => $exhaustedDefenderIds, 'dead' => $deadDefenderIds],
+            );
+        }
+
+    }
+
     /**
      * Executes the attack:
      * * Checks how much damage gets through, and incurs damage.
@@ -65,6 +78,7 @@ class AllocateDefenders extends GameState {
         //   and hurt workers
         $deadDefenders = [];
         $exhaustedDefenders = [];
+        $usedBeer = 0;
         $succeeded = true;
         foreach ($attackSides as $side => $attackStrength) {
             $sideDefenders = $defenders[$side] ?? [];
@@ -73,10 +87,10 @@ class AllocateDefenders extends GameState {
             if ($gotThrough > 0) {
                 $succeeded = false;
                 // all of the defenders die
-                $deadDefenders = [...$deadDefenders, ...$sideDefenders];
+                $deadDefenders = [...$deadDefenders, ...array_map(fn ($def) => $def->id, $sideDefenders)];
             } else if ($gotThrough === 0) {
                 // attack exactly matched defender strength, defenders die but defense was successful
-                $deadDefenders = [...$deadDefenders, ...$sideDefenders];
+                $deadDefenders = [...$deadDefenders, ...array_map(fn ($def) => $def->id, $sideDefenders)];
             } else {
                 // the player must have selected which ones get hit
                 $hitChoices = $choices[$side];
@@ -97,9 +111,9 @@ class AllocateDefenders extends GameState {
                         } else if ($defender->exhausted && $hitStr === 2) {
                             throw new UserException("That knight is already wounded and cannot take 2 damage");
                         } else if ($hitStr === 1) {
-                            $exhaustedDefenders[] = $defender;
+                            $exhaustedDefenders[] = $defender->id;
                         } else if ($hitStr === 2) {
-                            $deadDefenders[] = $defender;
+                            $deadDefenders[] = $defender->id;
                         }
                     } else {
                         if ($hitStr === 2) {
@@ -109,16 +123,32 @@ class AllocateDefenders extends GameState {
                                 throw new UserException("You don't have enough beer!");
                             }
                             $beerCounter->inc($playerId, -1);
-                            $exhaustedDefenders[] = $defender;
+                            $exhaustedDefenders[] = $defender->id;
+                            $usedBeer++;
                         } else if ($hitStr === 1) {
-                            $deadDefenders[] = $defender;
+                            $deadDefenders[] = $defender->id;
                         }
                     }
                 }
             }
         }
 
-        // TODO: exhaust/kill workers, mark success!
+        if (count($exhaustedDefenders) > 0) {
+            Game::DbQuery(sprintf(
+                "UPDATE castle_defender SET exhausted = 1 WHERE id IN (%s)",
+                implode(",", $exhaustedDefenders),
+            ));
+        }
+        if (count($deadDefenders) > 0) {
+            Game::DbQuery(sprintf(
+                "DELETE FROM castle_defender WHERE id IN (%s)",
+                implode(",", $deadDefenders),
+            ));
+        }
+
+        // TODO: mark success!
+        $this->notifyAttack($playerId, $succeeded, $exhaustedDefenders, $deadDefenders);
+        $this->game->gamestate->setPlayerNonMultiactive($playerId, 'attacksDone');
     }
 
     /**
@@ -139,7 +169,7 @@ class AllocateDefenders extends GameState {
     private function needsChoice(array $attackSides, array $defenders): array {
         $out = [];
         foreach ($attackSides as $side => $attackStrength) {
-            $defenseStrength = $this->totalStrength($defenders[$side]);
+            $defenseStrength = $this->totalStrength($defenders[$side] ?? []);
             if ($defenseStrength > $attackStrength) {
                 $out[] = $side;
             }
@@ -161,10 +191,11 @@ class AllocateDefenders extends GameState {
             // values are defender ID => strength of hit (0 (beer), 1, or 2)
             foreach ($ids as $defId => $hit) {
                 if (!\is_int($defId) || !\is_int($hit) || $hit > 2 || $hit < 0) {
-                    throw new UserException("Invalid defender ID");
+                    throw new UserException("Invalid defender");
                 }
             }
         }
+        $this->executeAttack($currentPlayerId, $choices);
     }
 
     public function zombie() {
