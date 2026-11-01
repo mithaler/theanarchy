@@ -36,7 +36,7 @@ class ReceiveAttacks extends GameState {
             $game,
             id: StateConstants::RECEIVE_ATTACKS,
             type: StateType::MULTIPLE_ACTIVE_PLAYER,
-            description: clienttranslate('Players are receiving attacks'),
+            description: clienttranslate('Players are resolving attacks'),
             initialPrivate: StateConstants::MUSTER,
             transitions: ['attacksDone' => StateConstants::ATTACKS_DONE],
         );

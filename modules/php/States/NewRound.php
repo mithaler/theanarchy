@@ -8,8 +8,8 @@ use Bga\GameFramework\States\GameState;
 use Bga\GameFramework\StateType;
 
 use Bga\Games\theanarchy\Game;
-use BGA\Games\theanarchy\PlayerAttackCard;
 use BGA\Games\theanarchy\StateConstants;
+use BGA\Games\theanarchy\Resource;
 
 class NewRound extends GameState {
     function __construct(protected Game $game) {
@@ -61,8 +61,27 @@ class NewRound extends GameState {
             );
         }
 
-        // TODO: board resource income!
-        // that includes Muster tokens!
+        $incomes = $this->game->getObjectListFromDB(<<<SQL
+            SELECT player_id, LCASE(section) AS section, MAX(box_id) AS gain
+            FROM checked_box
+            WHERE section IN (
+                'SERFS', 'CRAFTSMEN', 'MATERIALS', 'PATRONS', 'SILVER',
+                'FOOD', 'SOLDIERS', 'KNIGHTS', 'MUSTER', 'RAMPARTS'
+            )
+            GROUP BY player_id, section;
+            SQL
+        );
+        foreach ($incomes as $income) {
+            if ($income["section"] === 'ramparts' && $income['gain'] >= 2) {
+                $this->game->resources(Resource::MUSTER_TOKENS)->inc(
+                    (int) $income['player_id'], (int) floor($income['gain'] / 2)
+                );
+            } else {
+                $this->game->resources(Resource::from($income['section']))->inc(
+                    (int) $income['player_id'], (int) $income['gain']
+                );
+            }
+        }
 
         // draw path cards to the table
         $pathCards = $this->game->pathCards->pickCardsForLocation(\count($players), 'deck', 'table');

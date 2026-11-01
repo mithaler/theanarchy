@@ -248,19 +248,8 @@ class Game extends \Bga\GameFramework\Table {
     protected function setupNewGame($players, $options = []): string {
         $this->round->initDb(1);
 
-        $initialValues = [
-            Resource::SERFS->value => 1,
-            Resource::SOLDIERS->value => 2,
-            Resource::SILVER->value => 1,
-            Resource::FOOD->value => 1,
-            Resource::MATERIALS->value => 1,
-        ];
-
         foreach (Resource::cases() as $resource) {
-            $this->resources($resource)->initDb(
-                array_keys($players),
-                initialValue: $initialValues[$resource->value] ?? 0
-            );
+            $this->resources($resource)->initDb(array_keys($players), 0);
         }
 
         // Set the colors of the players with HTML color code. The default below is red/green/blue/orange/brown. The

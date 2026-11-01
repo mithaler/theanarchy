@@ -45,6 +45,9 @@ class AttacksDone extends GameState {
                 );
             }
 
+            // zero out unused muster tokens
+            $this->game->resources(Resource::MUSTER_TOKENS)->set($playerId, 0);
+
             // gain loyalty/discontent based on determination
             // loyalty = determination - failed attack count
             // discontent = determination - loyalty
