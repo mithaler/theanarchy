@@ -175,7 +175,7 @@ class Game extends \Bga\GameFramework\Table {
 
             SELECT
                 card_id, card_type, card_type_arg, card_location, card_location_arg,
-                'finalEscalade' AS type, 'visible' AS state, 1 AS position
+                'finalEscalade' AS type, state, 1 AS position
             FROM `final_escalade_card`
             WHERE card_location = 'hand' $playerArg
             ORDER BY position DESC"

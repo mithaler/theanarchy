@@ -82,6 +82,8 @@ CREATE TABLE IF NOT EXISTS final_escalade_card (
     `card_type_arg` TINYINT NOT NULL,
     `card_location` VARCHAR(40) NOT NULL,
     `card_location_arg` INT NOT NULL,
+    -- Final Escalade cards can never be hidden
+    `state` ENUM('visible', 'success', 'failed') NOT NULL DEFAULT 'visible',
     PRIMARY KEY (`card_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 

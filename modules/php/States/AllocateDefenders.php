@@ -144,7 +144,7 @@ class AllocateDefenders extends GameState {
 
         // mark the attack card success/failed in the table
         Game::DbQuery(sprintf(
-            "UPDATE %s SET state = '%s' WHERE card_id = %s",
+            "UPDATE %s SET state = '%s' WHERE card_type = %s",
             $attack->card->finalEscalade ? 'final_escalade_card' : 'attack_card',
             $succeeded ? 'success' : 'failed',
             $attack->id,
