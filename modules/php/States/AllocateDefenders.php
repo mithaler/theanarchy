@@ -78,7 +78,7 @@ class AllocateDefenders extends GameState {
         $succeeded = true;
         foreach ($attackSides as $side => $attackStrength) {
             $sideDefenders = $defenders[$side] ?? [];
-            $defenderStrength = $this->totalStrength($sideDefenders);
+            $defenderStrength = $this->game->totalStrength($sideDefenders);
             $gotThrough = $attackStrength - $defenderStrength;
             if ($gotThrough > 0) {
                 $succeeded = false;
@@ -158,15 +158,6 @@ class AllocateDefenders extends GameState {
     }
 
     /**
-     * Returns the total strength of an array of defenders.
-     * @param CastleDefender[] $defenders The defenders.
-     * @return int Their total strength.
-     */
-    private function totalStrength(array $defenders): int {
-        return array_sum(array_map(fn ($def) => $def->strength(), $defenders));
-    }
-
-    /**
      * Returns the set of sides the player has a choice of defenders on.
      * @param int $playerId The player.
      * @param array<string, int> $attackSides
@@ -178,7 +169,7 @@ class AllocateDefenders extends GameState {
         $beer = $this->game->resources(Resource::BEER)->get($playerId);
         foreach ($attackSides as $side => $attackStrength) {
             $sideDefenders = $defenders[$side] ?? [];
-            $defenseStrength = $this->totalStrength($sideDefenders);
+            $defenseStrength = $this->game->totalStrength($sideDefenders);
             if (
                 ($defenseStrength > $attackStrength) ||
                 ($beer > 0 && array_any($sideDefenders, fn ($def) => $def->beerable()))

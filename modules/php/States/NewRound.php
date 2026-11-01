@@ -8,6 +8,7 @@ use Bga\GameFramework\States\GameState;
 use Bga\GameFramework\StateType;
 
 use Bga\Games\theanarchy\Game;
+use BGA\Games\theanarchy\PlayerAttackCard;
 use BGA\Games\theanarchy\StateConstants;
 
 class NewRound extends GameState {
@@ -55,7 +56,7 @@ class NewRound extends GameState {
                 clienttranslate('${player_name} draws attack cards for the round'),
                 [
                     ...$this->game->playerNotifArgs($playerId),
-                    'cards' => $this->game->attackCardRepr($feCard, $attackCards),
+                    'cards' => $this->game->attackSetRepr($this->game->playerAttacks($playerId), $playerId),
                 ],
             );
         }

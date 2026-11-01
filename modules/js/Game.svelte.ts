@@ -20,6 +20,7 @@ import type {
   PlayerKey,
   CastleDefender,
   Side,
+  Attack,
 } from "./context.svelte";
 import { ctx, getPlayer } from "./context.svelte";
 import {
@@ -198,5 +199,19 @@ export class Game {
       }
       return [...defs, def];
     }, [] as CastleDefender[]);
+  }
+
+  async notif_roundCleanup() {
+    Object.values(ctx.data!.players).forEach((player) => {
+      player.attackCards = {};
+      player.defenders = [];
+    });
+  }
+
+  async notif_newAttackCards(args: {
+    player_id: number;
+    cards: Record<number, Attack>;
+  }) {
+    getPlayer(args.player_id).attackCards = args.cards;
   }
 }

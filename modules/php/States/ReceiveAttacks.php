@@ -38,6 +38,7 @@ class ReceiveAttacks extends GameState {
             type: StateType::MULTIPLE_ACTIVE_PLAYER,
             description: clienttranslate('Players are receiving attacks'),
             initialPrivate: StateConstants::MUSTER,
+            transitions: ['attacksDone' => StateConstants::ATTACKS_DONE],
         );
     }
 

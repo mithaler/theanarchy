@@ -64,7 +64,13 @@ class Muster extends GameState {
 
     public function onEnteringState(int $currentPlayerId, array $args) {
         if (\array_key_exists('nextState', $args)) {
-            $this->game->gamestate->nextPrivateState($currentPlayerId, $args['nextState']);
+            if ($args['nextState'] === 'attacksDone') {
+                // this isn't a private state, we just mark them done
+                $this->game->gamestate->unsetPrivateState($currentPlayerId);
+                $this->game->gamestate->setPlayerNonMultiactive($currentPlayerId, 'attacksDone');
+            } else {
+                $this->game->gamestate->nextPrivateState($currentPlayerId, $args['nextState']);
+            }
         }
     }
 

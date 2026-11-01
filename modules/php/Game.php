@@ -135,9 +135,9 @@ class Game extends \Bga\GameFramework\Table {
         $pathCards = $this->pathCards->getCardsInLocation('hand');
         $attackCards = $this->playerAttacks();
         foreach ($result['players'] as $playerId => &$player) {
-            foreach (array_filter($attackCards, fn ($c) => $c->playerId === $playerId) as $pac) {
-                $player['attackCards'][$pac->position] = $this->attackRepr($pac, $playerId, $pac->state === 'visible');
-            }
+            $player['attackCards'] = $this->attackSetRepr(
+                array_filter($attackCards, fn ($c) => $c->playerId === $playerId), $playerId
+            );
             $playerPathCards = array_filter($pathCards, fn ($c) => (int) $c['location_arg'] === $playerId);
             $player['pathCards'] = array_values(array_map(fn ($c) => $c['type'], $playerPathCards));
             $player['defenders'] = [];
@@ -300,6 +300,21 @@ class Game extends \Bga\GameFramework\Table {
         return InitialSetup::class;
     }
 
+    /**
+     * Returns the entire set of attacks the player has to deal with, as shown to the frontend
+     * (that is, with hidden cards hidden).
+     * @param PlayerAttackCard[] $attacks
+     * @param int $playerId
+     * @return array<int, array>
+     */
+    public function attackSetRepr(array $attacks, int $playerId): array {
+        $out = [];
+        foreach ($attacks as $atk) {
+            $out[$atk->position] = $this->attackRepr($atk, $playerId, $atk->state !== 'hidden');
+        }
+        return $out;
+    }
+
     public function attackRepr(PlayerAttackCard $card, int $playerId, bool $visible = true) {
         return $visible ?
             ["id" => $card->id, "face" => "front", "attacks" => $this->attacksBySide($playerId, $card)] :
@@ -327,6 +342,15 @@ class Game extends \Bga\GameFramework\Table {
             $out[$defender->side->value][] = $defender;
         }
         return $out;
+    }
+
+    /**
+     * Returns the total strength of an array of defenders.
+     * @param CastleDefender[] $defenders The defenders.
+     * @return int Their total strength.
+     */
+    public static function totalStrength(array $defenders): int {
+        return array_sum(array_map(fn ($def) => $def->strength(), $defenders));
     }
 
     public function currentScenarioCard(): ScenarioCard {
