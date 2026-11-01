@@ -44,18 +44,13 @@ class AllocateDefenders extends GameState {
 
     private function notifyAttack(int $playerId, bool $success, array $exhaustedDefenderIds, array $deadDefenderIds) {
         $playerNotifArgs = $this->game->playerNotifArgs($playerId);
-        if ($success) {
-            $this->game->notify->all(
-                'attackSuccess', clienttranslate('${player_name} successfully repels an attack'),
-                [...$playerNotifArgs, 'exhausted' => $exhaustedDefenderIds, 'dead' => $deadDefenderIds],
-            );
-        } else {
-            $this->game->notify->all(
-                'attackFailed', clienttranslate('${player_name} fails to repel an attack'),
-                [...$playerNotifArgs, 'exhausted' => $exhaustedDefenderIds, 'dead' => $deadDefenderIds],
-            );
-        }
-
+        $this->game->notify->all(
+            'attackResolved',
+            $success ?
+                clienttranslate('${player_name} successfully repels an attack') :
+                clienttranslate('${player_name} fails to repel an attack'),
+            [...$playerNotifArgs, 'exhausted' => $exhaustedDefenderIds, 'dead' => $deadDefenderIds],
+        );
     }
 
     /**

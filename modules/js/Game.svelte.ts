@@ -49,6 +49,12 @@ interface UseMusterArgs {
   toSide: Side;
 }
 
+interface AttackResolvedArgs {
+  player_id: number;
+  dead: number[];
+  exhausted: number[];
+}
+
 export class Game {
   bga: AnarchyBga;
 
@@ -179,5 +185,18 @@ export class Game {
     if (defender) {
       defender.side = args.toSide;
     }
+  }
+
+  async notif_attackResolved(args: AttackResolvedArgs) {
+    const player = getPlayer(args.player_id);
+    player.defenders = player.defenders.reduce((defs, def) => {
+      if (args.dead.includes(def.id)) {
+        return defs;
+      }
+      if (args.exhausted.includes(def.id)) {
+        def.exhausted = true;
+      }
+      return [...defs, def];
+    }, [] as CastleDefender[]);
   }
 }
