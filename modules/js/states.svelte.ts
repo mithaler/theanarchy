@@ -236,6 +236,15 @@ export class AllocateDefenders extends State<AllocateDefendersState> {
             }
           });
         });
+      } else {
+        // The player has no choice: they must click a button to accept their fate
+        // TODO: show which defenders will die somehow
+        this.bga.statusBar.setTitle(_("${you} must resolve the attack"));
+        this.bga.statusBar.addActionButton(_("Done"), () =>
+          this.bga.actions.performAction("actChooseDefenders", {
+            choices: "[]",
+          }),
+        );
       }
     }
   }

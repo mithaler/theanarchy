@@ -36,7 +36,7 @@ class AllocateDefenders extends GameState {
 
         $attackSides = $this->game->attacksBySide($currentPlayerId, $attack);
         $defenders = $this->game->getCastleDefenders($currentPlayerId);
-        $needsChoice = $this->needsChoice($attackSides, $defenders);
+        $needsChoice = $this->needsChoice($currentPlayerId, $attackSides, $defenders);
         return [
             'attack' => $this->game->attackRepr($attack, $currentPlayerId),
             'needsChoice' => $needsChoice,
@@ -168,15 +168,21 @@ class AllocateDefenders extends GameState {
 
     /**
      * Returns the set of sides the player has a choice of defenders on.
+     * @param int $playerId The player.
      * @param array<string, int> $attackSides
      * @param array<string, CastleDefender[]> $defenders
      * @return AttackSide[]
      */
-    private function needsChoice(array $attackSides, array $defenders): array {
+    private function needsChoice(int $playerId, array $attackSides, array $defenders): array {
         $out = [];
+        $beer = $this->game->resources(Resource::BEER)->get($playerId);
         foreach ($attackSides as $side => $attackStrength) {
-            $defenseStrength = $this->totalStrength($defenders[$side] ?? []);
-            if ($defenseStrength > $attackStrength) {
+            $sideDefenders = $defenders[$side] ?? [];
+            $defenseStrength = $this->totalStrength($sideDefenders);
+            if (
+                ($defenseStrength > $attackStrength) ||
+                ($beer > 0 && array_any($sideDefenders, fn ($def) => $def->beerable()))
+            ) {
                 $out[] = $side;
             }
         }

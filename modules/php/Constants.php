@@ -239,6 +239,7 @@ const FINAL_ESCALADE_CARDS = [
 
 class PlayerAttackCard implements JsonSerializable {
     public function __construct(
+        /** This is actually the card_type field! */
         public string $id,
         public string $state,
         public int $position,
@@ -420,7 +421,7 @@ class CastleDefender {
             (int) $row["player_id"],
             AttackSide::from($row["side"]),
             $row["type"],
-            (boolean) $row["exhausted"],
+            (bool) $row["exhausted"],
         );
     }
 
@@ -430,5 +431,10 @@ class CastleDefender {
             "soldiers", "craftsmen", "tactics" => 1,
             "knights" => $this->exhausted ? 1 : 2,
         };
+    }
+
+    /** Returns whether this defender can be beered. */
+    public function beerable(): bool {
+        return (!$this->exhausted && in_array($this->type, ['soldiers', 'craftsmen']));
     }
 }
