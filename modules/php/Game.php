@@ -157,7 +157,7 @@ class Game extends \Bga\GameFramework\Table {
 
     /**
      * Returns all the player attack cards in the player's queue, in descending order
-     * (that is, first incoming attack first).
+     * (that is, first incoming attack first). Includes previously succeeded/failed attacks.
      * @param int $playerId
      * @return PlayerAttackCard[]
      */
@@ -183,9 +183,16 @@ class Game extends \Bga\GameFramework\Table {
         return array_values(array_map(fn ($atk) => PlayerAttackCard::fromCardArray($atk), $attacks));
     }
 
+    // Returns the next attack the player has to deal with (excluding previously
+    // succeeded/failed ones). Returns null if the player is done with attacks.
     public function nextPlayerAttack(int $playerId): ?PlayerAttackCard {
         $attacks = $this->playerAttacks($playerId);
-        return \count($attacks) > 0 ? $attacks[0] : null;
+        foreach ($attacks as $attack) {
+            if ($attack->state !== 'success' && $attack->state !== 'failed') {
+                return $attack;
+            }
+        }
+        return null;
     }
 
     private function makeCards(int $end, int $start = 1): array {

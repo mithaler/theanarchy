@@ -23,6 +23,7 @@ class AllocateDefenders extends GameState {
             descriptionMyTurn: clienttranslate('${you} must choose which defenders will take damage'),
             transitions: [
                 'attacksDone' => StateConstants::ATTACKS_DONE,
+                'muster' => StateConstants::MUSTER,
             ],
         );
     }
@@ -151,7 +152,9 @@ class AllocateDefenders extends GameState {
 
         // TODO: grant points!
         $this->notifyAttack($playerId, $succeeded, $exhaustedDefenders, $deadDefenders);
-        $this->game->gamestate->setPlayerNonMultiactive($playerId, 'attacksDone');
+
+        // loop back to Muster, which will decide at the start whether attacks are done
+        $this->game->gamestate->nextPrivateState($playerId, 'muster');
     }
 
     /**
