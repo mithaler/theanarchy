@@ -141,7 +141,15 @@ class AllocateDefenders extends GameState {
             ));
         }
 
-        // TODO: mark success!
+        // mark the attack card success/failed in the table
+        Game::DbQuery(sprintf(
+            "UPDATE %s SET state = '%s' WHERE card_id = %s",
+            $attack->card->finalEscalade ? 'final_escalade_card' : 'attack_card',
+            $succeeded ? 'success' : 'failed',
+            $attack->id,
+        ));
+
+        // TODO: grant points!
         $this->notifyAttack($playerId, $succeeded, $exhaustedDefenders, $deadDefenders);
         $this->game->gamestate->setPlayerNonMultiactive($playerId, 'attacksDone');
     }

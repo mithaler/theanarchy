@@ -172,9 +172,11 @@ class AttackCard {
     /**
      * @param ?Tactic $tactic The allowed tactic, if any.
      * @param array<string, AttackSide[]> $attacks The attacks incoming ("A" => AttackSide::TOP).
-     * @param Defense Allowed defense. (Walls and towers are implicit from oncoming attacks.)
+     * @param Defense $defense Allowed defense. (Walls and towers are implicit from oncoming attacks.)
      * @param int $back The card ID of the back of this card, to hide which attack it is when face down.
      * @param bool $strong Whether this is a fierce attack.
+     * @param bool $defenderWorkers Whether this attack allows defender workers.
+     * @param bool $finalEscalade Whether this is a Final Escalade card.
      */
     public function __construct(
         public ?Tactic $tactic,
@@ -183,6 +185,7 @@ class AttackCard {
         public int $back,
         public bool $strong = false,
         public bool $defenderWorkers = true,
+        public bool $finalEscalade = false,
     ) {}
 }
 
@@ -226,12 +229,12 @@ const ATTACK_CARDS = [
 ];
 
 const FINAL_ESCALADE_CARDS = [
-    37 => new AttackCard(Tactic::ROCKS, ["A" => [AttackSide::LEFT, AttackSide::BOTTOM]], Defense::WALLS, 37),
-    38 => new AttackCard(Tactic::ROCKS, ["A" => [AttackSide::RIGHT, AttackSide::BOTTOM]], Defense::WALLS, 37),
-    39 => new AttackCard(Tactic::ROCKS, ["A" => [AttackSide::TOP, AttackSide::BOTTOM]], Defense::WALLS, 37),
-    40 => new AttackCard(Tactic::ROCKS, ["A" => [AttackSide::TOP, AttackSide::RIGHT]], Defense::WALLS, 37),
-    41 => new AttackCard(Tactic::ROCKS, ["A" => [AttackSide::TOP, AttackSide::LEFT]], Defense::WALLS, 37),
-    42 => new AttackCard(Tactic::ROCKS, ["A" => [AttackSide::RIGHT, AttackSide::LEFT]], Defense::WALLS, 37),
+    37 => new AttackCard(Tactic::ROCKS, ["A" => [AttackSide::LEFT, AttackSide::BOTTOM]], Defense::WALLS, 37, finalEscalade: true),
+    38 => new AttackCard(Tactic::ROCKS, ["A" => [AttackSide::RIGHT, AttackSide::BOTTOM]], Defense::WALLS, 37, finalEscalade: true),
+    39 => new AttackCard(Tactic::ROCKS, ["A" => [AttackSide::TOP, AttackSide::BOTTOM]], Defense::WALLS, 37, finalEscalade: true),
+    40 => new AttackCard(Tactic::ROCKS, ["A" => [AttackSide::TOP, AttackSide::RIGHT]], Defense::WALLS, 37, finalEscalade: true),
+    41 => new AttackCard(Tactic::ROCKS, ["A" => [AttackSide::TOP, AttackSide::LEFT]], Defense::WALLS, 37, finalEscalade: true),
+    42 => new AttackCard(Tactic::ROCKS, ["A" => [AttackSide::RIGHT, AttackSide::LEFT]], Defense::WALLS, 37, finalEscalade: true),
 ];
 
 class PlayerAttackCard implements JsonSerializable {
