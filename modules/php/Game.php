@@ -384,7 +384,7 @@ class Game extends \Bga\GameFramework\Table {
             return $items;
         }, []);
 
-        Reward::resources("DEBUG", 0, $resources)->grant($this, (int) $this->getCurrentPlayerId());
+        Reward::resources("DEBUG", 0, $resources, false)->grant($this, (int) $this->getCurrentPlayerId());
         $currPlayerId = (int) $this->getCurrentPlayerId();
         $newAllCheckedBoxes = $this->allCheckedBoxes($currPlayerId);
         $this->notifyNewAvailable($currPlayerId, $this->getAvailableBoxes($currPlayerId, $newAllCheckedBoxes));

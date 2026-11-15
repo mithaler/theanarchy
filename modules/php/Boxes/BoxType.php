@@ -43,8 +43,10 @@ class Box {
 
 class Reward {
 
+    public ?string $id;
     public string $fromSection;
     public int $fromId;
+    public bool $undoable;
 
     /**
      * @var array<string, int>
@@ -61,9 +63,11 @@ class Reward {
         int $fromId,
         array $resources,
         array $boxesToCheck,
+        bool $undoable = true,
     ) {
         $this->fromSection = $fromSection;
         $this->fromId = $fromId;
+        $this->undoable = $undoable;
 
         /*
             this can be either:
@@ -105,37 +109,41 @@ class Reward {
         }
     }
 
-    public static function resources(string $fromSection, int $fromId, array $resources): Reward {
-        return new Reward($fromSection, $fromId, $resources, []);
+    public static function resources(string $fromSection, int $fromId, array $resources, bool $undoable = true): Reward {
+        return new Reward($fromSection, $fromId, $resources, [], $undoable);
     }
 
-    public static function boxes(string $fromSection, int $fromId, array $boxes): Reward {
-        return new Reward($fromSection, $fromId, [], $boxes);
+    public static function boxes(string $fromSection, int $fromId, array $boxes, bool $undoable = true): Reward {
+        return new Reward($fromSection, $fromId, [], $boxes, $undoable);
     }
 
-    public static function none(string $fromSection, int $fromId): Reward {
-        return new Reward($fromSection, $fromId, [], []);
+    public static function none(string $fromSection, int $fromId, bool $undoable = true): Reward {
+        return new Reward($fromSection, $fromId, [], [], $undoable);
     }
 
     /**
      * Gives the player the reward (if there is one), and notifies the frontend.
+     * Must be called AFTER boxes are written to checked_box, or the reward won't be
+     * associated with boxes correctly.
      */
-    public function grant(Game $game, int $playerId) {
+    public function grant(Game $game, int $playerId, ?int $parentRewardId = null) {
         if ($this->resources) {
             foreach ($this->resources as $resource => $count) {
                 $game->resources(Resource::from($resource))->inc($playerId, $count);
             }
         }
 
+        $rewardId = $this->writeToDb($game, $parentRewardId);
+
         // notify this happened
         $this->notify($game, $playerId);
 
         if ($this->boxes) {
-            foreach ($this->boxes as $box => $ids) {
+            foreach ($this->boxes as $box => $boxIds) {
                 $subrewards = [];
-                if (\is_array($ids)) {
-                    foreach ($ids as $id) {
-                        $subr = SECTIONS[$box]->check($game, $playerId, $id, false);
+                if (\is_array($boxIds)) {
+                    foreach ($boxIds as $boxId) {
+                        $subr = SECTIONS[$box]->check($game, $playerId, $boxId, false);
                         if ($subr !== null) {
                             $subrewards[] = $subr;
                         }
@@ -148,10 +156,49 @@ class Reward {
                 }
                 $this->boxes[$box] = $subrewards;
                 foreach ($subrewards as $subreward) {
-                    $subreward->grant($game, $playerId);
+                    $subreward->grant($game, $playerId, $rewardId);
                 }
             }
         }
+    }
+
+    /**
+     * Writes this Reward and its resources to the DB, and returns its ID.
+     * The returned ID is meant to be used during box checking so the checked_box
+     * table keeps a record of what Reward checked it.
+     * Does not write subrewards; that's are done by recursive logic that calls this.
+     */
+    private function writeToDb(Game $game, ?int $parentRewardId): int {
+        // insert the Reward and get its ID
+        $game->DbQuery(sprintf(
+            "INSERT INTO reward (player_id, undoable, parent_reward_id, move_id) VALUES (%s, %s, %s, %s)",
+            $game->getCurrentPlayerId(),
+            $this->undoable,
+            $parentRewardId ?? 'null',
+            $parentRewardId === null ? $game->bga->logs->getCurrentMoveId() : 'null',
+        ));
+        $rewardId = $game->DbGetLastId();
+
+        // update the checked_box entry with this reward ID now that we have it
+        $game->DbQuery(
+            "UPDATE checked_box
+            SET reward_id = $rewardId
+            WHERE box_id = $this->fromId AND section = '$this->fromSection'"
+        );
+
+        // write out the resource rewards
+        if (count($this->resources) > 0) {
+            $values = [];
+            foreach ($this->resources as $resource => $count) {
+                $values[] = ("($rewardId, '$resource', $count)");
+            }
+            $game->DbQuery(
+                "INSERT INTO reward_resource (reward_id, resource, count) VALUES " .
+                implode(',', $values)
+            );
+        }
+
+        return $rewardId;
     }
 
     private function notify(Game $game, int $playerId) {

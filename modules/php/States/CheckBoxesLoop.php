@@ -6,7 +6,9 @@ require_once(__DIR__ . "/../Boxes/Sections.php");
 require_once(__DIR__ . "/../Constants.php");
 
 use Bga\GameFramework\StateType;
+use Bga\GameFramework\Actions\CheckAction;
 use Bga\GameFramework\States\GameState;
+use Bga\GameFramework\States\PossibleAction;
 
 use Bga\Games\theanarchy\Game;
 use BGA\Games\theanarchy\StateConstants;
@@ -34,5 +36,12 @@ class CheckBoxesLoop extends GameState {
     function onEnteringState() {
         $this->gamestate->setAllPlayersMultiactive();
         $this->gamestate->initializePrivateStateForAllActivePlayers();
+    }
+
+    #[PossibleAction]
+    #[CheckAction(false)]
+    function actUndoDone(int $currentPlayerId) {
+        $this->gamestate->setPlayersMultiactive([$currentPlayerId], "");
+        $this->gamestate->initializePrivateState($currentPlayerId);
     }
 }

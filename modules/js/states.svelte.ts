@@ -87,6 +87,25 @@ export class CheckBoxes extends State<CheckBoxesArgs> {
   }
 }
 
+export class CheckBoxesLoop extends State<object> {
+  onPlayerActivationChange(args: object, isCurrentPlayerActive: boolean) {
+    if (
+      !isCurrentPlayerActive &&
+      !this.bga.players.isCurrentPlayerSpectator()
+    ) {
+      this.bga.statusBar.addActionButton(
+        _("Resume"),
+        () => {
+          this.bga.actions.performAction("actUndoDone", null, {
+            checkAction: false,
+          });
+        },
+        { color: "secondary" },
+      );
+    }
+  }
+}
+
 export interface StValentinesFestivalArgs {
   availableBoxes: { female?: number[]; male?: number[] };
 }

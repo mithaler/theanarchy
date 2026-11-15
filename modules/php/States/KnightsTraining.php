@@ -37,9 +37,9 @@ class KnightsTraining extends GameState {
     ) {
         // use a reward for this, even though we don't know (or care) what box ID it came from?
         if ($choice == "soldiers") {
-            $reward = Reward::resources("KNIGHTS TRAINING", 0, [Resource::SOLDIERS]);
+            $reward = Reward::resources("KNIGHTS TRAINING", 0, [Resource::SOLDIERS], false);
         } else if ($choice == "KNIGHTS") {
-            $reward = Reward::boxes("KNIGHTS TRAINING", 0, ["KNIGHTS"]);
+            $reward = Reward::boxes("KNIGHTS TRAINING", 0, ["KNIGHTS"], false);
         }
 
         // we don't need the other parts of checking a box

@@ -17,7 +17,7 @@
 
 -- Boxes checked by players
 CREATE TABLE IF NOT EXISTS checked_box (
-    -- The player who checked the box
+    -- The player who checked the box.
     player_id INT NOT NULL,
 
     -- The section the box is in. Always matches the row name as it appears on the sheet exactly,
@@ -32,6 +32,10 @@ CREATE TABLE IF NOT EXISTS checked_box (
     -- For cases where a number is written in the box, NULL if not needed.
     -- This is used for Michaelmas, and bubbles that get circled and then filled (Tactics).
     written_value TINYINT,
+
+    -- The ID of the reward this box was checked by.
+    -- Null if the box wasn't checked via a reward (such as initial state, or during attacks).
+    reward_id INT,
 
     PRIMARY KEY (player_id, section, box_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -95,4 +99,22 @@ CREATE TABLE IF NOT EXISTS path_card (
     `card_location` VARCHAR(40) NOT NULL,
     `card_location_arg` INT NOT NULL,
     PRIMARY KEY (`card_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS reward (
+    `id` INT unsigned NOT NULL AUTO_INCREMENT,
+    `player_id` INT unsigned NOT NULL,
+    `undoable` BOOLEAN NOT NULL DEFAULT true,
+    `parent_reward_id` INT unsigned,
+    `move_id` INT,
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS reward_resource (
+    `id` INT unsigned NOT NULL AUTO_INCREMENT,
+    `reward_id` INT unsigned NOT NULL,
+    `resource` VARCHAR(20) NOT NULL,
+    `count` INT NOT NULL DEFAULT 1,
+    CONSTRAINT fk_reward FOREIGN KEY (`reward_id`) REFERENCES reward(`id`),
+    PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

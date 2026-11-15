@@ -35,7 +35,7 @@ class AttacksDone extends GameState {
             // transform remaining defenders into serfs at 3:1 strength:serfs
             $defenders = $this->game->getCastleDefenders($playerId);
             $totalStrength = $this->game->totalStrength(array_merge([], ...array_values($defenders)));
-            $serfs = $totalStrength / 3;
+            $serfs = floor($totalStrength / 3);
             if ($serfs > 0) {
                 $this->game->resources(Resource::SERFS)->inc($playerId, $serfs);
                 $this->game->notify->all(
