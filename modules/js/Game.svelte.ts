@@ -26,6 +26,7 @@ import { ctx, getPlayer } from "./context.svelte";
 import {
   Brewhouse,
   CheckBoxes,
+  CheckBoxesLoop,
   StValentinesFestival,
   KnightsTraining,
   type StValentinesFestivalArgs,
@@ -66,6 +67,7 @@ export class Game {
     const states: [string, State<unknown>][] = [
       ["ChoosePathCards", new ChoosePathCards(this, bga)],
       ["CheckBoxes", new CheckBoxes(this, bga)],
+      ["CheckBoxesLoop", new CheckBoxesLoop(this, bga)],
       ["KnightsTraining", new KnightsTraining(this, bga)],
       ["StValentinesFestival", new StValentinesFestival(this, bga)],
       ["Brewhouse", new Brewhouse(this, bga)],
