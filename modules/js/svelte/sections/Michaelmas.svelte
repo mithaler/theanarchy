@@ -5,25 +5,12 @@
     addCancelButton,
     ids,
     multiResourceChoice,
+    restoreCheckBoxesPrivateState,
+    setCheckBoxesClientState,
     type SectionProps,
   } from "./utils.svelte";
   const { isMe, checkedBoxes, availableBoxes }: SectionProps = $props();
   const choiceCounts: number[] = [1, 1, 3, 3, 2, 1, 1, 2, 3];
-
-  /**
-   * This works around a bug in BGA's framework: when using client states, restoreServerGameState()
-   * doesn't work correctly: it restores the _main_ state, not the _private_ state, which breaks the
-   * UI. We have to detect this case and work around it by entering a client state that looks like
-   * it. I hate this.
-   */
-  function restoreFakeMichaelmasState() {
-    const bga = getBga();
-    if (bga.states.getCurrentPlayerStateName() === "Michaelmas") {
-      bga.states.setClientState("fakeMichaelmas", {
-        descriptionmyturn: _("${you} must fill in Michaelmas numbers"),
-      });
-    }
-  }
 
   const advanceToResourceChoice = $derived(
     async (boxId: number, num: string, doCheck: ChoiceFunc) => {
@@ -34,15 +21,13 @@
       if (checkedBoxes.includes(otherId)) {
         const count = choiceCounts[setIdx];
         // we just completed a set, so we need resource choices from the player
-        multiResourceChoice(
-          count,
-          (choices) => doCheck(`${num},${choices.join(",")}`),
-          restoreFakeMichaelmasState,
+        multiResourceChoice(count, (choices) =>
+          doCheck(`${num},${choices.join(",")}`),
         );
       } else {
         // we didn't just complete a set; just write the number
         await doCheck(num);
-        restoreFakeMichaelmasState();
+        restoreCheckBoxesPrivateState(getBga());
       }
     },
   );
@@ -64,7 +49,7 @@
       );
       if (possibleNums.length > 1) {
         const bga = getBga();
-        bga.states.setClientState("basicChoice", {
+        setCheckBoxesClientState("basicChoice", {
           descriptionmyturn: _("${you} must choose which number to write"),
         });
         possibleNums.forEach((choice) => {
@@ -72,7 +57,7 @@
             advanceToResourceChoice(boxId, choice, doCheck);
           });
         });
-        addCancelButton(bga, restoreFakeMichaelmasState);
+        addCancelButton(bga);
       } else {
         // there's only one number choice, just use it
         advanceToResourceChoice(boxId, possibleNums[0], doCheck);

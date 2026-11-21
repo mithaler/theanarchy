@@ -11,6 +11,7 @@
   import CastleWorkers from "./CastleWorkers.svelte";
   import type { ChoiceFunc } from "./Checkbox.svelte";
   import type { PlayerBoardProps } from "./PlayerArea.svelte";
+  import { restoreCheckBoxesPrivateState } from "./sections/utils.svelte";
   interface Props extends PlayerBoardProps {
     mode: CastleMode;
   }
@@ -41,7 +42,7 @@
         return;
       }
       await choiceFunc(choice);
-      getBga().states.restoreServerGameState();
+      restoreCheckBoxesPrivateState(getBga());
       castleState.towerChoiceFunc = undefined;
       castleState.wallChoiceFunc = undefined;
     };

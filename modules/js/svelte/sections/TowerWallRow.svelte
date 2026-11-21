@@ -2,7 +2,12 @@
   import { getBga } from "../../context.svelte";
   import { castleState } from "../Castle.svelte";
   import Checkbox, { getState, type ChoiceFunc } from "../Checkbox.svelte";
-  import { addCancelButton, ids, type SectionProps } from "./utils.svelte";
+  import {
+    addCancelButton,
+    ids,
+    setCheckBoxesClientState,
+    type SectionProps,
+  } from "./utils.svelte";
 
   interface Props extends SectionProps {
     section: "WALL" | "TOWER";
@@ -15,7 +20,7 @@
       section === "WALL"
         ? "${you} must select a wall to build"
         : "${you} must select a tower to build";
-    bga.states.setClientState("fortChoice", { descriptionmyturn });
+    setCheckBoxesClientState("fortChoice", { descriptionmyturn });
 
     const prop: keyof typeof castleState =
       section === "WALL" ? "wallChoiceFunc" : "towerChoiceFunc";

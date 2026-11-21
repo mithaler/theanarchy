@@ -1,5 +1,6 @@
 import {
   ctx,
+  getBga,
   performAction,
   type AnarchyBga,
   type Attack,
@@ -20,6 +21,7 @@ import { state as pathCardState } from "./svelte/PathCardSelector.svelte";
 export abstract class State<ArgType> {
   game: Game;
   bga: AnarchyBga;
+  args!: ArgType;
 
   /* eslint-disable @typescript-eslint/no-unused-vars */
   onEnteringState(args: ArgType, isCurrentPlayerActive: boolean): void {}
@@ -67,13 +69,12 @@ export class CheckBoxes extends State<CheckBoxesArgs> {
   undoUpdater?: () => void;
 
   onEnteringState(args: CheckBoxesArgs, isCurrentPlayerActive: boolean) {
+    const playerId = this.bga.players?.getCurrentPlayerId();
     if (!ctx.state.availableBoxes) {
-      ctx.state.availableBoxes =
-        args.availableBoxes[this.bga.players.getCurrentPlayerId()];
+      ctx.state.availableBoxes = args.availableBoxes[playerId];
     }
     if (!ctx.state.availableWalls) {
-      ctx.state.availableWalls =
-        args.availableWalls[this.bga.players.getCurrentPlayerId()];
+      ctx.state.availableWalls = args.availableWalls[playerId];
     }
     ctx.state.canUndo = args.canUndo;
     this.bga.statusBar.addActionButton(

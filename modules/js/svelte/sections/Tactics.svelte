@@ -7,14 +7,19 @@
   } from "../../context.svelte";
   import Checkbox, { getState, type ChoiceFunc } from "../Checkbox.svelte";
   import { tacticChoice, TACTICS } from "./TacticsUse.svelte";
-  import { addCancelButton, ids, type SectionProps } from "./utils.svelte";
+  import {
+    addCancelButton,
+    ids,
+    setCheckBoxesClientState,
+    type SectionProps,
+  } from "./utils.svelte";
 
   const { availableBoxes, checkedBoxes, isMe }: SectionProps = $props();
 
   const click = $derived((doCheck: ChoiceFunc) => {
     const bga = getBga();
     const player = ctx.data!.players[bga.players.getCurrentPlayerId()]!;
-    bga.states.setClientState("basicChoice", {
+    setCheckBoxesClientState("basicChoice", {
       descriptionmyturn: _("${you} must decide what to pay"),
     });
 
@@ -34,7 +39,7 @@
       });
       ctx.state.availableBoxes = newAvailBoxes;
 
-      bga.states.setClientState("chooseTactics", {
+      setCheckBoxesClientState("chooseTactics", {
         descriptionmyturn: _("${you} must choose a tactic to unlock"),
       });
       addCancelButton(bga, () => {

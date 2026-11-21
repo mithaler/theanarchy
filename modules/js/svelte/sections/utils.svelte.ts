@@ -8,6 +8,7 @@ import {
 } from "../../context.svelte";
 import type { ChoiceFunc } from "../Checkbox.svelte";
 import ResourceChooser, { type Values } from "../ResourceChooser.svelte";
+import { CheckBoxes } from "../../states.svelte";
 
 export interface SectionProps {
   isMe: boolean;
@@ -27,11 +28,36 @@ export function sectionProps(
   };
 }
 
+/**
+ * The BGA's basic setClientState does not correctly leave private states.
+ * Whenever I do it, it's always out of CheckBoxes, so do it correctly.
+ */
+export function setCheckBoxesClientState(name: string, args: object) {
+  const bga = getBga();
+  const state = bga.states.getCurrentPlayerStateClass();
+  if (state instanceof CheckBoxes) {
+    state.onLeavingState();
+  }
+  bga.states.setClientState(name, args);
+}
+
+/**
+ * The BGA's basic restoreServerGameState does not correctly restore private states.
+ * Whenever I do it, it's always into CheckBoxes, so do it correctly.
+ */
+export function restoreCheckBoxesPrivateState(bga: AnarchyBga) {
+  bga.states.restoreServerGameState();
+  const state = bga.states.getCurrentPlayerStateClass();
+  if (state instanceof CheckBoxes) {
+    state.onEnteringState(state.args, true);
+  }
+}
+
 export function addCancelButton(bga: AnarchyBga, addlCleanup?: () => void) {
   bga.statusBar.addActionButton(
     _("Cancel"),
     () => {
-      bga.states.restoreServerGameState();
+      restoreCheckBoxesPrivateState(bga);
       if (addlCleanup) {
         addlCleanup();
       }
@@ -46,13 +72,13 @@ export function basicChoice(
 ): (doCheck: ChoiceFunc) => void {
   return (doCheck: ChoiceFunc) => {
     const bga = getBga();
-    bga.states.setClientState("basicChoice", {
+    setCheckBoxesClientState("basicChoice", {
       descriptionmyturn: question,
     });
     choices.forEach((choice) => {
       bga.statusBar.addActionButton(choice, async () => {
         await doCheck(choice);
-        bga.states.restoreServerGameState();
+        restoreCheckBoxesPrivateState(bga);
       });
     });
     addCancelButton(bga);
@@ -63,10 +89,9 @@ export function basicChoice(
 export async function multiResourceChoice(
   count: number,
   callback: (choices: string[]) => Promise<void>,
-  onCancel?: () => void,
 ) {
   const bga = getBga();
-  bga.states.setClientState("multiResourceChoice", {
+  setCheckBoxesClientState("multiResourceChoice", {
     descriptionMyTurn: _("${you} must choose ${count} resources"),
     args: { count },
   });
@@ -80,6 +105,7 @@ export async function multiResourceChoice(
       }
     });
     await callback(choices);
+    restoreCheckBoxesPrivateState(bga);
   });
 
   const statusBar = document.getElementById("maintitlebar_content")!;
@@ -96,7 +122,7 @@ export async function multiResourceChoice(
   addCancelButton(bga, () => {
     unmount(chooser, { outro: true }).then(() => {
       document.getElementById("resource-chooser")?.remove();
-      if (onCancel) onCancel();
+      restoreCheckBoxesPrivateState(bga);
     });
   });
 }
