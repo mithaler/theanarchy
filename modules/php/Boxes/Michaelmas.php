@@ -135,7 +135,7 @@ class Michaelmas extends BoxType {
                 $game->domainCards->moveAllCardsInLocation("{$playerId}_hand", "{$playerId}_discard");
             }
 
-            $reward = Reward::none("MICHAELMAS", $boxId);
+            $reward = Reward::none("MICHAELMAS", $boxId, false);
             return $this->checkAndPay($game, $playerId, $boxId, $pay, [Resource::SERFS], $reward);
         } else if ($boxId > 6 && $choice !== null) {
             $choices = \explode(",", $choice);
@@ -193,10 +193,10 @@ class Michaelmas extends BoxType {
                         $resourceRewards[$res->value] = 1;
                     }
                 }
-                $reward = new Reward($this->name, $boxId, $resourceRewards, $nonChoiceRewards);
+                $reward = new Reward($this->name, $boxId, $resourceRewards, $nonChoiceRewards, false);
             } else {
                 // we didn't complete a set
-                $reward = Reward::none($this->name, $boxId);
+                $reward = Reward::none($this->name, $boxId, false);
 
                 // notify new available, only if we haven't switched states
                 if ($game->gamestate->getCurrentStateId($playerId) == StateConstants::MICHAELMAS) {

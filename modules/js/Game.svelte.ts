@@ -219,4 +219,18 @@ export class Game {
   }) {
     getPlayer(args.player_id).attackCards = args.cards;
   }
+
+  async notif_uncheckBox(args: {
+    player_id: number;
+    boxSection: string;
+    boxId: number;
+  }) {
+    const checked = getPlayer(args.player_id).checkedBoxes[args.boxSection];
+    const idx = checked.indexOf(args.boxId);
+    checked.splice(idx, 1);
+  }
+
+  async notif_undo(args: { canUndo: boolean }) {
+    ctx.state.canUndo = args.canUndo;
+  }
 }

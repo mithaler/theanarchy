@@ -44,6 +44,7 @@ class Box {
 class Reward {
 
     private ?int $id;
+    private ?int $moveId;
     public string $fromSection;
     public int $fromId;
     public bool $undoable;
@@ -205,15 +206,19 @@ class Reward {
         $rewardId = (int) $data['id'];
         $box = $allBoxes[$rewardId];
         $resourceSet = $allResources[$rewardId] ?? [];
-        $resources = \count($resourceSet) > 0 ? array_reduce(
-            array_map(
-                null,
-                explode(',', $resourceSet['resources']),
-                explode(',', $resourceSet['counts'])
-            ),
-            fn ($out, $item) => [...$out, $item[0] => $item[1]],
-            [],
-        ) : [];
+        if (\count($resourceSet) > 0) {
+            $resources = array_reduce(
+                array_map(
+                    null,
+                    explode(',', $resourceSet['resources']),
+                    explode(',', $resourceSet['counts'])
+                ),
+                fn ($out, $item) => [...$out, $item[0] => $item[1]],
+                [],
+            );
+        } else {
+            $resources = [];
+        }
 
         $out = new Reward(
             $box['section'],
@@ -223,6 +228,7 @@ class Reward {
             $data['undoable'] === '1' ? true : false
         );
         $out->id = $rewardId;
+        $out->moveId = $data['move_id'] !== null ? (int) ($data['move_id']) : null;
         return $out;
     }
 
@@ -327,6 +333,37 @@ class Reward {
                 "canUndo" => $topLevel ? $this->undoable : null,
             ]);
         }
+    }
+
+    public function undo(Game $game, int $playerId) {
+        // update gamelog first (so notifs of check removals don't disappear)
+        // only the top-level one has a moveId so this doesn't fire recursively
+        if ($this->moveId) {
+            $game->bga->logs->remove($this->moveId);
+        }
+
+        // recursively unwind subrewards
+        foreach ($this->boxes as $subrewards) {
+            foreach ($subrewards as $subreward) {
+                $subreward->undo($game, $playerId);
+            }
+        }
+
+        // resources go back down
+        foreach ($this->resources as $resourceName => $count) {
+            $game->resources($resourceName)->inc($playerId, -$count);
+        }
+
+        // delete checked box, the reward resources, and the reward itself
+        Game::DbQuery("DELETE FROM checked_box WHERE reward_id = $this->id");
+        Game::DbQuery("DELETE FROM reward_resource WHERE reward_id = $this->id");
+        Game::DbQuery("DELETE FROM reward WHERE id = $this->id");
+
+        $game->notify->all('uncheckBox', '', [
+            ...$game->playerNotifArgs($playerId),
+            'boxSection' => $this->fromSection,
+            'boxId' => $this->fromId,
+        ]);
     }
 }
 

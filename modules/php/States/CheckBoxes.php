@@ -87,6 +87,23 @@ class CheckBoxes extends GameState {
     }
 
     #[PossibleAction]
+    function actUndo(int $currentPlayerId) {
+        $lastReward = Reward::latestFromPlayer($currentPlayerId);
+        if (!$lastReward->undoable) {
+            throw new UserException("Your last checked box was not undoable");
+        }
+        $lastReward->undo($this->game, $currentPlayerId);
+
+        // after that, check if undoing is still possible
+        $newLastReward = Reward::latestFromPlayer($currentPlayerId);
+        $this->game->notify->all(
+            'undo',
+            clienttranslate('${player_name} undoes his last box'),
+            [...$this->game->playerNotifArgs($currentPlayerId), 'canUndo' => $newLastReward->undoable],
+        );
+    }
+
+    #[PossibleAction]
     function actPass(int $currentPlayerId) {
         $this->game->gamestate->nextPrivateState($currentPlayerId, "done");
     }
