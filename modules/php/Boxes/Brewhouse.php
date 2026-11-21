@@ -134,9 +134,9 @@ class Brewhouse extends BoxType {
         // OK now we actually need a reward
         $beers = $this->setsCompleted($playerId, $boxId, $currBoxes);
         if ($beers > 0) {
-            $reward = Reward::resources("BREWHOUSE", $boxId, [Resource::BEER->value => $beers], false);
+            $reward = Reward::resources("BREWHOUSE", $boxId, [Resource::BEER->value => $beers], undoable: false);
         } else {
-            $reward = Reward::none("BREWHOUSE", $boxId, false);
+            $reward = Reward::none("BREWHOUSE", $boxId, undoable: false);
         }
 
         // discard a card of the type and check if we need to stay in this state

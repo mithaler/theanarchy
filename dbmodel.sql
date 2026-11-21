@@ -110,6 +110,7 @@ CREATE TABLE IF NOT EXISTS reward (
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- Represents either a gain (positive count) or a cost of the box (negative count).
 CREATE TABLE IF NOT EXISTS reward_resource (
     `id` INT unsigned NOT NULL AUTO_INCREMENT,
     `reward_id` INT unsigned NOT NULL,

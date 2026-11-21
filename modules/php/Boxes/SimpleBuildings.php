@@ -38,18 +38,18 @@ class Keep extends SimpleBuilding {
         return [];
     }
 
-    private function materialReward(int $boxId, string $choice): Reward {
+    private function materialReward(int $boxId, string $choice, array $cost): Reward {
         if (!\in_array($choice, ["food", "silver", "materials"])) {
             throw new UserException("Invalid reward");
         }
-        return Reward::resources($this->name, $boxId, [$choice => 1]);
+        return Reward::resources($this->name, $boxId, [$choice => 1], $cost);
     }
 
-    private function fourReward(string $choice): Reward {
+    private function fourReward(string $choice, array $cost): Reward {
         if (!\in_array($choice, ["WARCRAFT", "WORSHIP", "ENTERTAINMENT"])) {
             throw new UserException("Invalid reward");
         }
-        return Reward::boxes($this->name, 4, [$choice, "INFLUENCE"]);
+        return Reward::boxes($this->name, 4, [$choice, "INFLUENCE"], $cost);
     }
 
     public function check(Game $game, int $playerId, ?int $boxId = null, bool $pay = true, ?string $choice = null): Reward {
@@ -58,12 +58,12 @@ class Keep extends SimpleBuilding {
             : [Resource::PATRONS];
 
         $reward = match ($boxId) {
-            1, 5, 9 => Reward::boxes($this->name, $boxId, ["INFLUENCE"]),
-            2, 6, 10 => Reward::resources($this->name, $boxId, [Resource::KNIGHTS]),
-            3, 7, 11 => $this->materialReward($boxId, $choice),
-            4 => $this->fourReward($choice),
-            8 => Reward::boxes($this->name, $boxId, ["WORSHIP", "ENTERTAINMENT", "INFLUENCE"]),
-            12 => Reward::boxes($this->name, $boxId, ["WARCRAFT", "WORSHIP", "ENTERTAINMENT", "INFLUENCE"]),
+            1, 5, 9 => Reward::boxes($this->name, $boxId, ["INFLUENCE"], $cost),
+            2, 6, 10 => Reward::resources($this->name, $boxId, [Resource::KNIGHTS], $cost),
+            3, 7, 11 => $this->materialReward($boxId, $choice, $cost),
+            4 => $this->fourReward($choice, $cost),
+            8 => Reward::boxes($this->name, $boxId, ["WORSHIP", "ENTERTAINMENT", "INFLUENCE"], $cost),
+            12 => Reward::boxes($this->name, $boxId, ["WARCRAFT", "WORSHIP", "ENTERTAINMENT", "INFLUENCE"], $cost),
         };
         return $this->checkAndPay($game, $playerId, $boxId, $pay, $cost, $reward);
     }
@@ -100,8 +100,8 @@ class Mint extends SimpleBuilding {
             : [Resource::SERFS];
 
         $reward = match ($boxId) {
-            1, 2, 4, 5, 7, 8 => Reward::none($this->name, $boxId),
-            3, 6, 9 => new Reward($this->name, $boxId, [Resource::SILVER], ["SILVER", "INFLUENCE"]),
+            1, 2, 4, 5, 7, 8 => Reward::none($this->name, $boxId, $cost),
+            3, 6, 9 => new Reward($this->name, $boxId, [Resource::SILVER], ["SILVER", "INFLUENCE"], $cost),
         };
         return $this->checkAndPay($game, $playerId, $boxId, $pay, $cost, $reward);
     }
@@ -139,10 +139,10 @@ class Stables extends SimpleBuilding {
 
         $cost = $building ? [Resource::CRAFTSMEN, Resource::MATERIALS] : [Resource::from($choice)];
         $reward = match ($boxId) {
-            1, 5 => Reward::boxes($this->name, $boxId, ["INFLUENCE"]),
-            2, 6 => Reward::resources($this->name, $boxId, [Resource::FOOD]),
-            3, 7 => Reward::resources($this->name, $boxId, [Resource::SILVER]),
-            4, 8 => Reward::resources($this->name, $boxId, [Resource::KNIGHTS]),
+            1, 5 => Reward::boxes($this->name, $boxId, ["INFLUENCE"], $cost),
+            2, 6 => Reward::resources($this->name, $boxId, [Resource::FOOD], $cost),
+            3, 7 => Reward::resources($this->name, $boxId, [Resource::SILVER], $cost),
+            4, 8 => Reward::resources($this->name, $boxId, [Resource::KNIGHTS], $cost),
         };
         return $this->checkAndPay($game, $playerId, $boxId, $pay, $cost, $reward);
     }

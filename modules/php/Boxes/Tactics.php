@@ -45,7 +45,7 @@ class Tactics extends BoxType {
             throw new UserException("You already have that tactic");
         }
 
-        $reward = Reward::boxes($this->name, $boxId, [$choices[1]]);
+        $reward = Reward::boxes($this->name, $boxId, [$choices[1]], $cost);
         return $this->checkAndPay($game, $playerId, $boxId, true, $cost, $reward);
     }
 }
@@ -112,7 +112,7 @@ abstract class SpentTactic extends BoxType {
         if ($this->highestCheckedBox($playerId, $currBoxes, section: $this->availableTacticName) < $boxId) {
             throw new UserException("Tactic not available");
         }
-        $reward = Reward::none($this->name, $boxId);
+        $reward = Reward::none($this->name, $boxId, undoable: false);
         return $this->checkAndPay($game, $playerId, $boxId, false, [], $reward);
     }
 }

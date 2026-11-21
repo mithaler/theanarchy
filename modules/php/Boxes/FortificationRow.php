@@ -65,8 +65,8 @@ class Gate extends FortificationRow {
     protected int $largeCraneThreshold = 5;
     protected function reward(int $boxId): Reward {
         return match ($boxId) {
-            1, 3, 5 => Reward::resources("GATE", $boxId, [Resource::PATRONS, Resource::GATE]),
-            2, 4, 6 => new Reward("GATE", $boxId, [Resource::GATE], ["MIGHT"]),
+            1, 3, 5 => Reward::resources("GATE", $boxId, [Resource::PATRONS, Resource::GATE], $this->cost),
+            2, 4, 6 => new Reward("GATE", $boxId, [Resource::GATE], ["MIGHT"], $this->cost),
         };
     }
 }
@@ -80,9 +80,9 @@ class Tower extends FortificationRow {
     // excludes the tower part! must be added by the caller.
     protected function reward(int $boxId): Reward {
         return match ($boxId) {
-            1, 4, 5, 7 => Reward::resources("TOWER", $boxId, [Resource::PATRONS]),
-            3, 6, 8 => Reward::boxes("TOWER", $boxId, ["MIGHT"]),
-            default => Reward::none("TOWER", $boxId),
+            1, 4, 5, 7 => Reward::resources("TOWER", $boxId, [Resource::PATRONS], $this->cost),
+            3, 6, 8 => Reward::boxes("TOWER", $boxId, ["MIGHT"], $this->cost),
+            default => Reward::none("TOWER", $boxId, $this->cost),
         };
     }
 
@@ -111,9 +111,9 @@ class Wall extends FortificationRow {
     // excludes the wall part! must be added by the caller.
     protected function reward(int $boxId): Reward {
         return match ($boxId) {
-            1, 4, 7, 10, 12, 15 => Reward::resources("WALL", $boxId, [Resource::PATRONS]),
-            3, 6, 8, 11, 13, 16 => Reward::boxes("WALL", $boxId, ["MIGHT"]),
-            default => Reward::none("WALL", $boxId),
+            1, 4, 7, 10, 12, 15 => Reward::resources("WALL", $boxId, [Resource::PATRONS], $this->cost),
+            3, 6, 8, 11, 13, 16 => Reward::boxes("WALL", $boxId, ["MIGHT"], $this->cost),
+            default => Reward::none("WALL", $boxId, $this->cost),
         };
     }
 
@@ -163,9 +163,9 @@ class Moat extends FortificationRow {
 
     protected function reward(int $boxId): Reward {
         return match ($boxId) {
-            1, 3, 5, 7, 9, 11 => Reward::none("MOAT", $boxId),
-            2, 4, 8, 10 => Reward::resources("MOAT", $boxId, [Resource::MATERIALS, Resource::MOAT]),
-            6, 12 => new Reward("MOAT", $boxId, [Resource::MATERIALS, Resource::MOAT], ["MIGHT"]),
+            1, 3, 5, 7, 9, 11 => Reward::none("MOAT", $boxId, $this->cost),
+            2, 4, 8, 10 => Reward::resources("MOAT", $boxId, [Resource::MATERIALS, Resource::MOAT], $this->cost),
+            6, 12 => new Reward("MOAT", $boxId, [Resource::MATERIALS, Resource::MOAT], ["MIGHT"], $this->cost),
         };
     }
 

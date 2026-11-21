@@ -117,7 +117,7 @@ class Lammas extends BoxType {
             if (count($cards) > 0) {
                 $game->gamestate->nextPrivateState($playerId, "lammas");
             }
-            $reward = Reward::none(NAME, $boxId, false);
+            $reward = Reward::none(NAME, $boxId, undoable: false);
             return $this->checkAndPay($game, $playerId, $boxId, true, [Resource::SERFS], $reward);
 
         // filling in a flag
@@ -156,8 +156,8 @@ class Lammas extends BoxType {
 
             $game->dump("rb", $rewardBoxIds);
             $reward = count($rewardBoxIds) > 0 ?
-                Reward::boxes(LAMMAS_NAME, $boxId, [LAMMAS_NAME => $rewardBoxIds], false) :
-                Reward::none(LAMMAS_NAME, $boxId, false);
+                Reward::boxes(LAMMAS_NAME, $boxId, [LAMMAS_NAME => $rewardBoxIds], undoable: false) :
+                Reward::none(LAMMAS_NAME, $boxId, undoable: false);
             $out = $this->checkAndPay($game, $playerId, $boxId, false, [], $reward);
 
             if ($game->gamestate->getCurrentStateId($playerId) === StateConstants::LAMMAS) {

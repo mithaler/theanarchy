@@ -64,37 +64,38 @@ class Chapel extends BoxType {
         ));
     }
 
-    private function checkChapelComplete(int $playerId, int $boxId, array $currBoxes): Reward {
+    private function checkChapelComplete(int $playerId, int $boxId, array $currBoxes, array $cost): Reward {
         $chapelSet = match ($boxId) {
             2, 3, 4 => [2, 3, 4],
             7, 8, 9 => [7, 8, 9],
             12, 13, 14 => [12, 13, 14],
             default => throw new UserException("Chapel broken")
         };
-        if (array_all($chapelSet, fn ($chapelBox) => 
+        if (array_all($chapelSet, fn ($chapelBox) =>
             $chapelBox == $boxId ||
             $this->idFilled($playerId, $this->name, $chapelBox, $currBoxes)
         )) {
-            return Reward::boxes($this->name, $boxId, [$this->name => [$chapelSet[2] + 1]]);
+            return Reward::boxes($this->name, $boxId, [$this->name => [$chapelSet[2] + 1]], $cost);
         } else {
-            return Reward::none($this->name, $boxId);
+            return Reward::none($this->name, $boxId, $cost);
         }
     }
 
     public function check(Game $game, int $playerId, ?int $boxId = null, bool $pay = true, ?string $choice = null): Reward {
+        $cost = $this->cost($boxId);
         $reward = match ($boxId) {
-            1, 6, 11 => Reward::none($this->name, $boxId),
-            2, 3, 4, 7, 8, 9, 12, 13, 14 => $this->checkChapelComplete($playerId, $boxId, $game->allCheckedBoxes($playerId)),
-            5, 10, 15 => new Reward($this->name, $boxId, [Resource::PATRONS->value => 1], ["SILVER", "INFLUENCE"]),
+            1, 6, 11 => Reward::none($this->name, $boxId, $cost),
+            2, 3, 4, 7, 8, 9, 12, 13, 14 => $this->checkChapelComplete($playerId, $boxId, $game->allCheckedBoxes($playerId), $cost),
+            5, 10, 15 => new Reward($this->name, $boxId, [Resource::PATRONS->value => 1], ["SILVER", "INFLUENCE"], $cost),
         };
-        return $this->checkAndPay($game, $playerId, $boxId, $pay, $this->cost($boxId), $reward);
+        return $this->checkAndPay($game, $playerId, $boxId, $pay, $cost, $reward);
     }
 }
 
 class KnightsTraining extends BoxType {
     public string $name = "KNIGHTS TRAINING";
 
-    private const array WORSHIP_THRESHOLDS = [1 => 2, 2 => 4, 3 => 6, 4 => 7, 5 => 8, 6 => 9]; 
+    private const array WORSHIP_THRESHOLDS = [1 => 2, 2 => 4, 3 => 6, 4 => 7, 5 => 8, 6 => 9];
 
     public function validBoxes(Game $game, int $playerId, array $currBoxes): array {
         $highest = $this->highestCheckedBox($playerId, $currBoxes);
@@ -134,15 +135,15 @@ class KnightsTraining extends BoxType {
 
         $symbolCount = count($uniqSymbols);
         if ($symbolCount < 2) {
-            $reward = Reward::none($this->name, $boxId);
+            $reward = Reward::none($this->name, $boxId, undoable: false);
         } else if ($symbolCount == 2) {
-            $reward = Reward::resources($this->name, $boxId, [Resource::SOLDIERS]);
+            $reward = Reward::resources($this->name, $boxId, [Resource::SOLDIERS], undoable: false);
         } else if ($symbolCount == 3) {
             // no reward immediately; we have to change states to get a choice
-            $reward = Reward::none($this->name, $boxId);
+            $reward = Reward::none($this->name, $boxId, undoable: false);
             $game->gamestate->nextPrivateState($playerId, "knightstraining");
         } else if ($symbolCount == 4) {
-            $reward = new Reward($this->name, $boxId, [Resource::SOLDIERS->value => 1], ["KNIGHTS", "MIGHT"]);
+            $reward = new Reward($this->name, $boxId, [Resource::SOLDIERS->value => 1], ["KNIGHTS", "MIGHT"], undoable: false);
         }
         return $this->checkAndPay($game, $playerId, $boxId, $pay, [Resource::PATRONS], $reward);
     }

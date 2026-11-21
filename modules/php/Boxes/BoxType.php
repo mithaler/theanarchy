@@ -55,6 +55,14 @@ class Reward {
     public array $resources;
 
     /**
+     * @var ?array<string, int>
+     * This field is only used for undo. It may be null in two cases:
+     * * There was no cost
+     * * The reward is not undoable (since there's no point)
+     */
+    public ?array $cost;
+
+    /**
      * @var array<string, Reward[]|null>
      */
     public array $boxes;
@@ -64,6 +72,7 @@ class Reward {
         int $fromId,
         array $resources,
         array $boxesToCheck,
+        ?array $cost = null,
         bool $undoable = true,
     ) {
         $this->fromSection = $fromSection;
@@ -85,6 +94,19 @@ class Reward {
             } else {
                 // it's an enum variant
                 $this->resources[$value->value] = 1;
+            }
+        }
+
+        // cost is same as resources, except also nullable
+        $cost ??= [];
+        $this->cost = [];
+        foreach ($cost as $idx => $value) {
+            if (\is_string($idx) && \is_numeric($value)) {
+                // it's enum(string) => count
+                $this->cost[$idx] = $value;
+            } else {
+                // it's an enum variant
+                $this->cost[$value->value] = 1;
             }
         }
 
@@ -110,16 +132,16 @@ class Reward {
         }
     }
 
-    public static function resources(string $fromSection, int $fromId, array $resources, bool $undoable = true): Reward {
-        return new Reward($fromSection, $fromId, $resources, [], $undoable);
+    public static function resources(string $fromSection, int $fromId, array $resources, ?array $cost = null, bool $undoable = true): Reward {
+        return new Reward($fromSection, $fromId, $resources, [], $cost, $undoable);
     }
 
-    public static function boxes(string $fromSection, int $fromId, array $boxes, bool $undoable = true): Reward {
-        return new Reward($fromSection, $fromId, [], $boxes, $undoable);
+    public static function boxes(string $fromSection, int $fromId, array $boxes, ?array $cost = null, bool $undoable = true): Reward {
+        return new Reward($fromSection, $fromId, [], $boxes, $cost, $undoable);
     }
 
-    public static function none(string $fromSection, int $fromId, bool $undoable = true): Reward {
-        return new Reward($fromSection, $fromId, [], [], $undoable);
+    public static function none(string $fromSection, int $fromId, ?array $cost = null, bool $undoable = true): Reward {
+        return new Reward($fromSection, $fromId, [], [], $cost, $undoable);
     }
 
     /**
@@ -198,6 +220,17 @@ class Reward {
                 implode(',', $values)
             );
         }
+        // ...and the costs
+        if (\count($this->cost) > 0) {
+            $values = [];
+            foreach ($this->cost as $resource => $count) {
+                $values[] = ("($rewardId, '$resource', -$count)");
+            }
+            $game->DbQuery(
+                "INSERT INTO reward_resource (reward_id, resource, count) VALUES " .
+                implode(',', $values)
+            );
+        }
 
         return $rewardId;
     }
@@ -206,8 +239,11 @@ class Reward {
         $rewardId = (int) $data['id'];
         $box = $allBoxes[$rewardId];
         $resourceSet = $allResources[$rewardId] ?? [];
+
+        $resources = [];
+        $costs = [];
         if (\count($resourceSet) > 0) {
-            $resources = array_reduce(
+            $resRows = array_reduce(
                 array_map(
                     null,
                     explode(',', $resourceSet['resources']),
@@ -216,15 +252,21 @@ class Reward {
                 fn ($out, $item) => [...$out, $item[0] => $item[1]],
                 [],
             );
-        } else {
-            $resources = [];
+            foreach ($resRows as $res => $count) {
+                if ($count > 0) {
+                    $resources[$res] = $count;
+                } else {
+                    $costs[$res] = -$count;
+                }
+            }
         }
 
         $out = new Reward(
             $box['section'],
             (int) $box['box_id'],
             $resources,
-            [],
+            [],  // subrewards, get filled in later
+            $costs,
             $data['undoable'] === '1' ? true : false
         );
         $out->id = $rewardId;
@@ -352,6 +394,11 @@ class Reward {
         // resources go back down
         foreach ($this->resources as $resourceName => $count) {
             $game->resources($resourceName)->inc($playerId, -$count);
+        }
+
+        // costs get refunded
+        foreach ($this->cost as $resourceName => $count) {
+            $game->resources($resourceName)->inc($playerId, $count);
         }
 
         // delete checked box, the reward resources, and the reward itself

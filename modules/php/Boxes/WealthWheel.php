@@ -6,12 +6,14 @@ use BGA\Games\theanarchy\Game;
 use BGA\Games\theanarchy\Boxes\BoxType;
 use BGA\Games\theanarchy\Resource;
 
+const COST = [Resource::SILVER];
+
 abstract class WealthWheel extends BoxType {
     abstract protected function reward($boxId): Reward;
 
     public function check(Game $game, int $playerId, ?int $boxId = null, bool $pay = true, ?string $choice = null): Reward {
         $reward = $this->reward($boxId);
-        return $this->checkAndPay($game, $playerId, $boxId, $pay, [Resource::SILVER], $reward);
+        return $this->checkAndPay($game, $playerId, $boxId, $pay, COST, $reward);
     }
 
     protected function sectionBoxIds(int $playerId, array &$currBoxes): array {
@@ -66,8 +68,8 @@ class Guildsmen extends WealthWheelSide {
     public string $name = "GUILDSMEN";
     protected function reward($boxId): Reward {
         return match ($boxId) {
-            7, 10, 11 => new Reward($this->name, $boxId, [Resource::CRAFTSMEN], ["CRAFTSMEN"]),
-            default => Reward::resources($this->name, $boxId, [Resource::CRAFTSMEN]),
+            7, 10, 11 => new Reward($this->name, $boxId, [Resource::CRAFTSMEN], ["CRAFTSMEN"], COST),
+            default => Reward::resources($this->name, $boxId, [Resource::CRAFTSMEN], COST),
         };
     }
 }
@@ -76,11 +78,11 @@ class Allies extends WealthWheelSide {
     public string $name = "ALLIES";
     protected function reward($boxId): Reward {
         return match ($boxId) {
-            1, 4, 6 => Reward::resources($this->name, $boxId, [Resource::KNIGHTS]),
-            2, 3, 8, 9 => Reward::resources($this->name, $boxId, [Resource::PATRONS]),
-            5 => Reward::resources($this->name, $boxId, [Resource::CRAFTSMEN]),
-            7, 10 => new Reward($this->name, $boxId, [Resource::KNIGHTS], ["LOYALTY"]),
-            11 => new Reward($this->name, $boxId, [Resource::KNIGHTS], ["KNIGHTS"]),
+            1, 4, 6 => Reward::resources($this->name, $boxId, [Resource::KNIGHTS], COST),
+            2, 3, 8, 9 => Reward::resources($this->name, $boxId, [Resource::PATRONS], COST),
+            5 => Reward::resources($this->name, $boxId, [Resource::CRAFTSMEN], COST),
+            7, 10 => new Reward($this->name, $boxId, [Resource::KNIGHTS], ["LOYALTY"], COST),
+            11 => new Reward($this->name, $boxId, [Resource::KNIGHTS], ["KNIGHTS"], COST),
         };
     }
 }
@@ -90,10 +92,10 @@ class Mercenaries extends WealthWheelSide {
 
     protected function reward($boxId): Reward {
         return match ($boxId) {
-            1 => Reward::resources($this->name, $boxId, [Resource::SOLDIERS]),
-            2, 3, 7, 8, 9, 10 => Reward::resources($this->name, $boxId, [Resource::SOLDIERS->value => 2]),
-            4, 5, 6 => Reward::resources($this->name, $boxId, [Resource::PATRONS]),
-            11 => new Reward($this->name, $boxId, [Resource::PATRONS], ["PATRONS"]),
+            1 => Reward::resources($this->name, $boxId, [Resource::SOLDIERS], COST),
+            2, 3, 7, 8, 9, 10 => Reward::resources($this->name, $boxId, [Resource::SOLDIERS->value => 2], COST),
+            4, 5, 6 => Reward::resources($this->name, $boxId, [Resource::PATRONS], COST),
+            11 => new Reward($this->name, $boxId, [Resource::PATRONS], ["PATRONS"], COST),
         };
     }
 }
@@ -135,8 +137,8 @@ class Siegecraft extends WealthWheel {
 
     protected function reward($boxId): Reward {
         return match ($boxId) {
-            1, 10 => Reward::resources($this->name, $boxId, [Resource::SERFS]),
-            default => Reward::none($this->name, $boxId),
+            1, 10 => Reward::resources($this->name, $boxId, [Resource::SERFS], COST),
+            default => Reward::none($this->name, $boxId, COST),
         };
     }
 }
@@ -157,9 +159,9 @@ class SiegecraftConstruction extends BoxType {
 
     private function reward(int $id): Reward {
         return match ($id) {
-            1, 2, 4, 5 => Reward::boxes($this->name, $id, ["MIGHT"]),
-            3, 6 => Reward::resources($this->name, $id, [Resource::SERFS->value => 1]),
-            7, 8 => new Reward($this->name, $id, [Resource::SOLDIERS], ["MIGHT"]),
+            1, 2, 4, 5 => Reward::boxes($this->name, $id, ["MIGHT"], self::COSTS[$id]),
+            3, 6 => Reward::resources($this->name, $id, [Resource::SERFS->value => 1], self::COSTS[$id]),
+            7, 8 => new Reward($this->name, $id, [Resource::SOLDIERS], ["MIGHT"], self::COSTS[$id]),
         };
     }
 

@@ -39,7 +39,7 @@ class StValentinesFestival extends BoxType {
 
         if ($pay && $boxId <= 6) {
             // activation row
-            $reward = Reward::none(NAME, $boxId, false);
+            $reward = Reward::none(NAME, $boxId, undoable: false);
 
             $cards = $game->drawDomainCards($playerId, 2, true);
             $game->notify->all(
@@ -95,9 +95,9 @@ class StValentinesFestival extends BoxType {
             // pair row; did the player just complete a pair?
             $mate = $boxId % 2 == 1 ? $boxId + 1 : $boxId - 1;
             if ($this->idFilled($playerId, NAME, $mate, $currBoxes)) {
-                $reward = Reward::boxes(NAME, $boxId, [NAME], false);
+                $reward = Reward::boxes(NAME, $boxId, [NAME], undoable: false);
             } else {
-                $reward = Reward::none(NAME, $boxId, false);
+                $reward = Reward::none(NAME, $boxId, undoable: false);
             }
         } else if (!$pay && $boxId == null) {
             // reward row
@@ -108,7 +108,7 @@ class StValentinesFestival extends BoxType {
                 $boxId,
                 [Resource::SERFS],
                 $boxId % 2 == 1 ? ["LOYALTY"] : ["LOYALTY", "SERFS"],
-                false,
+                undoable: false,
             );
         }
 

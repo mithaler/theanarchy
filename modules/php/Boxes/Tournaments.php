@@ -93,9 +93,9 @@ class Tournaments extends BoxType {
         if ($boxId <= 6) {
             // you get this reward either way
             $reward = match ($boxId) {
-                1, 2 => Reward::resources($this->name, $boxId, [Resource::KNIGHTS], false),
-                3, 4 => new Reward($this->name, $boxId, [Resource::KNIGHTS], ["BRAVERY"], false),
-                5, 6 => new Reward($this->name, $boxId, [Resource::KNIGHTS], ["BRAVERY", "INFLUENCE"], false),
+                1, 2 => Reward::resources($this->name, $boxId, [Resource::KNIGHTS], undoable: false),
+                3, 4 => new Reward($this->name, $boxId, [Resource::KNIGHTS], ["BRAVERY"], undoable: false),
+                5, 6 => new Reward($this->name, $boxId, [Resource::KNIGHTS], ["BRAVERY", "INFLUENCE"], undoable: false),
             };
 
             // do I win?
@@ -106,8 +106,8 @@ class Tournaments extends BoxType {
             return $this->checkAndPay($game, $playerId, $boxId, $pay, self::COSTS[$boxId], $reward);
         } else if ($boxId > 6 && !$pay) {
             $reward = match ($boxId) {
-                7, 8, 9, 10 => new Reward("TOURNAMENTS", $boxId, [Resource::SOLDIERS], ["INFLUENCE"], false),
-                11, 12 => new Reward("TOURNAMENTS", $boxId, [Resource::SOLDIERS], ["MIGHT", "JOY"], false),
+                7, 8, 9, 10 => new Reward("TOURNAMENTS", $boxId, [Resource::SOLDIERS], ["INFLUENCE"], undoable: false),
+                11, 12 => new Reward("TOURNAMENTS", $boxId, [Resource::SOLDIERS], ["MIGHT", "JOY"], undoable: false),
             };
             return $this->checkAndPay($game, $playerId, $boxId, false, [], $reward);
         }
