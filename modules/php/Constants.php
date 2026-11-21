@@ -385,10 +385,11 @@ const SCENARIO_CARDS = [
  * and difficulty.
  * @param string $mode "siege" or "classic"
  * @param string $difficulty "easy", "medium" or "hard"
+ * @param boolean $roundIds if true, keyed by card ID (instead of round number)
  * @return ScenarioCard[]
  */
-function scenarioCards(string $mode, string $difficulty): array {
-    $start = 1;
+function scenarioCards(string $mode, string $difficulty, bool $byCardId = false): array {
+    $start = 0;
     if ($mode === "siege") {
         $start += 15;
     }
@@ -399,7 +400,13 @@ function scenarioCards(string $mode, string $difficulty): array {
         $start += 10;
     }
 
-    return \array_slice(SCENARIO_CARDS, $start, 5);
+    if ($byCardId) {
+        return \array_slice(SCENARIO_CARDS, $start, 5, true);
+    } else {
+        // shift keys up by 1 to match round numbers
+        $cards = \array_slice(SCENARIO_CARDS, $start, 5);
+        return array_combine(range(1, \count($cards)), $cards);
+    }
 }
 
 /**

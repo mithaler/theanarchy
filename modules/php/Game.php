@@ -152,6 +152,9 @@ class Game extends \Bga\GameFramework\Table {
             $result['players'][$playerId]['defenders'][] = $defender;
         }
 
+        // TODO: make this configurable
+        $result['scenario'] = scenarioCards("classic", "easy", true);
+
         return $result;
     }
 
