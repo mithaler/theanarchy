@@ -142,6 +142,9 @@ export class Game {
     const section = player.checkedBoxes[args.boxSection] ?? [];
     section.push(args.boxId);
     ctx.data!.players[args.player_id]!.checkedBoxes[args.boxSection] = section;
+    if (args.canUndo !== null) {
+      ctx.state.canUndo = args.canUndo;
+    }
   }
 
   async notif_newAvailable(args: BoxSet) {

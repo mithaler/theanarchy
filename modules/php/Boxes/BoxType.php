@@ -43,7 +43,7 @@ class Box {
 
 class Reward {
 
-    public ?string $id;
+    private ?int $id;
     public string $fromSection;
     public int $fromId;
     public bool $undoable;
@@ -74,7 +74,7 @@ class Reward {
                 [Resource::SOME, Resource::ANOTHER]
             or:
                 [Resource::SOME, Resource::ANOTHER->value => 2]
-            we always transform it to the second form
+            we always transform it to the resource => count form
         */
         $this->resources = [];
         foreach ($resources as $idx => $value) {
@@ -136,7 +136,7 @@ class Reward {
         $rewardId = $this->writeToDb($game, $parentRewardId);
 
         // notify this happened
-        $this->notify($game, $playerId);
+        $this->notify($game, $playerId, topLevel: $parentRewardId === null);
 
         if ($this->boxes) {
             foreach ($this->boxes as $box => $boxIds) {
@@ -170,10 +170,10 @@ class Reward {
      */
     private function writeToDb(Game $game, ?int $parentRewardId): int {
         // insert the Reward and get its ID
-        $game->DbQuery(sprintf(
+        $game->DbQuery(\sprintf(
             "INSERT INTO reward (player_id, undoable, parent_reward_id, move_id) VALUES (%s, %s, %s, %s)",
             $game->getCurrentPlayerId(),
-            $this->undoable,
+            $this->undoable ? 1 : 0,
             $parentRewardId ?? 'null',
             $parentRewardId === null ? $game->bga->logs->getCurrentMoveId() : 'null',
         ));
@@ -187,7 +187,7 @@ class Reward {
         );
 
         // write out the resource rewards
-        if (count($this->resources) > 0) {
+        if (\count($this->resources) > 0) {
             $values = [];
             foreach ($this->resources as $resource => $count) {
                 $values[] = ("($rewardId, '$resource', $count)");
@@ -201,12 +201,114 @@ class Reward {
         return $rewardId;
     }
 
-    private function notify(Game $game, int $playerId) {
+    private static function fromDb(array $data, array $allResources, array $allBoxes): Reward {
+        $rewardId = (int) $data['id'];
+        $box = $allBoxes[$rewardId];
+        $resourceSet = $allResources[$rewardId] ?? [];
+        $resources = \count($resourceSet) > 0 ? array_reduce(
+            array_map(
+                null,
+                explode(',', $resourceSet['resources']),
+                explode(',', $resourceSet['counts'])
+            ),
+            fn ($out, $item) => [...$out, $item[0] => $item[1]],
+            [],
+        ) : [];
+
+        $out = new Reward(
+            $box['section'],
+            (int) $box['box_id'],
+            $resources,
+            [],
+            $data['undoable'] === '1' ? true : false
+        );
+        $out->id = $rewardId;
+        return $out;
+    }
+
+    private static function insertIntoTree(Reward &$top, Reward $toInsert, int $parentRewardId): bool {
+        if ($top->id === $parentRewardId) {
+            $top->boxes[$toInsert->fromSection][] = $toInsert;
+            return true;
+        }
+        // it's not this one; search deeper
+        foreach ($top->boxes as $childSet) {
+            foreach ($childSet as $child) {
+                if (self::insertIntoTree($child, $toInsert, $parentRewardId)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public static function latestFromPlayer(int $playerId): ?Reward {
+        $rewardTree = Game::getObjectListFromDB(
+            "WITH RECURSIVE reward_tree AS (
+                SELECT * FROM `reward`
+                WHERE id = (
+                    SELECT id FROM `reward`
+                    WHERE player_id = $playerId
+                    ORDER BY move_id DESC
+                    LIMIT 1
+                )
+
+                UNION ALL
+
+                SELECT r.* FROM `reward` r
+                INNER JOIN `reward_tree` rt ON rt.id = r.parent_reward_id
+            )
+            SELECT * FROM `reward_tree`
+            ORDER BY parent_reward_id ASC"
+        );
+        if (\count($rewardTree) === 0) {
+            return null;
+        }
+
+        // gather all the ids and get their resources and boxes
+        $rewardIds = implode(',', array_map(fn ($r) => $r['id'], $rewardTree));
+        $resources = Game::getCollectionFromDB(
+            "SELECT
+                `reward_id`,
+                GROUP_CONCAT(`resource` ORDER BY `id` SEPARATOR ',') AS `resources`,
+                GROUP_CONCAT(`count` ORDER BY `id` SEPARATOR ',') AS `counts`
+            FROM `reward_resource`
+            WHERE `reward_id` IN ($rewardIds)
+            GROUP BY `reward_id`",
+        );
+        // ...there's only one per reward, right?
+        $boxes = Game::getCollectionFromDB(
+            "SELECT `reward_id`, `section`, `box_id`
+            FROM `checked_box`
+            WHERE `reward_id` IN ($rewardIds)",
+        );
+
+        // first one is top-level
+        $top = self::fromDb($rewardTree[0], $resources, $boxes);
+
+        // repeatedly search the list and materialize them
+        $idsToFind = [$top->id];
+        while (\count($idsToFind) > 0) {
+            $subrewardRows = array_filter($rewardTree, fn ($r) => \in_array((int) $r['parent_reward_id'], $idsToFind));
+
+            $idsToFind = [];
+            foreach ($subrewardRows as $subRow) {
+                $subreward = self::fromDb($subRow, $resources, $boxes);
+                self::insertIntoTree($top, $subreward, (int) $subRow['parent_reward_id']);
+                $idsToFind[] = $subreward->id;
+            }
+        }
+
+        return $top;
+    }
+
+    private function notify(Game $game, int $playerId, bool $topLevel = false) {
         if (\count($this->resources) == 0 && \count($this->boxes) == 0) {
             $game->notify->all("boxReward", \clienttranslate('${player_name} checks ${boxSection}'), [
                 ...$game->playerNotifArgs($playerId),
                 "boxSection" => $this->fromSection,
                 "boxId" => $this->fromId,
+                "canUndo" => $topLevel ? $this->undoable : null,
             ]);
         } else {
             $resourceRewards = [];
@@ -222,6 +324,7 @@ class Reward {
                 // TODO make this pretty!
                 "rewards" => implode(" ", [...$resourceRewards, ...array_keys($this->boxes)]),
                 // we don't include resources here, the framework auto-notifies setPlayerCounter for that
+                "canUndo" => $topLevel ? $this->undoable : null,
             ]);
         }
     }

@@ -68,6 +68,7 @@ export interface AnarchyData extends Gamedatas<AnarchyPlayer> {
 export interface AnarchyState {
   availableBoxes?: BoxSet;
   availableWalls?: PlayerKey[];
+  canUndo: boolean;
 
   // for Michaelmas only!
   availableBoxesByNum?: { [key: number]: number[] };
@@ -80,7 +81,11 @@ export interface AnarchyContext {
   locked: boolean;
 }
 
-export const ctx: AnarchyContext = $state({ locked: false, state: {} });
+export const ctx: AnarchyContext = $state({
+  locked: false,
+  state: { canUndo: false },
+  canUndo: false,
+});
 
 /**
  * Wraps bga.actions.performAction, but sets the lock in the context around it,
@@ -119,6 +124,7 @@ export interface BoxRewardArgs {
   boxSection: string;
   boxId: number;
   newAvailable: number[];
+  canUndo: boolean | null; // null means, ignore this reward for deciding!
 }
 
 export interface PlayerCounterArgs {

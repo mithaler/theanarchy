@@ -1,5 +1,6 @@
 import {
   ctx,
+  performAction,
   type AnarchyBga,
   type Attack,
   type BoxSet,
@@ -35,10 +36,8 @@ export abstract class State<ArgType> {
 
   addDoneButton(isCurrentPlayerActive: boolean) {
     if (isCurrentPlayerActive) {
-      this.bga.statusBar.addActionButton(
-        _("Done"),
-        () => this.bga.actions.performAction("actPass"),
-        { color: "secondary" },
+      this.bga.statusBar.addActionButton(_("Done"), () =>
+        performAction("actPass"),
       );
     }
   }
@@ -61,9 +60,12 @@ export class ChoosePathCards extends State<ChoosePathCardArgs> {
 export interface CheckBoxesArgs {
   availableBoxes: PlayerBoxSet;
   availableWalls: { [key: number]: PlayerKey[] };
+  canUndo: boolean;
 }
 
 export class CheckBoxes extends State<CheckBoxesArgs> {
+  undoUpdater?: () => void;
+
   onEnteringState(args: CheckBoxesArgs, isCurrentPlayerActive: boolean) {
     if (!ctx.state.availableBoxes) {
       ctx.state.availableBoxes =
@@ -73,6 +75,34 @@ export class CheckBoxes extends State<CheckBoxesArgs> {
       ctx.state.availableWalls =
         args.availableWalls[this.bga.players.getCurrentPlayerId()];
     }
+    ctx.state.canUndo = args.canUndo;
+    this.bga.statusBar.addActionButton(
+      _("Undo"),
+      () => performAction("actUndo"),
+      {
+        color: "secondary",
+        id: "action-bar-undo-button",
+        disabled: !ctx.state.canUndo,
+      },
+    );
+
+    this.undoUpdater = $effect.root(() => {
+      $effect(() => {
+        const btn: HTMLButtonElement = document.getElementById(
+          "action-bar-undo-button",
+        ) as HTMLButtonElement;
+
+        if (btn) {
+          if (!ctx.state.canUndo) {
+            btn.classList.add("disabled");
+            btn.disabled = true;
+          } else {
+            btn.classList.remove("disabled");
+            btn.disabled = false;
+          }
+        }
+      });
+    });
     this.addDoneButton(isCurrentPlayerActive);
   }
 
@@ -83,6 +113,12 @@ export class CheckBoxes extends State<CheckBoxesArgs> {
     if (!isCurrentPlayerActive) {
       ctx.state.availableBoxes = undefined;
       ctx.state.availableWalls = undefined;
+    }
+  }
+
+  onLeavingState(): void {
+    if (this.undoUpdater) {
+      this.undoUpdater();
     }
   }
 }
@@ -208,7 +244,7 @@ export class AllocateDefenders extends State<AllocateDefendersState> {
         ) as Record<Side, number>;
 
         this.bga.statusBar.addActionButton(
-          "Done",
+          _("Done"),
           () => {
             const choices = args.needsChoice.reduce(
               (glom, side) => ({
@@ -222,7 +258,7 @@ export class AllocateDefenders extends State<AllocateDefendersState> {
               }),
               {} as Record<Side, Record<number, Hit>>,
             );
-            this.bga.actions.performAction("actChooseDefenders", {
+            performAction("actChooseDefenders", {
               choices: JSON.stringify(choices),
             });
           },

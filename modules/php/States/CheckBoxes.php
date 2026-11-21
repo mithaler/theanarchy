@@ -14,6 +14,7 @@ use Bga\GameFramework\UserException;
 use Bga\GameFramework\Actions\Types\StringParam;
 use Bga\GameFramework\Actions\Types\IntParam;
 
+use BGA\Games\theanarchy\Boxes\Reward;
 use Bga\Games\theanarchy\Game;
 use Bga\Games\theanarchy\StateConstants;
 
@@ -45,7 +46,14 @@ class CheckBoxes extends GameState {
         $boxes = $this->game->allCheckedBoxes($playerId);
         $availboxes = [$playerId => $this->game->getAvailableBoxes($playerId, $boxes)];
         $walls = [$playerId => availableWalls($this->game, $playerId)];
-        return ["availableBoxes" => $availboxes, "availableWalls" => $walls];
+        $lastReward = Reward::latestFromPlayer($playerId);
+        $this->game->dump('lr', $lastReward);
+
+        return [
+            'availableBoxes' => $availboxes,
+            'availableWalls' => $walls,
+            'canUndo' => $lastReward ? $lastReward->undoable : false
+        ];
     }
 
     #[PossibleAction]
