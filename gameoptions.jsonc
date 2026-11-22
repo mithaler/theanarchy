@@ -20,4 +20,43 @@
     "default": 0
   }
   */
+
+  "101": {
+    "name": "Mode",
+    "default": 0,
+    "values": {
+      "0": {
+        "name": "Classic",
+        "description": "Include player castle attacks",
+        "tmdisplay": "Classic",
+        "nobeginner": true,
+      },
+      "1": {
+        "name": "Siege",
+        "description": "No player castle attacks",
+        "tmdisplay": "Siege",
+      },
+    },
+  },
+
+  "102": {
+    "name": "Difficulty",
+    "values": {
+      "0": {
+        "name": "Easy",
+        "tmdisplay": "Easy",
+        "nobeginner": true,
+      },
+      "1": {
+        "name": "Medium",
+        "tmdisplay": "Medium",
+        "nobeginner": true,
+      },
+      "2": {
+        "name": "Hard",
+        "tmdisplay": "Hard",
+        "nobeginner": true,
+      },
+    },
+  },
 }

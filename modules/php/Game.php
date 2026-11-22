@@ -94,6 +94,22 @@ class Game extends \Bga\GameFramework\Table {
         return $this->playerResources[$resource->name];
     }
 
+    /** The game mode: "classic" or "siege" (that is, with or without player castle attacks). */
+    public function mode(): string {
+        $option = $this->bga->tableOptions->get(101);
+        return $option === 0 ? 'classic' : 'siege';
+    }
+
+    /** The game difficulty: "easy", "medium" or "hard". Affects scenario cards. */
+    public function difficulty(): string {
+        $option = $this->bga->tableOptions->get(102);
+        return match ($option) {
+            0 => 'easy',
+            1 => 'medium',
+            2 => 'hard',
+        };
+    }
+
     public function upgradeTableDb($from_version) {
 //       if ($from_version <= 1404301345)
 //       {
@@ -152,10 +168,11 @@ class Game extends \Bga\GameFramework\Table {
             $result['players'][$playerId]['defenders'][] = $defender;
         }
 
-        // TODO: make this configurable
-        $result['scenario']['mode'] = 'classic';
-        $result['scenario']['difficulty'] = 'easy';
-        $result['scenario']['cards'] = scenarioCards("classic", "easy", true);
+        $mode = $this->mode();
+        $difficulty = $this->difficulty();
+        $result['scenario']['mode'] = $mode;
+        $result['scenario']['difficulty'] = $difficulty;
+        $result['scenario']['cards'] = scenarioCards($mode, $difficulty, true);
 
         return $result;
     }
@@ -349,8 +366,7 @@ class Game extends \Bga\GameFramework\Table {
 
     public function currentScenarioCard(): ScenarioCard {
         $round = $this->round->get();
-        // TODO: make this read settings!
-        return scenarioCards("classic", "easy")[$round];
+        return scenarioCards($this->mode(), $this->difficulty())[$round];
     }
 
     private function insertInitialProduction($playerIds) {
