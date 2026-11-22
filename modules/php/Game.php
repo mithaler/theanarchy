@@ -153,7 +153,9 @@ class Game extends \Bga\GameFramework\Table {
         }
 
         // TODO: make this configurable
-        $result['scenario'] = scenarioCards("classic", "easy", true);
+        $result['scenario']['mode'] = 'classic';
+        $result['scenario']['difficulty'] = 'easy';
+        $result['scenario']['cards'] = scenarioCards("classic", "easy", true);
 
         return $result;
     }
@@ -387,7 +389,7 @@ class Game extends \Bga\GameFramework\Table {
             return $items;
         }, []);
 
-        Reward::resources("DEBUG", 0, $resources, false)->grant($this, (int) $this->getCurrentPlayerId());
+        Reward::resources("DEBUG", 0, $resources, undoable: false)->grant($this, (int) $this->getCurrentPlayerId());
         $currPlayerId = (int) $this->getCurrentPlayerId();
         $newAllCheckedBoxes = $this->allCheckedBoxes($currPlayerId);
         $this->notifyNewAvailable($currPlayerId, $this->getAvailableBoxes($currPlayerId, $newAllCheckedBoxes));

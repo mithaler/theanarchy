@@ -3,6 +3,7 @@
 
   import type { AnarchyContext } from "../context.svelte";
   import AttackHandler from "./AttackHandler.svelte";
+  import MainBoard from "./MainBoard.svelte";
   import PathCardSelector from "./PathCardSelector.svelte";
   import PlayerBoard from "./PlayerArea.svelte";
   import Zoomer from "./Zoomer.svelte";
@@ -21,7 +22,7 @@
 
 <Zoomer bind:zoom />
 <div class="table" style:zoom>
-  <p>It is round {ctx.data!.round}</p>
+  <MainBoard {ctx} />
   <PathCardSelector />
 
   <!-- Show current player first -->

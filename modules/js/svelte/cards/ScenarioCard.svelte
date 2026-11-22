@@ -2,14 +2,14 @@
   interface Props {
     face: "front" | "back";
     mode: "siege" | "classic";
-    num: number;
+    num: string;
     zoom?: number;
   }
   const { face, mode, num, zoom }: Props = $props();
 </script>
 
 <div
-  class={["scenario", "card", `${mode}-${face}`, `${mode}-${face}${num}`]}
+  class={["scenario", "card", `${mode}-${face}`, `${mode}-${face}-${num}`]}
   style:zoom
 ></div>
 
@@ -17,10 +17,13 @@
   .card {
     width: 383px;
     height: 610px;
+    z-index: 2;
+    border-radius: 12px;
+    box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.6274509804);
   }
 
   .classic-front {
-    background-image: url("img/classic_scenario_front-.webp");
+    background-image: url("img/classic_scenario_fronts.webp");
   }
 
   .classic-front-1 {

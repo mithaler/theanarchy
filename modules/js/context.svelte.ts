@@ -61,8 +61,22 @@ export interface AnarchyPlayer extends Player {
 
 export type PlayerKey = keyof AnarchyPlayer;
 
+export interface ScenarioCard {
+  requiredStrength: number;
+  a: number;
+  b: number;
+  c: number;
+  d: number;
+  e: number;
+}
+
 export interface AnarchyData extends Gamedatas<AnarchyPlayer> {
   round: number;
+  scenario: {
+    mode: "classic" | "siege";
+    difficulty: "easy" | "medium" | "hard";
+    cards: Record<number, ScenarioCard>;
+  };
 }
 
 export interface AnarchyState {
