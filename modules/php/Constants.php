@@ -338,6 +338,7 @@ class ScenarioCard implements JsonSerializable {
     // resource costs at the top never change, they're purely per-round
     public function __construct(
         public ?int $requiredStrength,
+        public ?int $strOnBack,
         public ?array $siegeRequirements,
         public int $a,
         public int $b,
@@ -355,12 +356,42 @@ class ScenarioCard implements JsonSerializable {
     public function jsonSerialize(): mixed {
         return [
             'requiredStrength' => $this->requiredStrength,
+            'strOnBack' => $this->strOnBack,
             'a' => $this->a,
             'b' => $this->b,
             'c' => $this->c,
             'd' => $this->d,
             'e' => $this->d,
         ];
+    }
+
+    /**
+     * Returns the scenario cards for this game based on mode
+     * and difficulty.
+     * @param string $mode "siege" or "classic"
+     * @param string $difficulty "easy", "medium" or "hard"
+     * @param boolean $byCardId if true, keyed by card ID (instead of round number)
+     * @return ScenarioCard[]
+     */
+    public static function setForGame(string $mode, string $difficulty, bool $byCardId = false): array {
+        $start = 0;
+        if ($mode === "siege") {
+            $start += 15;
+        }
+
+        if ($difficulty === "medium") {
+            $start += 5;
+        } else if ($difficulty === "hard") {
+            $start += 10;
+        }
+
+        if ($byCardId) {
+            return \array_slice(SCENARIO_CARDS, $start, 5, true);
+        } else {
+            // shift keys up by 1 to match round numbers
+            $cards = \array_slice(SCENARIO_CARDS, $start, 5);
+            return array_combine(range(1, \count($cards)), $cards);
+        }
     }
 }
 
@@ -377,64 +408,36 @@ enum SiegeRequirement {
     case TOWER;
 }
 
+// TODO: The strOnBack values are wrong! Go back and figure those out.
 const SCENARIO_CARDS = [
     // classic easy
-    1 => new ScenarioCard(4, [SiegeRequirement::FOOD, SiegeRequirement::LADDER], 2, 1, 1, 2, 2),
-    2 => new ScenarioCard(4, [SiegeRequirement::FOOD, SiegeRequirement::BALLISTA], 2, 2, 1, 3, 3),
-    3 => new ScenarioCard(5, [SiegeRequirement::FOOD, SiegeRequirement::BLACK_HORSE, SiegeRequirement::TREBUCHET], 3, 2, 2, 3, 4),
-    4 => new ScenarioCard(5, [SiegeRequirement::TWO_FOOD, SiegeRequirement::BLACK_HORSE, SiegeRequirement::BATTERING_RAM], 3, 3, 2, 4, 4),
-    5 => new ScenarioCard(6, [SiegeRequirement::TWO_FOOD, SiegeRequirement::WHITE_HORSE, SiegeRequirement::CRANE], 4, 3, 3, 4, 5),
+    1 => new ScenarioCard(4, 1, [SiegeRequirement::FOOD, SiegeRequirement::LADDER], 2, 1, 1, 2, 2),
+    2 => new ScenarioCard(4, 1, [SiegeRequirement::FOOD, SiegeRequirement::BALLISTA], 2, 2, 1, 3, 3),
+    3 => new ScenarioCard(5, 1, [SiegeRequirement::FOOD, SiegeRequirement::BLACK_HORSE, SiegeRequirement::TREBUCHET], 3, 2, 2, 3, 4),
+    4 => new ScenarioCard(5, 1, [SiegeRequirement::TWO_FOOD, SiegeRequirement::BLACK_HORSE, SiegeRequirement::BATTERING_RAM], 3, 3, 2, 4, 4),
+    5 => new ScenarioCard(6, 1, [SiegeRequirement::TWO_FOOD, SiegeRequirement::WHITE_HORSE, SiegeRequirement::CRANE], 4, 3, 3, 4, 5),
 
     // classic medium
-    6 => new ScenarioCard(4, [SiegeRequirement::FOOD, SiegeRequirement::LADDER], 2, 1, 1, 2, 3),
-    7 => new ScenarioCard(4, [SiegeRequirement::FOOD, SiegeRequirement::BALLISTA], 3, 2, 2, 3, 3),
-    8 => new ScenarioCard(5, [SiegeRequirement::FOOD, SiegeRequirement::BLACK_HORSE, SiegeRequirement::TREBUCHET], 3, 3, 2, 4, 4),
-    9 => new ScenarioCard(5, [SiegeRequirement::TWO_FOOD, SiegeRequirement::BLACK_HORSE, SiegeRequirement::BATTERING_RAM], 4, 3, 3, 4, 4),
-    10 => new ScenarioCard(6, [SiegeRequirement::TWO_FOOD, SiegeRequirement::WHITE_HORSE, SiegeRequirement::CRANE], 4, 4, 3, 5, 5),
+    6 => new ScenarioCard(4, 1, [SiegeRequirement::FOOD, SiegeRequirement::LADDER], 2, 1, 1, 2, 3),
+    7 => new ScenarioCard(4, 1, [SiegeRequirement::FOOD, SiegeRequirement::BALLISTA], 3, 2, 2, 3, 3),
+    8 => new ScenarioCard(5, 1, [SiegeRequirement::FOOD, SiegeRequirement::BLACK_HORSE, SiegeRequirement::TREBUCHET], 3, 3, 2, 4, 4),
+    9 => new ScenarioCard(5, 1, [SiegeRequirement::TWO_FOOD, SiegeRequirement::BLACK_HORSE, SiegeRequirement::BATTERING_RAM], 4, 3, 3, 4, 4),
+    10 => new ScenarioCard(6, 1, [SiegeRequirement::TWO_FOOD, SiegeRequirement::WHITE_HORSE, SiegeRequirement::CRANE], 4, 4, 3, 5, 5),
 
     // classic hard
-    11 => new ScenarioCard(4, [SiegeRequirement::FOOD, SiegeRequirement::LADDER], 2, 2, 1, 3, 3),
-    12 => new ScenarioCard(4, [SiegeRequirement::FOOD, SiegeRequirement::BALLISTA], 3, 2, 2, 3, 4),
-    13 => new ScenarioCard(5, [SiegeRequirement::FOOD, SiegeRequirement::BLACK_HORSE, SiegeRequirement::TREBUCHET], 4, 3, 3, 4, 4),
-    14 => new ScenarioCard(5, [SiegeRequirement::TWO_FOOD, SiegeRequirement::BLACK_HORSE, SiegeRequirement::BATTERING_RAM], 4, 4, 3, 5, 5),
-    15 => new ScenarioCard(6, [SiegeRequirement::TWO_FOOD, SiegeRequirement::WHITE_HORSE, SiegeRequirement::TOWER], 5, 4, 4, 5, 6),
+    11 => new ScenarioCard(4, 1, [SiegeRequirement::FOOD, SiegeRequirement::LADDER], 2, 2, 1, 3, 3),
+    12 => new ScenarioCard(4, 1, [SiegeRequirement::FOOD, SiegeRequirement::BALLISTA], 3, 2, 2, 3, 4),
+    13 => new ScenarioCard(5, 1, [SiegeRequirement::FOOD, SiegeRequirement::BLACK_HORSE, SiegeRequirement::TREBUCHET], 4, 3, 3, 4, 4),
+    14 => new ScenarioCard(5, 1, [SiegeRequirement::TWO_FOOD, SiegeRequirement::BLACK_HORSE, SiegeRequirement::BATTERING_RAM], 4, 4, 3, 5, 5),
+    15 => new ScenarioCard(6, 1, [SiegeRequirement::TWO_FOOD, SiegeRequirement::WHITE_HORSE, SiegeRequirement::TOWER], 5, 4, 4, 5, 6),
 
     // siege easy
-    16 => new ScenarioCard(null, null, 2, 2, 1, 3, 3),
-    17 => new ScenarioCard(null, null, 3, 2, 2, 3, 4),
-    18 => new ScenarioCard(null, null, 3, 2, 2, 3, 4),
-    19 => new ScenarioCard(null, null, 4, 4, 3, 5, 5),
-    20 => new ScenarioCard(null, null, 5, 4, 4, 5, 6),
+    16 => new ScenarioCard(null, null, null, 2, 2, 1, 3, 3),
+    17 => new ScenarioCard(null, null, null, 3, 2, 2, 3, 4),
+    18 => new ScenarioCard(null, null, null, 3, 2, 2, 3, 4),
+    19 => new ScenarioCard(null, null, null, 4, 4, 3, 5, 5),
+    20 => new ScenarioCard(null, null, null, 5, 4, 4, 5, 6),
 ];
-
-/**
- * Returns the scenario cards for this game based on mode
- * and difficulty.
- * @param string $mode "siege" or "classic"
- * @param string $difficulty "easy", "medium" or "hard"
- * @param boolean $roundIds if true, keyed by card ID (instead of round number)
- * @return ScenarioCard[]
- */
-function scenarioCards(string $mode, string $difficulty, bool $byCardId = false): array {
-    $start = 0;
-    if ($mode === "siege") {
-        $start += 15;
-    }
-
-    if ($difficulty === "medium") {
-        $start += 5;
-    } else if ($difficulty === "hard") {
-        $start += 10;
-    }
-
-    if ($byCardId) {
-        return \array_slice(SCENARIO_CARDS, $start, 5, true);
-    } else {
-        // shift keys up by 1 to match round numbers
-        $cards = \array_slice(SCENARIO_CARDS, $start, 5);
-        return array_combine(range(1, \count($cards)), $cards);
-    }
-}
 
 /**
  * A castle defender -- a soldier, craftsman, knight or tactics use.

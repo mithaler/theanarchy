@@ -28,6 +28,7 @@ use Tower;
 use Wall;
 
 require_once(__DIR__ . "/BasicRow.php");
+require_once(__DIR__ . "/CastleAttack.php");
 require_once(__DIR__ . "/FortificationRow.php");
 require_once(__DIR__ . "/UnclickableRow.php");
 require_once(__DIR__ . "/Discontent.php");
@@ -45,6 +46,8 @@ require_once(__DIR__ . "/Lammas.php");
  * @param array<string, BoxType>
  */
 const SECTIONS = [
+    "CASTLE ATTACK" => new CastleAttack(),
+
     // Fortification rows
     "GATE" => new Gate(),
     "TOWER" => new Tower(),

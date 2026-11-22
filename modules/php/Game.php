@@ -172,7 +172,7 @@ class Game extends \Bga\GameFramework\Table {
         $difficulty = $this->difficulty();
         $result['scenario']['mode'] = $mode;
         $result['scenario']['difficulty'] = $difficulty;
-        $result['scenario']['cards'] = scenarioCards($mode, $difficulty, true);
+        $result['scenario']['cards'] = ScenarioCard::setForGame($mode, $difficulty, true);
 
         return $result;
     }
@@ -366,7 +366,7 @@ class Game extends \Bga\GameFramework\Table {
 
     public function currentScenarioCard(): ScenarioCard {
         $round = $this->round->get();
-        return scenarioCards($this->mode(), $this->difficulty())[$round];
+        return ScenarioCard::setForGame($this->mode(), $this->difficulty())[$round];
     }
 
     private function insertInitialProduction($playerIds) {
