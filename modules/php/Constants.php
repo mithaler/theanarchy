@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace BGA\Games\theanarchy;
 
 use JsonSerializable;
+use Override;
 
 class StateConstants {
     const int GAME_START = 2;
@@ -333,10 +334,11 @@ const PATH_CARDS = [
     "weaponsmith" => new PathCard(3, 2, 4, 3, 1),
 ];
 
-class ScenarioCard {
+class ScenarioCard implements JsonSerializable {
     // resource costs at the top never change, they're purely per-round
     public function __construct(
         public ?int $requiredStrength,
+        public ?array $siegeRequirements,
         public int $a,
         public int $b,
         public int $c,
@@ -348,36 +350,61 @@ class ScenarioCard {
         $prop = strtolower($letter);
         return $this->$prop;
     }
+
+    #[Override]
+    public function jsonSerialize(): mixed {
+        return [
+            'requiredStrength' => $this->requiredStrength,
+            'a' => $this->a,
+            'b' => $this->b,
+            'c' => $this->c,
+            'd' => $this->d,
+            'e' => $this->d,
+        ];
+    }
+}
+
+enum SiegeRequirement {
+    case FOOD;
+    case TWO_FOOD;
+    case LADDER;
+    case BALLISTA;
+    case BLACK_HORSE;
+    case WHITE_HORSE;
+    case TREBUCHET;
+    case BATTERING_RAM;
+    case CRANE;
+    case TOWER;
 }
 
 const SCENARIO_CARDS = [
     // classic easy
-    1 => new ScenarioCard(4, 2, 1, 1, 2, 2),
-    2 => new ScenarioCard(4, 2, 2, 1, 3, 3),
-    3 => new ScenarioCard(5, 3, 2, 2, 3, 4),
-    4 => new ScenarioCard(5, 3, 3, 2, 4, 4),
-    5 => new ScenarioCard(6, 4, 3, 3, 4, 5),
+    1 => new ScenarioCard(4, [SiegeRequirement::FOOD, SiegeRequirement::LADDER], 2, 1, 1, 2, 2),
+    2 => new ScenarioCard(4, [SiegeRequirement::FOOD, SiegeRequirement::BALLISTA], 2, 2, 1, 3, 3),
+    3 => new ScenarioCard(5, [SiegeRequirement::FOOD, SiegeRequirement::BLACK_HORSE, SiegeRequirement::TREBUCHET], 3, 2, 2, 3, 4),
+    4 => new ScenarioCard(5, [SiegeRequirement::TWO_FOOD, SiegeRequirement::BLACK_HORSE, SiegeRequirement::BATTERING_RAM], 3, 3, 2, 4, 4),
+    5 => new ScenarioCard(6, [SiegeRequirement::TWO_FOOD, SiegeRequirement::WHITE_HORSE, SiegeRequirement::CRANE], 4, 3, 3, 4, 5),
 
     // classic medium
-    6 => new ScenarioCard(4, 2, 1, 1, 2, 3),
-    7 => new ScenarioCard(4, 3, 2, 2, 3, 3),
-    8 => new ScenarioCard(5, 3, 3, 2, 4, 4),
-    9 => new ScenarioCard(5, 4, 3, 3, 4, 4),
-    10 => new ScenarioCard(6, 4, 4, 3, 5, 5),
+    6 => new ScenarioCard(4, [SiegeRequirement::FOOD, SiegeRequirement::LADDER], 2, 1, 1, 2, 3),
+    7 => new ScenarioCard(4, [SiegeRequirement::FOOD, SiegeRequirement::BALLISTA], 3, 2, 2, 3, 3),
+    8 => new ScenarioCard(5, [SiegeRequirement::FOOD, SiegeRequirement::BLACK_HORSE, SiegeRequirement::TREBUCHET], 3, 3, 2, 4, 4),
+    9 => new ScenarioCard(5, [SiegeRequirement::TWO_FOOD, SiegeRequirement::BLACK_HORSE, SiegeRequirement::BATTERING_RAM], 4, 3, 3, 4, 4),
+    10 => new ScenarioCard(6, [SiegeRequirement::TWO_FOOD, SiegeRequirement::WHITE_HORSE, SiegeRequirement::CRANE], 4, 4, 3, 5, 5),
 
     // classic hard
-    11 => new ScenarioCard(4, 2, 2, 1, 3, 3),
-    12 => new ScenarioCard(4, 3, 2, 2, 3, 4),
-    13 => new ScenarioCard(5, 4, 3, 3, 4, 4),
-    14 => new ScenarioCard(5, 4, 4, 3, 5, 5),
-    15 => new ScenarioCard(6, 5, 4, 4, 5, 6),
+    11 => new ScenarioCard(4, [SiegeRequirement::FOOD, SiegeRequirement::LADDER], 2, 2, 1, 3, 3),
+    12 => new ScenarioCard(4, [SiegeRequirement::FOOD, SiegeRequirement::BALLISTA], 3, 2, 2, 3, 4),
+    13 => new ScenarioCard(5, [SiegeRequirement::FOOD, SiegeRequirement::BLACK_HORSE, SiegeRequirement::TREBUCHET], 4, 3, 3, 4, 4),
+    14 => new ScenarioCard(5, [SiegeRequirement::TWO_FOOD, SiegeRequirement::BLACK_HORSE, SiegeRequirement::BATTERING_RAM], 4, 4, 3, 5, 5),
+    15 => new ScenarioCard(6, [SiegeRequirement::TWO_FOOD, SiegeRequirement::WHITE_HORSE, SiegeRequirement::TOWER], 5, 4, 4, 5, 6),
 
     // siege easy
-    16 => new ScenarioCard(null, 2, 2, 1, 3, 3),
-    17 => new ScenarioCard(null, 3, 2, 2, 3, 4),
-    18 => new ScenarioCard(null, 3, 2, 2, 3, 4),
-    19 => new ScenarioCard(null, 4, 4, 3, 5, 5),
-    20 => new ScenarioCard(null, 5, 4, 4, 5, 6),
+    16 => new ScenarioCard(null, null, 2, 2, 1, 3, 3),
+    17 => new ScenarioCard(null, null, 3, 2, 2, 3, 4),
+    18 => new ScenarioCard(null, null, 3, 2, 2, 3, 4),
+    19 => new ScenarioCard(null, null, 4, 4, 3, 5, 5),
+    20 => new ScenarioCard(null, null, 5, 4, 4, 5, 6),
 ];
 
 /**
